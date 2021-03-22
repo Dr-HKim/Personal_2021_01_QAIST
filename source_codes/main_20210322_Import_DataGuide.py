@@ -20,30 +20,9 @@ import pandas as pd
 # A15: 날짜 시작 (2000-01-04)
 # A5198: 날짜 종료 (2020-12-30)
 
-DG_DAILY_20000101_20201231 = pd.read_excel('./data_raw/DG_DAILY_20000101_20201231.xlsx', sheet_name=1, header=3,
-                                  skipfooter=0, usecols="B:GE")
+dg_data = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY1", header=None, skiprows=14, skipfooter=0)
 
+dg_header = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY1", header=None, skiprows=8, nrows=6)
 
-
-
-
-
-# 각 월별 ID 만들기
-df_KB_sales_index['MONTH_ID'] = df_KB_sales_index.index
-
-# datetime 형식으로 날짜 붙이기
-df_KB_sales_index["Date0"] = pd.to_datetime("19860101", errors='coerce', format='%Y%m%d')
-df_KB_sales_index["Date_y"] = df_KB_sales_index["Date0"].dt.year + divmod(df_KB_sales_index['MONTH_ID'], 12)[0]
-df_KB_sales_index["Date_m"] = df_KB_sales_index["Date0"].dt.month + divmod(df_KB_sales_index['MONTH_ID'], 12)[1]
-df_KB_sales_index["Date_d"] = df_KB_sales_index["Date0"].dt.day
-df_KB_sales_index["Date"] = pd.to_datetime(
-    df_KB_sales_index["Date_y"] * 10000 + df_KB_sales_index["Date_m"] * 100 + df_KB_sales_index["Date_d"],
-    format='%Y%m%d')
-df_KB_sales_index = df_KB_sales_index.drop(["Date0", "Date_y", "Date_m", "Date_d"], axis=1)
-
-# 주택매매가격 종합지수 시계열 그래프 그리기
-plt.plot(df_KB_sales_index["Date"], df_KB_sales_index["Total"], color='g')
-plt.plot(df_KB_sales_index["Date"], df_KB_sales_index["Seoul"], color='orange')
-plt.xlabel('Month')
-plt.ylabel('Housing Index')
-plt.show()
