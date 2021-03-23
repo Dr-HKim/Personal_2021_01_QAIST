@@ -1,5 +1,7 @@
 # Created by Kim Hyeongjun on 03/22/2021.
 # Copyright © 2021 dr-hkim.github.io. All rights reserved.
+# 데이터가이드 일간 데이터 엑셀을 불러와서 Pickle 형태로 저장
+# 전체 약 5시간 소요
 
 import pandas as pd
 from datetime import datetime
@@ -23,13 +25,31 @@ from datetime import datetime
 # A5198: 날짜 종료 (2020-12-30)
 
 # 테스트를 위한 자료
-dg_test_data = pd.read_excel(
+dg_daily1_test = pd.read_excel(
     './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY1", header=None, skiprows=14, skipfooter=0)
-dg_test_data.to_pickle('./data_processed/dg_test_data.pkl')
+dg_daily1_test.to_pickle('./data_processed/dg_daily1_test.pkl')
 
-dg_test_header = pd.read_excel(
+dg_header1_test = pd.read_excel(
     './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY1", header=None, skiprows=8, nrows=6)
-dg_test_header.to_pickle('./data_processed/dg_test_header.pkl')
+dg_header1_test.to_pickle('./data_processed/dg_header1_test.pkl')
+
+dg_daily2_test = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY2", header=None, skiprows=14, skipfooter=0)
+dg_daily2_test.to_pickle('./data_processed/dg_daily2_test.pkl')
+
+dg_header2_test = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY2", header=None, skiprows=8, nrows=6)
+dg_header2_test.to_pickle('./data_processed/dg_header2_test.pkl')
+
+dg_daily3_test = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY3", header=None, skiprows=14, skipfooter=0)
+dg_daily3_test.to_pickle('./data_processed/dg_daily3_test.pkl')
+
+dg_header3_test = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY3", header=None, skiprows=8, nrows=6)
+dg_header3_test.to_pickle('./data_processed/dg_header3_test.pkl')
+
+
 
 
 # 각 1시간 41분씩 총 5시간 소요
@@ -74,6 +94,20 @@ dg_daily2_20210101_Current.to_pickle('./data_processed/dg_daily2_20210101_Curren
 dg_daily3_20210101_Current = pd.read_excel(
     './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DG_DAILY3", header=None, skiprows=14, skipfooter=0)
 dg_daily3_20210101_Current.to_pickle('./data_processed/dg_daily3_20210101_Current.pkl')
+
+dg_header1_20210101_Current = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY1", header=None, skiprows=8, nrows=6)
+dg_header1_20210101_Current.to_pickle('./data_processed/dg_header1_20210101_Current.pkl')
+
+dg_header2_20210101_Current = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY2", header=None, skiprows=8, nrows=6)
+dg_header2_20210101_Current.to_pickle('./data_processed/dg_header2_20210101_Current.pkl')
+
+dg_header3_20210101_Current = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY3", header=None, skiprows=8, nrows=6)
+dg_header3_20210101_Current.to_pickle('./data_processed/dg_header3_20210101_Current.pkl')
+
+
 
 # StopWatch
 time_end_headers = datetime.now()
