@@ -2,6 +2,8 @@
 # Copyright © 2021 dr-hkim.github.io. All rights reserved.
 
 import pandas as pd
+from datetime import datetime
+
 
 ########################################################################################################################
 # 데이터가이드 일간 데이터 불러오기
@@ -20,26 +22,63 @@ import pandas as pd
 # A15: 날짜 시작 (2000-01-04)
 # A5198: 날짜 종료 (2020-12-30)
 
-dg_data = pd.read_excel(
+# 테스트를 위한 자료
+dg_test_data = pd.read_excel(
     './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY1", header=None, skiprows=14, skipfooter=0)
+dg_test_data.to_pickle('./data_processed/dg_test_data.pkl')
 
-dg_header = pd.read_excel(
+dg_test_header = pd.read_excel(
     './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY1", header=None, skiprows=8, nrows=6)
+dg_test_header.to_pickle('./data_processed/dg_test_header.pkl')
 
 
-dg_header0 = dg_header.transpose()
-new_header = dg_header0.iloc[0] #grab the first row for the header
-dg_header0 = dg_header0[1:] #take the data less the header row
-dg_header0.columns = new_header #set the header row as the df header
+# 각 1시간 41분씩 총 5시간 소요
+dg_daily1_20000101_20201231 = pd.read_excel(
+    './data_raw/DG_DAILY_20000101_20201231.xlsx', sheet_name="DG_DAILY1", header=None, skiprows=14, skipfooter=0)
+dg_daily1_20000101_20201231.to_pickle('./data_processed/dg_daily1_20000101_20201231.pkl')
 
-dg_header1 = dg_header0.loc[dg_header0["Item Name"] == "기준가(원)"]
-dg_header1 = dg_header1.reset_index()
+dg_daily2_20000101_20201231 = pd.read_excel(
+    './data_raw/DG_DAILY_20000101_20201231.xlsx', sheet_name="DG_DAILY2", header=None, skiprows=14, skipfooter=0)
+dg_daily2_20000101_20201231.to_pickle('./data_processed/dg_daily2_20000101_20201231.pkl')
 
-symbol_names = dg_header1["Symbol Name"]
-item_names = dg_header0["Item Name"]
-item_names = item_names[0:5]
+dg_daily3_20000101_20201231 = pd.read_excel(
+    './data_raw/DG_DAILY_20000101_20201231.xlsx', sheet_name="DG_DAILY3", header=None, skiprows=14, skipfooter=0)
+dg_daily3_20000101_20201231.to_pickle('./data_processed/dg_daily3_20000101_20201231.pkl')
 
-index = pd.MultiIndex.from_product([symbol_names, item_names], names=["symbol", "item"])
-dg_data0 = dg_data.copy()
-dg_data0 = dg_data0.iloc[:, 1:]
-dg_data0.columns = index
+dg_header1_20000101_20201231 = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY1", header=None, skiprows=8, nrows=6)
+dg_header1_20000101_20201231.to_pickle('./data_processed/dg_header1_20000101_20201231.pkl')
+
+dg_header2_20000101_20201231 = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY2", header=None, skiprows=8, nrows=6)
+dg_header2_20000101_20201231.to_pickle('./data_processed/dg_header2_20000101_20201231.pkl')
+
+dg_header3_20000101_20201231 = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY3", header=None, skiprows=8, nrows=6)
+dg_header3_20000101_20201231.to_pickle('./data_processed/dg_header3_20000101_20201231.pkl')
+
+
+
+# StopWatch: 코드 시작
+time_start = datetime.now()
+print("Procedure started at: " + str(time_start))
+
+dg_daily1_20210101_Current = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DG_DAILY1", header=None, skiprows=14, skipfooter=0)
+dg_daily1_20210101_Current.to_pickle('./data_processed/dg_daily1_20210101_Current.pkl')
+
+dg_daily2_20210101_Current = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DG_DAILY2", header=None, skiprows=14, skipfooter=0)
+dg_daily2_20210101_Current.to_pickle('./data_processed/dg_daily2_20210101_Current.pkl')
+
+dg_daily3_20210101_Current = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DG_DAILY3", header=None, skiprows=14, skipfooter=0)
+dg_daily3_20210101_Current.to_pickle('./data_processed/dg_daily3_20210101_Current.pkl')
+
+# StopWatch
+time_end_headers = datetime.now()
+print("Load Headers finished at: " + str(time_end_headers))
+print("Elapsed (in total): " + str(time_end_headers - time_start))
+
+
+
