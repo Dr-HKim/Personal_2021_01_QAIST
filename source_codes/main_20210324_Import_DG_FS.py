@@ -30,6 +30,11 @@ dg_fs_20200519_1981_1989_header = pd.read_excel(
     './data_raw/DG_FS_20200519_1981_1989.xlsx', header=None, skiprows=7, nrows=4)
 dg_fs_20200519_1981_1989_header.to_pickle('./data_processed/dg_fs_20200519_1981_1989_header.pkl')
 
+# StopWatch
+time_end_1981_1989 = datetime.now()
+print("Load 1981_1989 finished at: " + str(time_end_1981_1989))
+print("Elapsed (in 1981_1989): " + str(time_end_1981_1989 - time_start))
+
 dg_fs_20200519_1990_1999_data = pd.read_excel(
     './data_raw/DG_FS_20200519_1990_1999.xlsx', header=None, skiprows=11, skipfooter=0)
 dg_fs_20200519_1990_1999_data.to_pickle('./data_processed/dg_fs_20200519_1990_1999_data.pkl')
@@ -38,6 +43,11 @@ dg_fs_20200519_1990_1999_header = pd.read_excel(
     './data_raw/DG_FS_20200519_1990_1999.xlsx', header=None, skiprows=7, nrows=4)
 dg_fs_20200519_1990_1999_header.to_pickle('./data_processed/dg_fs_20200519_1990_1999_header.pkl')
 
+# StopWatch
+time_end_1990_1999 = datetime.now()
+print("Load 1990_1999 finished at: " + str(time_end_1990_1999))
+print("Elapsed (in 1990_1999): " + str(time_end_1990_1999 - time_end_1981_1989))
+
 dg_fs_20200519_2000_2015_data = pd.read_excel(
     './data_raw/DG_FS_20200519_2000_2015.xlsx', header=None, skiprows=11, skipfooter=0)
 dg_fs_20200519_2000_2015_data.to_pickle('./data_processed/dg_fs_20200519_2000_2015_data.pkl')
@@ -45,6 +55,11 @@ dg_fs_20200519_2000_2015_data.to_pickle('./data_processed/dg_fs_20200519_2000_20
 dg_fs_20200519_2000_2015_header = pd.read_excel(
     './data_raw/DG_FS_20200519_2000_2015.xlsx', header=None, skiprows=7, nrows=4)
 dg_fs_20200519_2000_2015_header.to_pickle('./data_processed/dg_fs_20200519_2000_2015_header.pkl')
+
+# StopWatch
+time_end_2000_2015 = datetime.now()
+print("Load 2000_2015 finished at: " + str(time_end_2000_2015))
+print("Elapsed (in 2000_2015): " + str(time_end_2000_2015 - time_end_1990_1999))
 
 dg_fs_20200519_2016_2020_data = pd.read_excel(
     './data_raw/DG_FS_20200519_2016_2020.xlsx', header=None, skiprows=11, skipfooter=0)
@@ -55,7 +70,8 @@ dg_fs_20200519_2016_2020_header = pd.read_excel(
 dg_fs_20200519_2016_2020_header.to_pickle('./data_processed/dg_fs_20200519_2016_2020_header.pkl')
 
 # StopWatch
-time_end_headers = datetime.now()
-print("Load Headers finished at: " + str(time_end_headers))
-print("Elapsed (in total): " + str(time_end_headers - time_start))
+time_end_2016_2020 = datetime.now()
+print("Load 2016_2020 finished at: " + str(time_end_2016_2020))
+print("Elapsed (in 2016_2020): " + str(time_end_2016_2020 - time_end_2000_2015))
+print("Elapsed (in total): " + str(time_end_2016_2020 - time_start))
 
