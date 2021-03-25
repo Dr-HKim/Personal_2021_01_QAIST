@@ -4,26 +4,53 @@
 import pandas as pd
 
 ########################################################################################################################
-# Import Pickle Dataset
-processed_daily_20000101_Current = pd.read_pickle('./data_processed/processed_daily_20000101_Current.pkl')
-processed_fs_1981_2020 = pd.read_pickle('./data_processed/processed_fs_1981_2020.pkl')
-
-# 재무제표 자료는 2011년 이후부터 분기별 자료 사용 가능
-sample_fs = processed_fs_1981_2020.loc[processed_fs_1981_2020["회계년"] > 2015]
-
-date_start = pd.to_datetime("20150101", errors='coerce', format='%Y%m%d')
-sample_daily = processed_daily_20000101_Current.loc[processed_daily_20000101_Current["Date"] > date_start]
-
-# 데이터 저장하기
-sample_fs.to_pickle('./data_processed/sample_fs.pkl')
-sample_daily.to_pickle('./data_processed/sample_daily.pkl')
+# # Import Pickle Dataset
+# processed_daily_20000101_Current = pd.read_pickle('./data_processed/processed_daily_20000101_Current.pkl')
+# processed_fs_1981_2020 = pd.read_pickle('./data_processed/processed_fs_1981_2020.pkl')
+#
+# # 재무제표 자료는 2011년 이후부터 분기별 자료 사용 가능
+# sample_fs = processed_fs_1981_2020.loc[processed_fs_1981_2020["회계년"] > 2015]
+#
+# date_start = pd.to_datetime("20150101", errors='coerce', format='%Y%m%d')
+# sample_daily = processed_daily_20000101_Current.loc[processed_daily_20000101_Current["Date"] > date_start]
+#
+# # 데이터 저장하기
+# sample_fs.to_pickle('./data_processed/sample_fs.pkl')
+# sample_daily.to_pickle('./data_processed/sample_daily.pkl')
 
 ########################################################################################################################
 # Import Pickle Dataset
 sample_fs = pd.read_pickle('./data_processed/sample_fs.pkl')
 sample_daily = pd.read_pickle('./data_processed/sample_daily.pkl')
 
+df_dataset = sample_daily.copy()
+list_symbol = df_dataset['Symbol'].drop_duplicates()
+list_symbol = list_symbol.reset_index(drop=True)
 
+df_firm_data = df_dataset[df_dataset['Symbol'] == list_symbol[34]]
+list_date = df_firm_data['Date']
+list_date = list_date.reset_index(drop=True)
+list_date[2].year
+list_date[2] + pd.Timedelta(days=15)
+
+import datetime
+
+datee = datetime.datetime.strptime(list_date[2], "%Y-%m-%d")
+
+datetime.fromtimestamp(list_date[2])
+
+list_date[2].datetime.year
+
+pd.DatetimeIndex(list_date[2]).year
+list_date[2]
+
+
+df['year'] = df['ArrivalDate'].dt.year
+
+
+
+for firm_symbol in list_symbol:
+    df_firm_data = df_dataset[df_dataset['Symbol'] == firm_symbol]
 
 class DataProcessing:
     """
