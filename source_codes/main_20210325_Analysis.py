@@ -1,7 +1,16 @@
 # Created by Kim Hyeongjun on 03/22/2021.
 # Copyright © 2021 dr-hkim.github.io. All rights reserved.
-
+# pandas.Dataframe.rolling 이용하면 이동평균값을 구할 수 있다.
+# df["mov30"] = df["Close"].rolling(30).mean()
+# Finance Data Reader https://financedata.github.io/posts/finance-data-reader-users-guide.html
+# 파이썬 판다스 주가 이동평균선 쉽게 계산하는 방법은? https://tariat.tistory.com/894
+# 나만 모르는 파이썬 주식데이터 수집하는 방법 TOP3는? https://tariat.tistory.com/913
+# 파이썬 실시간 주가, 주식시세 데이터 수집하는 방법은? https://tariat.tistory.com/892
+# OHLC 데이터로 훈련하면 예쁜(?) 차트 찾는 것이 가능하지 않을까?
+# pip install --upgrade mplfinance
 import pandas as pd
+import matplotlib.pyplot as plt
+import mplfinance as mpf
 
 ########################################################################################################################
 # # Import Pickle Dataset
@@ -24,166 +33,60 @@ sample_fs = pd.read_pickle('./data_processed/sample_fs.pkl')
 sample_daily = pd.read_pickle('./data_processed/sample_daily.pkl')
 
 df_dataset = sample_daily.copy()
-list_symbol = df_dataset['Symbol'].drop_duplicates()
-list_symbol = list_symbol.reset_index(drop=True)
-
-df_firm_data = df_dataset[df_dataset['Symbol'] == list_symbol[34]]
-list_date = df_firm_data['Date']
-list_date = list_date.reset_index(drop=True)
-list_date[2].year
-list_date[2] + pd.Timedelta(days=15)
-
-import datetime
-
-datee = datetime.datetime.strptime(list_date[2], "%Y-%m-%d")
-
-datetime.fromtimestamp(list_date[2])
-
-list_date[2].datetime.year
-
-pd.DatetimeIndex(list_date[2]).year
-list_date[2]
+df_dataset = df_dataset.rename(columns={
+    "Symbol Name": "Symbol_Name", "수정고가(원)": "Adj_High", "수정시가(원)": "Adj_Open", "수정저가(원)": "Adj_Low",
+    "수정주가(원)": "Adj_Close", "거래량(주)": "Volume"})
 
 
-df['year'] = df['ArrivalDate'].dt.year
+# 기업별로 수정주가(원) 30일 이동평균 구하기
+df_dataset['MA30'] = df_dataset.groupby('Symbol')['Adj_Close'].transform(lambda x: x.rolling(5, 5).mean())
+
+# 기업별로 수정주가(원) 30일 미래 이동평균 구하기 (forward-looking moving average)
+df_dataset = df_dataset.iloc[::-1]
+df_dataset['MA30_F'] = df_dataset.groupby('Symbol')['Adj_Close'].transform(lambda x: x.rolling(5, 5).mean())
+df_dataset = df_dataset.iloc[::-1]
+
+df_dataset['L1_Adj_Close'] = df_dataset.groupby('Symbol')['Adj_Close'].shift(1)
+df_dataset['daily_return'] = (df_dataset["Adj_Close"] - df_dataset["L1_Adj_Close"])/df_dataset["Adj_Close"]
 
 
-
-for firm_symbol in list_symbol:
-    df_firm_data = df_dataset[df_dataset['Symbol'] == firm_symbol]
-
-class DataProcessing:
-    """
-    데이터를 입력하면 기계학습에 사용 가능한 형태로 변경
-    """
-
-    def __init__(self, df_dataset, list_variable_names, nmonths_lookback):
-
-        output_total_lookback = []
-        output_total_forecast = []
-
-        list_CUSIP = df_dataset['CRSP_CUSIP'].drop_duplicates()
-
-        for firm_CUSIP in list_CUSIP:
-            df_firm_data = df_dataset[df_dataset['CRSP_CUSIP'] == firm_CUSIP]
-
-            n_obs = len(df_firm_data.index) - nmonths_lookback + 1
-            n_variables = len(list_variable_names)
-
-            output_firm_lookback = []
-            output_firm_forecast = []
-
-            for i in range(0, n_obs):
-                df_firm_data_12m = df_firm_data[0 + i:nmonths_lookback + i]
-                df_lookback = df_firm_data_12m[list_variable_names].values
-                df_forecast = df_firm_data_12m[-1:][['DEPVAR1Y']].values
-                if i == 0:
-                    output_firm_lookback = df_lookback
-                    output_firm_forecast = df_forecast
-                else:
-                    output_firm_lookback = np.vstack([output_firm_lookback, df_lookback])
-                    output_firm_forecast = np.vstack([output_firm_forecast, df_forecast])
-
-            reshaped_output_firm_lookback = output_firm_lookback.reshape((n_obs, nmonths_lookback, n_variables))
-            reshaped_output_firm_forecast = output_firm_forecast.reshape((n_obs, 1))
-
-            if firm_CUSIP == list_CUSIP[0:1].values:
-                output_total_lookback = reshaped_output_firm_lookback
-                output_total_forecast = reshaped_output_firm_forecast
-            else:
-                output_total_lookback = np.vstack([output_total_lookback, reshaped_output_firm_lookback])
-                output_total_forecast = np.vstack([output_total_forecast, reshaped_output_firm_forecast])
-
-        output_total_forecast = output_total_forecast.reshape(len(output_total_forecast), )  # (n, 1) -> (n,) 차원 변경
-
-        self.output_total_lookback = output_total_lookback
-        self.output_total_forecast = output_total_forecast
-        self.output_total_lookback_lastobs = output_total_lookback[:, -1, :]  # 일반적인 모형 적용을 위해
+# 그래프: 일간 수익률 히스토그램 그리기
+plt.hist(df_dataset.loc[df_dataset["Symbol Name"] == "삼성전자"]["daily_return"], bins=18)
+plt.grid(True)
+plt.show()
 
 
-class DataProcessingStep5:
-    def __init__(self, df_training, df_validation, df_test, list_variable_names):
-        # StopWatch: 코드 시작
-        time_step5_start = datetime.now()
-        print("Step5 started at: " + str(time_step5_start))
+company_name = "셀트리온"
+date_start = pd.to_datetime("20200224", errors='coerce', format='%Y%m%d')
+date_end = pd.to_datetime("20200403", errors='coerce', format='%Y%m%d')
+cond_data = (df_dataset["Symbol_Name"] == company_name) & \
+            (df_dataset["Date"] >= date_start) & \
+            (df_dataset["Date"] <= date_end)
 
-        # 빠른 기계학습 개발을 위하여 샘플 자료 작성
-        # 참고: df_test 가운데 6910 개 기업 정상, 61개 기업 부도
-        df_training_sample = get_dataset_sample(df_dataset=df_training, n_normal=80, n_bankrupt=80)
-        df_validation_sample = get_dataset_sample(df_dataset=df_validation, n_normal=20, n_bankrupt=20)
-        df_test_sample = get_dataset_sample(df_dataset=df_test, n_normal=2000, n_bankrupt=20)
+# 그래프: 날짜와 종가로 차트 그리기
+plt.title("Adjusted Price")
+plt.xticks(rotation=45)
+plt.plot(df_dataset.loc[cond_data]["Date"],
+         df_dataset.loc[cond_data]["Adj_Close"], "co-")
+plt.grid(color="gray", linestyle="--")
+plt.show()
 
-        # Standardization: MinMaxScaler 사용, 훈련(training) 데이터셋에 맞추어 정규화 실시
-        # todo: 음수 값이 있어도 MinMaxScaler 를 쓰는게 맞을까?
-        scaler = MinMaxScaler(feature_range=(0, 1))
-        scaler.fit(df_training[list_variable_names])
+# 그래프: 캔들차트 그리기
+df_candle_chart = df_dataset.loc[cond_data]
+df_candle_chart.index = df_candle_chart["Date"]
+df_candle_chart = df_candle_chart[["Adj_Open", "Adj_High", "Adj_Low", "Adj_Close", "Volume"]]
+df_candle_chart = df_candle_chart.rename(columns={
+    "Adj_Open": "Open", "Adj_High": "High", "Adj_Low": "Low", "Adj_Close": "Close"})
 
-        # 동일한 scaler 를 training, validation, test dataset 에 적용
-        df_training[list_variable_names] = scaler.transform(df_training[list_variable_names])
-        df_validation[list_variable_names] = scaler.transform(df_validation[list_variable_names])
-        df_test[list_variable_names] = scaler.transform(df_test[list_variable_names])
+# 그래프: 캔들차트 그리기
+mpf.plot(df_candle_chart, title="Celltrion candle chart", type="candle")
 
-        # 샘플자료에도 동일한 scaler 를 적용
-        df_training_sample[list_variable_names] = scaler.transform(df_training_sample[list_variable_names])
-        df_validation_sample[list_variable_names] = scaler.transform(df_validation_sample[list_variable_names])
-        df_test_sample[list_variable_names] = scaler.transform(df_test_sample[list_variable_names])
+# 그래프: OHLC 차트 그리기
+mpf.plot(df_candle_chart, title="Celltrion OHLC chart", type="ohlc")
 
-        # 클래스를 사용하여 각 자료마다 X, X_lastobs, Y 생성
-        step5_training = DataProcessing(
-            df_dataset=df_training, list_variable_names=list_variable_names, nmonths_lookback=12)
-        # StopWatch: Step5_training 종료
-        time_step5_training = datetime.now()
-        print("Step5_training finished at: " + str(time_step5_training))
-        print("Elapsed (in step5): " + str(time_step5_training - time_step5_start))
-
-        step5_validation = DataProcessing(
-            df_dataset=df_validation, list_variable_names=list_variable_names, nmonths_lookback=12)
-        # StopWatch: Step5_validation 종료
-        time_step5_validation = datetime.now()
-        print("Step5_validation finished at: " + str(time_step5_validation))
-        print("Elapsed (in step5): " + str(time_step5_validation - time_step5_start))
-
-        step5_test = DataProcessing(
-            df_dataset=df_test, list_variable_names=list_variable_names, nmonths_lookback=12)
-        # StopWatch: Step5_test 종료
-        time_step5_test = datetime.now()
-        print("Step5_test finished at: " + str(time_step5_test))
-        print("Elapsed (in step5): " + str(time_step5_test - time_step5_start))
-
-        # 샘플자료에도 클래스를 사용하여 각 자료마다 X, X_lastobs, Y 생성
-        step5_training_sample = DataProcessing(
-            df_dataset=df_training_sample, list_variable_names=list_variable_names, nmonths_lookback=12)
-        step5_validation_sample = DataProcessing(
-            df_dataset=df_validation_sample, list_variable_names=list_variable_names, nmonths_lookback=12)
-        step5_test_sample = DataProcessing(
-            df_dataset=df_test_sample, list_variable_names=list_variable_names, nmonths_lookback=12)
-        # StopWatch: Step5_sample 종료
-        time_step5_sample = datetime.now()
-        print("Step5_sample finished at: " + str(time_step5_sample))
-        print("Elapsed (in step5): " + str(time_step5_sample - time_step5_start))
-
-        self.train_X = step5_training.output_total_lookback
-        self.train_X_lastobs = step5_training.output_total_lookback_lastobs
-        self.train_Y = step5_training.output_total_forecast
-
-        self.validation_X = step5_validation.output_total_lookback
-        self.validation_X_lastobs = step5_validation.output_total_lookback_lastobs
-        self.validation_Y = step5_validation.output_total_forecast
-
-        self.test_X = step5_test.output_total_lookback
-        self.test_X_lastobs = step5_test.output_total_lookback_lastobs
-        self.test_Y = step5_test.output_total_forecast
-
-        self.sample_train_X = step5_training_sample.output_total_lookback
-        self.sample_train_X_lastobs = step5_training_sample.output_total_lookback_lastobs
-        self.sample_train_Y = step5_training_sample.output_total_forecast
-
-        self.sample_validation_X = step5_validation_sample.output_total_lookback
-        self.sample_validation_X_lastobs = step5_validation_sample.output_total_lookback_lastobs
-        self.sample_validation_Y = step5_validation_sample.output_total_forecast
-
-        self.sample_test_X = step5_test_sample.output_total_lookback
-        self.sample_test_X_lastobs = step5_test_sample.output_total_lookback_lastobs
-        self.sample_test_Y = step5_test_sample.output_total_forecast
-
+# 그래프: 캔들차트(컬러) 그리기
+kwargs = dict(title="Celltrion Customized Chart", type="candle", mav=(2, 4, 6), volume=True, ylabel="OHLC Candles")
+mc = mpf.make_marketcolors(up="r", down="b", inherit=True)
+s = mpf.make_mpf_style(marketcolors=mc)
+mpf.plot(df_candle_chart, **kwargs, style=s)
 
