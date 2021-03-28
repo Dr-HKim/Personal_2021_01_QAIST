@@ -119,3 +119,53 @@ for company in company_list:
     print(company)
     print(df_adj_close.head())
 
+df_daily_return = df_company_data.pct_change()
+df_annual_return = df_daily_return.mean()*252
+df_daily_cov = df_daily_return.cov()
+df_annual_cov = df_daily_cov*252
+
+import numpy as np
+
+list_portfolio_return = []
+list_portfolio_risk = []
+list_portfolio_weights = []
+list_portfolio_sharpe = []
+
+for _ in range(20000):
+    portfolio_weights = np.random.random(len(company_list))
+    portfolio_weights /= np.sum(portfolio_weights)
+
+    portfolio_return = np.dot(portfolio_weights, df_annual_return)
+    portfolio_risk = np.sqrt(np.dot(portfolio_weights.T, np.dot(df_annual_cov, portfolio_weights)))
+
+    list_portfolio_return.append(portfolio_return)
+    list_portfolio_risk.append(portfolio_risk)
+    list_portfolio_weights.append(portfolio_weights)
+    list_portfolio_sharpe.append(portfolio_return/portfolio_risk)
+
+portfolio = {"Returns": list_portfolio_return, "Risk": list_portfolio_risk, "Sharpe": list_portfolio_sharpe}
+
+for i, s in enumerate(company_list):
+    portfolio[s] = [weight[i] for weight in list_portfolio_weights]
+
+df_portfolio = pd.DataFrame(portfolio)
+
+df_portfolio = df_portfolio[["Returns", "Risk", "Sharpe"] + [s for s in company_list]]
+
+max_sharpe = df_portfolio.loc[df_portfolio["Sharpe"] == df_portfolio["Sharpe"].max()]
+min_risk = df_portfolio[df_portfolio["Risk"] == df_portfolio["Risk"].min()]
+
+df_portfolio.plot.scatter(x="Risk", y="Returns", figsize=(10,7), grid=True)
+plt.title("Efficient Frontier")
+plt.xlabel("Risk")
+plt.ylabel("Expected Returns")
+plt.show()
+
+
+df_portfolio.plot.scatter(x="Risk", y="Returns", c="Sharpe", cmap="viridis", edgecolors="k", figsize=(11, 7), grid=True)
+plt.scatter(x=max_sharpe["Risk"], y=max_sharpe["Returns"], c="r", marker="*", s=300)
+plt.scatter(x=min_risk["Risk"], y=min_risk["Returns"], c="r", marker="X", s=200)
+plt.title("Portfolio Optimization")
+plt.xlabel("Risk")
+plt.ylabel("Expected Returns")
+plt.show()
