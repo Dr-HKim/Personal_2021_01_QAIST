@@ -36,6 +36,7 @@ df_dataset = sample_daily.copy()
 df_dataset = df_dataset.rename(columns={
     "Symbol Name": "Symbol_Name", "수정고가(원)": "Adj_High", "수정시가(원)": "Adj_Open", "수정저가(원)": "Adj_Low",
     "수정주가(원)": "Adj_Close", "거래량(주)": "Volume"})
+df_dataset.index = df_dataset["Date"]
 
 
 # 기업별로 수정주가(원) 30일 이동평균 구하기
@@ -56,13 +57,25 @@ plt.grid(True)
 plt.show()
 
 
-company_name = "셀트리온"
+company_name = "삼성전자"
+company_name = "NAVER"
+
 date_start = pd.to_datetime("20200224", errors='coerce', format='%Y%m%d')
 date_end = pd.to_datetime("20200403", errors='coerce', format='%Y%m%d')
 cond_data = (df_dataset["Symbol_Name"] == company_name) & \
             (df_dataset["Date"] >= date_start) & \
             (df_dataset["Date"] <= date_end)
+tmp = df_dataset.loc[cond_data]
 
+company_code = "A005930"
+company_code = "A035420"
+
+date_start = pd.to_datetime("20200224", errors='coerce', format='%Y%m%d')
+date_end = pd.to_datetime("20200403", errors='coerce', format='%Y%m%d')
+cond_data = (df_dataset["Symbol"] == company_code) & \
+            (df_dataset["Date"] >= date_start) & \
+            (df_dataset["Date"] <= date_end)
+tmp = df_dataset.loc[cond_data]
 # 그래프: 날짜와 종가로 차트 그리기
 plt.title("Adjusted Price")
 plt.xticks(rotation=45)
@@ -89,4 +102,20 @@ kwargs = dict(title="Celltrion Customized Chart", type="candle", mav=(2, 4, 6), 
 mc = mpf.make_marketcolors(up="r", down="b", inherit=True)
 s = mpf.make_mpf_style(marketcolors=mc)
 mpf.plot(df_candle_chart, **kwargs, style=s)
+
+
+company_list = ["삼성전자", "SK하이닉스", "현대차", "NAVER"]
+date_start = pd.to_datetime("20160104", errors='coerce', format='%Y%m%d')
+date_end = pd.to_datetime("20180427", errors='coerce', format='%Y%m%d')
+
+df_company_data = pd.DataFrame()
+for company in company_list:
+    cond_data = (df_dataset["Symbol_Name"] == company) & \
+                (df_dataset["Date"] >= date_start) & \
+                (df_dataset["Date"] <= date_end)
+
+    df_adj_close = df_dataset.loc[cond_data]["Adj_Close"]
+    df_company_data[company] = df_adj_close
+    print(company)
+    print(df_adj_close.head())
 
