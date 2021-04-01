@@ -26,27 +26,27 @@ from datetime import datetime
 
 # 테스트를 위한 자료
 dg_daily1_test = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY1", header=None, skiprows=14, skipfooter=0)
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY1", header=None, skiprows=14, skipfooter=0)
 dg_daily1_test.to_pickle('./data_processed/dg_daily1_test.pkl')
 
 dg_header1_test = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY1", header=None, skiprows=8, nrows=6)
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY1", header=None, skiprows=8, nrows=6)
 dg_header1_test.to_pickle('./data_processed/dg_header1_test.pkl')
 
 dg_daily2_test = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY2", header=None, skiprows=14, skipfooter=0)
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY2", header=None, skiprows=14, skipfooter=0)
 dg_daily2_test.to_pickle('./data_processed/dg_daily2_test.pkl')
 
 dg_header2_test = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY2", header=None, skiprows=8, nrows=6)
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY2", header=None, skiprows=8, nrows=6)
 dg_header2_test.to_pickle('./data_processed/dg_header2_test.pkl')
 
 dg_daily3_test = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY3", header=None, skiprows=14, skipfooter=0)
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY3", header=None, skiprows=14, skipfooter=0)
 dg_daily3_test.to_pickle('./data_processed/dg_daily3_test.pkl')
 
 dg_header3_test = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY3", header=None, skiprows=8, nrows=6)
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY3", header=None, skiprows=8, nrows=6)
 dg_header3_test.to_pickle('./data_processed/dg_header3_test.pkl')
 
 
@@ -54,28 +54,45 @@ dg_header3_test.to_pickle('./data_processed/dg_header3_test.pkl')
 
 # 각 1시간 41분씩 총 5시간 소요
 dg_daily1_20000101_20201231 = pd.read_excel(
-    './data_raw/DG_DAILY_20000101_20201231.xlsx', sheet_name="DG_DAILY1", header=None, skiprows=14, skipfooter=0)
+    './data_raw/DG_DAILY_20000101_20201231.xlsx', sheet_name="DAILY1", header=None, skiprows=14, skipfooter=0)
 dg_daily1_20000101_20201231.to_pickle('./data_processed/dg_daily1_20000101_20201231.pkl')
 
 dg_daily2_20000101_20201231 = pd.read_excel(
-    './data_raw/DG_DAILY_20000101_20201231.xlsx', sheet_name="DG_DAILY2", header=None, skiprows=14, skipfooter=0)
+    './data_raw/DG_DAILY_20000101_20201231.xlsx', sheet_name="DAILY2", header=None, skiprows=14, skipfooter=0)
 dg_daily2_20000101_20201231.to_pickle('./data_processed/dg_daily2_20000101_20201231.pkl')
 
 dg_daily3_20000101_20201231 = pd.read_excel(
-    './data_raw/DG_DAILY_20000101_20201231.xlsx', sheet_name="DG_DAILY3", header=None, skiprows=14, skipfooter=0)
+    './data_raw/DG_DAILY_20000101_20201231.xlsx', sheet_name="DAILY3", header=None, skiprows=14, skipfooter=0)
 dg_daily3_20000101_20201231.to_pickle('./data_processed/dg_daily3_20000101_20201231.pkl')
 
 dg_header1_20000101_20201231 = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY1", header=None, skiprows=8, nrows=6)
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY1", header=None, skiprows=8, nrows=6)
 dg_header1_20000101_20201231.to_pickle('./data_processed/dg_header1_20000101_20201231.pkl')
 
 dg_header2_20000101_20201231 = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY2", header=None, skiprows=8, nrows=6)
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY2", header=None, skiprows=8, nrows=6)
 dg_header2_20000101_20201231.to_pickle('./data_processed/dg_header2_20000101_20201231.pkl')
 
 dg_header3_20000101_20201231 = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY3", header=None, skiprows=8, nrows=6)
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY3", header=None, skiprows=8, nrows=6)
 dg_header3_20000101_20201231.to_pickle('./data_processed/dg_header3_20000101_20201231.pkl')
+
+dg_daily4_20000101_20201231 = pd.read_excel(
+    './data_raw/DG_DAILY_20000101_20201231.xlsx', sheet_name="DAILY4", header=None, skiprows=14, skipfooter=0)
+dg_daily4_20000101_20201231.to_pickle('./data_processed/dg_daily4_20000101_20201231.pkl')
+
+dg_header4_20000101_20201231 = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY4", header=None, skiprows=8, nrows=6)
+dg_header4_20000101_20201231.to_pickle('./data_processed/dg_header4_20000101_20201231.pkl')
+
+dg_daily5_20000101_20201231 = pd.read_excel(
+    './data_raw/DG_DAILY_20000101_20201231.xlsx', sheet_name="DAILY5", header=None, skiprows=14, skipfooter=0)
+dg_daily5_20000101_20201231.to_pickle('./data_processed/dg_daily5_20000101_20201231.pkl')
+
+dg_header5_20000101_20201231 = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY5", header=None, skiprows=8, nrows=6)
+dg_header5_20000101_20201231.to_pickle('./data_processed/dg_header5_20000101_20201231.pkl')
+
 
 
 
@@ -84,28 +101,46 @@ time_start = datetime.now()
 print("Procedure started at: " + str(time_start))
 
 dg_daily1_20210101_Current = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DG_DAILY1", header=None, skiprows=14, skipfooter=0)
+    './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DAILY1", header=None, skiprows=14, skipfooter=0)
 dg_daily1_20210101_Current.to_pickle('./data_processed/dg_daily1_20210101_Current.pkl')
 
 dg_daily2_20210101_Current = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DG_DAILY2", header=None, skiprows=14, skipfooter=0)
+    './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DAILY2", header=None, skiprows=14, skipfooter=0)
 dg_daily2_20210101_Current.to_pickle('./data_processed/dg_daily2_20210101_Current.pkl')
 
 dg_daily3_20210101_Current = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DG_DAILY3", header=None, skiprows=14, skipfooter=0)
+    './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DAILY3", header=None, skiprows=14, skipfooter=0)
 dg_daily3_20210101_Current.to_pickle('./data_processed/dg_daily3_20210101_Current.pkl')
 
 dg_header1_20210101_Current = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY1", header=None, skiprows=8, nrows=6)
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY1", header=None, skiprows=8, nrows=6)
 dg_header1_20210101_Current.to_pickle('./data_processed/dg_header1_20210101_Current.pkl')
 
 dg_header2_20210101_Current = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY2", header=None, skiprows=8, nrows=6)
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY2", header=None, skiprows=8, nrows=6)
 dg_header2_20210101_Current.to_pickle('./data_processed/dg_header2_20210101_Current.pkl')
 
 dg_header3_20210101_Current = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DG_DAILY3", header=None, skiprows=8, nrows=6)
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY3", header=None, skiprows=8, nrows=6)
 dg_header3_20210101_Current.to_pickle('./data_processed/dg_header3_20210101_Current.pkl')
+
+
+dg_daily4_20210101_Current = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DAILY4", header=None, skiprows=14, skipfooter=0)
+dg_daily4_20210101_Current.to_pickle('./data_processed/dg_daily4_20210101_Current.pkl')
+
+dg_header4_20210101_Current = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY4", header=None, skiprows=8, nrows=6)
+dg_header4_20210101_Current.to_pickle('./data_processed/dg_header4_20210101_Current.pkl')
+
+dg_daily5_20210101_Current = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DAILY5", header=None, skiprows=14, skipfooter=0)
+dg_daily5_20210101_Current.to_pickle('./data_processed/dg_daily5_20210101_Current.pkl')
+
+dg_header5_20210101_Current = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY5", header=None, skiprows=8, nrows=6)
+dg_header5_20210101_Current.to_pickle('./data_processed/dg_header5_20210101_Current.pkl')
+
 
 
 
