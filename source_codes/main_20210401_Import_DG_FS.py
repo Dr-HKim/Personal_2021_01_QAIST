@@ -22,11 +22,11 @@ time_start = datetime.now()
 print("Procedure started at: " + str(time_start))
 
 dg_fs_IFRSC_2020_2021_data = pd.read_excel(
-    './data_raw/DG_FS_2020_2021.xlsx', sheet_name="IFRSC", header=None, skiprows=11, skipfooter=0)
+    './data_raw/DG_AllNetFiscal_2020_2021.xlsx', sheet_name="IFRSC", header=None, skiprows=11, skipfooter=0)
 dg_fs_IFRSC_2020_2021_data.to_pickle('./data_processed/dg_fs_IFRSC_2020_2021_data.pkl')
 
 dg_fs_IFRSC_2020_2021_header = pd.read_excel(
-    './data_raw/DG_FS_2020_2021.xlsx', sheet_name="IFRSC", header=None, skiprows=7, nrows=4)
+    './data_raw/DG_AllNetFiscal_2020_2021.xlsx', sheet_name="IFRSC", header=None, skiprows=7, nrows=4)
 dg_fs_IFRSC_2020_2021_header.to_pickle('./data_processed/dg_fs_IFRSC_2020_2021_header.pkl')
 
 # StopWatch
@@ -34,42 +34,173 @@ time_end_IFRSC_2020_2021 = datetime.now()
 print("Load IFRSC_2020_2021 finished at: " + str(time_end_IFRSC_2020_2021))
 print("Elapsed (in IFRSC_2020_2021): " + str(time_end_IFRSC_2020_2021 - time_start))
 
+dg_fs_IFRSC_2010_2019_data = pd.read_excel(
+    './data_raw/DG_AllNetFiscal_2010_2019.xlsx', sheet_name="IFRSC", header=None, skiprows=11, skipfooter=0)
+dg_fs_IFRSC_2010_2019_data.to_pickle('./data_processed/dg_fs_IFRSC_2010_2019_data.pkl')
+
+dg_fs_IFRSC_2010_2019_header = pd.read_excel(
+    './data_raw/DG_AllNetFiscal_2010_2019.xlsx', sheet_name="IFRSC", header=None, skiprows=7, nrows=4)
+dg_fs_IFRSC_2010_2019_header.to_pickle('./data_processed/dg_fs_IFRSC_2010_2019_header.pkl')
+
+# StopWatch
+time_end_IFRSC_2010_2019 = datetime.now()
+print("Load IFRSC_2010_2019 finished at: " + str(time_end_IFRSC_2010_2019))
+print("Elapsed (in IFRSC_2010_2019): " + str(time_end_IFRSC_2010_2019 - time_end_IFRSC_2020_2021))
+
+dg_fs_IFRSC_2000_2009_data = pd.read_excel(
+    './data_raw/DG_AllNetFiscal_2000_2009.xlsx', sheet_name="IFRSC", header=None, skiprows=11, skipfooter=0)
+dg_fs_IFRSC_2000_2009_data.to_pickle('./data_processed/dg_fs_IFRSC_2000_2009_data.pkl')
+
+dg_fs_IFRSC_2000_2009_header = pd.read_excel(
+    './data_raw/DG_AllNetFiscal_2000_2009.xlsx', sheet_name="IFRSC", header=None, skiprows=7, nrows=4)
+dg_fs_IFRSC_2000_2009_header.to_pickle('./data_processed/dg_fs_IFRSC_2000_2009_header.pkl')
+
+# StopWatch
+time_end_IFRSC_2000_2009 = datetime.now()
+print("Load IFRSC_2000_2009 finished at: " + str(time_end_IFRSC_2000_2009))
+print("Elapsed (in IFRSC_2000_2009): " + str(time_end_IFRSC_2000_2009 - time_end_IFRSC_2010_2019))
+
+########################################################################################################################
+# StopWatch: 코드 시작
+time_start = datetime.now()
+print("Procedure started at: " + str(time_start))
+
 dg_fs_IFRSN_2020_2021_data = pd.read_excel(
-    './data_raw/DG_FS_2020_2021.xlsx', sheet_name="IFRSN", header=None, skiprows=11, skipfooter=0)
+    './data_raw/DG_AllNetFiscal_2020_2021.xlsx', sheet_name="IFRSN", header=None, skiprows=11, skipfooter=0)
 dg_fs_IFRSN_2020_2021_data.to_pickle('./data_processed/dg_fs_IFRSN_2020_2021_data.pkl')
 
 dg_fs_IFRSN_2020_2021_header = pd.read_excel(
-    './data_raw/DG_FS_2020_2021.xlsx', sheet_name="IFRSN", header=None, skiprows=7, nrows=4)
+    './data_raw/DG_AllNetFiscal_2020_2021.xlsx', sheet_name="IFRSN", header=None, skiprows=7, nrows=4)
 dg_fs_IFRSN_2020_2021_header.to_pickle('./data_processed/dg_fs_IFRSN_2020_2021_header.pkl')
 
 # StopWatch
 time_end_IFRSN_2020_2021 = datetime.now()
 print("Load IFRSN_2020_2021 finished at: " + str(time_end_IFRSN_2020_2021))
-print("Elapsed (in IFRSN_2020_2021): " + str(time_end_IFRSN_2020_2021 - time_end_IFRSC_2020_2021))
+print("Elapsed (in IFRSN_2020_2021): " + str(time_end_IFRSN_2020_2021 - time_start))
+
+
+dg_fs_IFRSN_2010_2019_data = pd.read_excel(
+    './data_raw/DG_AllNetFiscal_2010_2019.xlsx', sheet_name="IFRSN", header=None, skiprows=11, skipfooter=0)
+dg_fs_IFRSN_2010_2019_data.to_pickle('./data_processed/dg_fs_IFRSN_2010_2019_data.pkl')
+
+dg_fs_IFRSN_2010_2019_header = pd.read_excel(
+    './data_raw/DG_AllNetFiscal_2010_2019.xlsx', sheet_name="IFRSN", header=None, skiprows=7, nrows=4)
+dg_fs_IFRSN_2010_2019_header.to_pickle('./data_processed/dg_fs_IFRSN_2010_2019_header.pkl')
+
+# StopWatch
+time_end_IFRSN_2010_2019 = datetime.now()
+print("Load IFRSN_2010_2019 finished at: " + str(time_end_IFRSN_2010_2019))
+print("Elapsed (in IFRSN_2010_2019): " + str(time_end_IFRSN_2010_2019 - time_end_IFRSN_2020_2021))
+
+dg_fs_IFRSN_2000_2009_data = pd.read_excel(
+    './data_raw/DG_AllNetFiscal_2000_2009.xlsx', sheet_name="IFRSN", header=None, skiprows=11, skipfooter=0)
+dg_fs_IFRSN_2000_2009_data.to_pickle('./data_processed/dg_fs_IFRSN_2000_2009_data.pkl')
+
+dg_fs_IFRSN_2000_2009_header = pd.read_excel(
+    './data_raw/DG_AllNetFiscal_2000_2009.xlsx', sheet_name="IFRSN", header=None, skiprows=7, nrows=4)
+dg_fs_IFRSN_2000_2009_header.to_pickle('./data_processed/dg_fs_IFRSN_2000_2009_header.pkl')
+
+# StopWatch
+time_end_IFRSN_2000_2009 = datetime.now()
+print("Load IFRSN_2000_2009 finished at: " + str(time_end_IFRSN_2000_2009))
+print("Elapsed (in IFRSN_2000_2009): " + str(time_end_IFRSN_2000_2009 - time_end_IFRSN_2010_2019))
+
+########################################################################################################################
+# StopWatch: 코드 시작
+time_start = datetime.now()
+print("Procedure started at: " + str(time_start))
 
 dg_fs_GAAPC_2020_2021_data = pd.read_excel(
-    './data_raw/DG_FS_2020_2021.xlsx', sheet_name="GAAPC", header=None, skiprows=11, skipfooter=0)
+    './data_raw/DG_AllNetFiscal_2020_2021.xlsx', sheet_name="GAAPC", header=None, skiprows=11, skipfooter=0)
 dg_fs_GAAPC_2020_2021_data.to_pickle('./data_processed/dg_fs_GAAPC_2020_2021_data.pkl')
 
 dg_fs_GAAPC_2020_2021_header = pd.read_excel(
-    './data_raw/DG_FS_2020_2021.xlsx', sheet_name="GAAPC", header=None, skiprows=7, nrows=4)
+    './data_raw/DG_AllNetFiscal_2020_2021.xlsx', sheet_name="GAAPC", header=None, skiprows=7, nrows=4)
 dg_fs_GAAPC_2020_2021_header.to_pickle('./data_processed/dg_fs_GAAPC_2020_2021_header.pkl')
 
 # StopWatch
 time_end_GAAPC_2020_2021 = datetime.now()
 print("Load GAAPC_2020_2021 finished at: " + str(time_end_GAAPC_2020_2021))
-print("Elapsed (in GAAPC_2020_2021): " + str(time_end_GAAPC_2020_2021 - time_end_IFRSN_2020_2021))
+print("Elapsed (in GAAPC_2020_2021): " + str(time_end_GAAPC_2020_2021 - time_start))
+
+dg_fs_GAAPC_2010_2019_data = pd.read_excel(
+    './data_raw/DG_AllNetFiscal_2010_2019.xlsx', sheet_name="GAAPC", header=None, skiprows=11, skipfooter=0)
+dg_fs_GAAPC_2010_2019_data.to_pickle('./data_processed/dg_fs_GAAPC_2010_2019_data.pkl')
+
+dg_fs_GAAPC_2010_2019_header = pd.read_excel(
+    './data_raw/DG_AllNetFiscal_2010_2019.xlsx', sheet_name="GAAPC", header=None, skiprows=7, nrows=4)
+dg_fs_GAAPC_2010_2019_header.to_pickle('./data_processed/dg_fs_GAAPC_2010_2019_header.pkl')
+
+# StopWatch
+time_end_GAAPC_2010_2019 = datetime.now()
+print("Load GAAPC_2010_2019 finished at: " + str(time_end_GAAPC_2010_2019))
+print("Elapsed (in GAAPC_2010_2019): " + str(time_end_GAAPC_2010_2019 - time_end_GAAPC_2020_2021))
+
+dg_fs_GAAPC_2000_2009_data = pd.read_excel(
+    './data_raw/DG_AllNetFiscal_2000_2009.xlsx', sheet_name="GAAPC", header=None, skiprows=11, skipfooter=0)
+dg_fs_GAAPC_2000_2009_data.to_pickle('./data_processed/dg_fs_GAAPC_2000_2009_data.pkl')
+
+dg_fs_GAAPC_2000_2009_header = pd.read_excel(
+    './data_raw/DG_AllNetFiscal_2000_2009.xlsx', sheet_name="GAAPC", header=None, skiprows=7, nrows=4)
+dg_fs_GAAPC_2000_2009_header.to_pickle('./data_processed/dg_fs_GAAPC_2000_2009_header.pkl')
+
+# StopWatch
+time_end_GAAPC_2000_2009 = datetime.now()
+print("Load GAAPC_2000_2009 finished at: " + str(time_end_GAAPC_2000_2009))
+print("Elapsed (in GAAPC_2000_2009): " + str(time_end_GAAPC_2000_2009 - time_end_GAAPC_2010_2019))
+
+########################################################################################################################
+# StopWatch: 코드 시작
+time_start = datetime.now()
+print("Procedure started at: " + str(time_start))
 
 dg_fs_GAAPN_2020_2021_data = pd.read_excel(
-    './data_raw/DG_FS_2020_2021.xlsx', sheet_name="GAAPN", header=None, skiprows=11, skipfooter=0)
+    './data_raw/DG_AllNetFiscal_2020_2021.xlsx', sheet_name="GAAPN", header=None, skiprows=11, skipfooter=0)
 dg_fs_GAAPN_2020_2021_data.to_pickle('./data_processed/dg_fs_GAAPN_2020_2021_data.pkl')
 
 dg_fs_GAAPN_2020_2021_header = pd.read_excel(
-    './data_raw/DG_FS_2020_2021.xlsx', sheet_name="GAAPN", header=None, skiprows=7, nrows=4)
+    './data_raw/DG_AllNetFiscal_2020_2021.xlsx', sheet_name="GAAPN", header=None, skiprows=7, nrows=4)
 dg_fs_GAAPN_2020_2021_header.to_pickle('./data_processed/dg_fs_GAAPN_2020_2021_header.pkl')
 
 # StopWatch
 time_end_GAAPN_2020_2021 = datetime.now()
 print("Load GAAPN_2020_2021 finished at: " + str(time_end_GAAPN_2020_2021))
-print("Elapsed (in GAAPN_2020_2021): " + str(time_end_GAAPN_2020_2021 - time_end_GAAPC_2020_2021))
+print("Elapsed (in GAAPN_2020_2021): " + str(time_end_GAAPN_2020_2021 - time_start))
+
+dg_fs_GAAPN_2010_2019_data = pd.read_excel(
+    './data_raw/DG_AllNetFiscal_2010_2019.xlsx', sheet_name="GAAPN", header=None, skiprows=11, skipfooter=0)
+dg_fs_GAAPN_2010_2019_data.to_pickle('./data_processed/dg_fs_GAAPN_2010_2019_data.pkl')
+
+dg_fs_GAAPN_2010_2019_header = pd.read_excel(
+    './data_raw/DG_AllNetFiscal_2010_2019.xlsx', sheet_name="GAAPN", header=None, skiprows=7, nrows=4)
+dg_fs_GAAPN_2010_2019_header.to_pickle('./data_processed/dg_fs_GAAPN_2010_2019_header.pkl')
+
+# StopWatch
+time_end_GAAPN_2010_2019 = datetime.now()
+print("Load GAAPN_2010_2019 finished at: " + str(time_end_GAAPN_2010_2019))
+print("Elapsed (in GAAPN_2010_2019): " + str(time_end_GAAPN_2010_2019 - time_end_GAAPN_2020_2021))
+
+dg_fs_GAAPN_2000_2009_data = pd.read_excel(
+    './data_raw/DG_AllNetFiscal_2000_2009.xlsx', sheet_name="GAAPN", header=None, skiprows=11, skipfooter=0)
+dg_fs_GAAPN_2000_2009_data.to_pickle('./data_processed/dg_fs_GAAPN_2000_2009_data.pkl')
+
+dg_fs_GAAPN_2000_2009_header = pd.read_excel(
+    './data_raw/DG_AllNetFiscal_2000_2009.xlsx', sheet_name="GAAPN", header=None, skiprows=7, nrows=4)
+dg_fs_GAAPN_2000_2009_header.to_pickle('./data_processed/dg_fs_GAAPN_2000_2009_header.pkl')
+
+# StopWatch
+time_end_GAAPN_2000_2009 = datetime.now()
+print("Load GAAPN_2000_2009 finished at: " + str(time_end_GAAPN_2000_2009))
+print("Elapsed (in GAAPN_2000_2009): " + str(time_end_GAAPN_2000_2009 - time_end_GAAPN_2010_2019))
+
+
+
+########################################################################################################################
+
+
+
+
+
+
+
 
