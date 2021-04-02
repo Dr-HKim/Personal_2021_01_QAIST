@@ -77,24 +77,39 @@ dg_header3_20000101_20201231 = pd.read_excel(
     './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY3", header=None, skiprows=8, nrows=6)
 dg_header3_20000101_20201231.to_pickle('./data_processed/dg_header3_20000101_20201231.pkl')
 
+# StopWatch: 코드 시작
+time_start = datetime.now(); print("Procedure started at: " + str(time_start))
+
 dg_daily4_20000101_20201231 = pd.read_excel(
-    './data_raw/DG_DAILY_20000101_20201231.xlsx', sheet_name="DAILY4", header=None, skiprows=14, skipfooter=0)
+    './data_raw/DG_DAILY4_20000101_20201231.xlsx', sheet_name="DAILY4", header=None, skiprows=14, skipfooter=0)
 dg_daily4_20000101_20201231.to_pickle('./data_processed/dg_daily4_20000101_20201231.pkl')
 
 dg_header4_20000101_20201231 = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY4", header=None, skiprows=8, nrows=6)
+    './data_raw/DG_DAILY4_20000101_20201231.xlsx', sheet_name="DAILY4", header=None, skiprows=8, nrows=6)
 dg_header4_20000101_20201231.to_pickle('./data_processed/dg_header4_20000101_20201231.pkl')
 
+# StopWatch
+time_tmp4 = datetime.now()
+print("Load Daily4 finished at: " + str(time_tmp4))
+print("Elapsed (in total): " + str(time_tmp4 - time_start))
+
 dg_daily5_20000101_20201231 = pd.read_excel(
-    './data_raw/DG_DAILY_20000101_20201231.xlsx', sheet_name="DAILY5", header=None, skiprows=14, skipfooter=0)
+    './data_raw/DG_DAILY5_20000101_20201231.xlsx', sheet_name="DAILY5", header=None, skiprows=14, skipfooter=0)
 dg_daily5_20000101_20201231.to_pickle('./data_processed/dg_daily5_20000101_20201231.pkl')
 
 dg_header5_20000101_20201231 = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY5", header=None, skiprows=8, nrows=6)
+    './data_raw/DG_DAILY5_20000101_20201231.xlsx', sheet_name="DAILY5", header=None, skiprows=8, nrows=6)
 dg_header5_20000101_20201231.to_pickle('./data_processed/dg_header5_20000101_20201231.pkl')
 
+# StopWatch
+time_tmp5 = datetime.now()
+print("Load Daily5 finished at: " + str(time_tmp5))
+print("Elapsed (in total): " + str(time_tmp5 - time_tmp4))
 
-
+########################################################################################################################
+# 데이터가이드 일간 데이터 불러오기
+# 파일: DG_DAILY_20210101_Current.xlsx
+# 날짜: 2021-01-01 ~ Current
 
 # StopWatch: 코드 시작
 time_start = datetime.now()
@@ -112,33 +127,33 @@ dg_daily3_20210101_Current = pd.read_excel(
     './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DAILY3", header=None, skiprows=14, skipfooter=0)
 dg_daily3_20210101_Current.to_pickle('./data_processed/dg_daily3_20210101_Current.pkl')
 
-dg_header1_20210101_Current = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY1", header=None, skiprows=8, nrows=6)
-dg_header1_20210101_Current.to_pickle('./data_processed/dg_header1_20210101_Current.pkl')
-
-dg_header2_20210101_Current = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY2", header=None, skiprows=8, nrows=6)
-dg_header2_20210101_Current.to_pickle('./data_processed/dg_header2_20210101_Current.pkl')
-
-dg_header3_20210101_Current = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY3", header=None, skiprows=8, nrows=6)
-dg_header3_20210101_Current.to_pickle('./data_processed/dg_header3_20210101_Current.pkl')
-
-
 dg_daily4_20210101_Current = pd.read_excel(
     './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DAILY4", header=None, skiprows=14, skipfooter=0)
 dg_daily4_20210101_Current.to_pickle('./data_processed/dg_daily4_20210101_Current.pkl')
-
-dg_header4_20210101_Current = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY4", header=None, skiprows=8, nrows=6)
-dg_header4_20210101_Current.to_pickle('./data_processed/dg_header4_20210101_Current.pkl')
 
 dg_daily5_20210101_Current = pd.read_excel(
     './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DAILY5", header=None, skiprows=14, skipfooter=0)
 dg_daily5_20210101_Current.to_pickle('./data_processed/dg_daily5_20210101_Current.pkl')
 
+
+dg_header1_20210101_Current = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DAILY1", header=None, skiprows=8, nrows=6)
+dg_header1_20210101_Current.to_pickle('./data_processed/dg_header1_20210101_Current.pkl')
+
+dg_header2_20210101_Current = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DAILY2", header=None, skiprows=8, nrows=6)
+dg_header2_20210101_Current.to_pickle('./data_processed/dg_header2_20210101_Current.pkl')
+
+dg_header3_20210101_Current = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DAILY3", header=None, skiprows=8, nrows=6)
+dg_header3_20210101_Current.to_pickle('./data_processed/dg_header3_20210101_Current.pkl')
+
+dg_header4_20210101_Current = pd.read_excel(
+    './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DAILY4", header=None, skiprows=8, nrows=6)
+dg_header4_20210101_Current.to_pickle('./data_processed/dg_header4_20210101_Current.pkl')
+
 dg_header5_20210101_Current = pd.read_excel(
-    './data_raw/DG_DAILY_20210101_test.xlsx', sheet_name="DAILY5", header=None, skiprows=8, nrows=6)
+    './data_raw/DG_DAILY_20210101_Current.xlsx', sheet_name="DAILY5", header=None, skiprows=8, nrows=6)
 dg_header5_20210101_Current.to_pickle('./data_processed/dg_header5_20210101_Current.pkl')
 
 

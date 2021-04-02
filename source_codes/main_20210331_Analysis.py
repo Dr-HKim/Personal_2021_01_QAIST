@@ -1,5 +1,6 @@
 # Created by Kim Hyeongjun on 03/22/2021.
 # Copyright © 2021 dr-hkim.github.io. All rights reserved.
+# 어떤 기준으로 재무자료와 시장자료를 연결해야할까?
 
 # Import Packages
 import pandas as pd
@@ -14,20 +15,35 @@ import mplfinance as mpf
 # # 재무제표 자료는 2011년 이후부터 분기별 자료 사용 가능
 # sample_fs = processed_fs_1981_2020.loc[processed_fs_1981_2020["회계년"] > 2015]
 #
+# # 데이터 저장하기
+# sample_fs.to_pickle('./data_processed/sample_fs.pkl')
+#
+# # 일간 주가자료
 # date_start = pd.to_datetime("20150101", errors='coerce', format='%Y%m%d')
 # sample_daily = processed_daily_20000101_Current.loc[processed_daily_20000101_Current["Date"] > date_start]
 #
 # # 데이터 저장하기
-# sample_fs.to_pickle('./data_processed/sample_fs.pkl')
 # sample_daily.to_pickle('./data_processed/sample_daily.pkl')
 
 ########################################################################################################################
 # Import Pickle Dataset
-sample_fs = pd.read_pickle('./data_processed/sample_fs.pkl')
 sample_daily = pd.read_pickle('./data_processed/sample_daily.pkl')
 
-# YYYYQQ = 회계년 + 주기 (1Q -> Q1)
+df_daily_data = sample_daily.copy()
+df_daily_data['rank_per'] = df_daily_data.groupby('Date')['PER(IFRS-연결)'].rank(method='min', ascending=False)
+df_daily_data['eps'] = df_daily_data["수정주가(원)"]/df_daily_data["PER(IFRS-연결)"]
+
+
+########################################################################################################################
+# Import Pickle Dataset
+sample_fs = pd.read_pickle('./data_processed/sample_fs.pkl')
 df_fs_data = sample_fs.copy()
+
+tmp = df_fs_data.loc[df_fs_data["Name"] == "방림"]  # 방림은 결산월이 9월이다.
+
+
+
+# YYYYQQ = 회계년 + 주기 (1Q -> Q1)
 df_fs_data["YYYYQQ"] = df_fs_data["회계년"].astype(str) + "Q" + df_fs_data["주기"].str.slice(start=0, stop=1)
 
 col_names1 = df_fs_data.columns[0:5].to_series()
@@ -45,6 +61,36 @@ df_daily_data = sample_daily.copy()
 date_start = pd.to_datetime("20150101", errors='coerce', format='%Y%m%d')
 date_start.year
 date_start.month
+
+
+month_settlement = [12, 12, 12, 12]
+fiscal_year = [2021, 2021, 2021, 2021]
+quarter = ["Q1", "Q2", "Q3", "Q4"]
+quarter_month = [3, 6, 9, 12]
+file_month = [5, 8, 11, 3]
+df_settlement = pd.DataFrame(
+        {"month_settlement": month_settlement, "fiscal_year": fiscal_year, "quarter": quarter, "quarter_month": quarter_month, "file_month": file_month})
+
+def get_month_calc(result):
+    if result <= 0:
+        result = result + 12
+    elif result > 12:
+        result = result - 12
+    return result
+
+for month in range(1,13):
+    month_settlement = [month, month, month, month]
+    fiscal_year = [2021, 2021, 2021, 2021]
+    quarter = ["Q1", "Q2", "Q3", "Q4"]
+    quarter_month = [get_month_calc(month-9), get_month_calc(month-6), get_month_calc(month-3), month]
+    file_month = [get_month_calc(month - 9 + 2), get_month_calc(month - 6 + 2), get_month_calc(month - 3 + 2), get_month_calc(month + 3)]
+    df_settlement_month = pd.DataFrame(
+        {"month_settlement": month_settlement, "fiscal_year": fiscal_year, "quarter": quarter, "quarter_month": quarter_month, "file_month": file_month})
+    df_settlement = pd.concat([df_settlement, df_settlement_month])
+
+
+
+df_settlement.to_clipboard(excel=True, sep=None, index=False)
 
 
 # 사업보고서: 결산 후 90일 이내 (12월 결산법인 03/31)

@@ -28,52 +28,68 @@ def get_processed_daily_data(dg_daily, dg_header):
 
 ########################################################################################################################
 # Import Pickle Dataset
-dg_daily1_test = pd.read_pickle('./data_processed/dg_daily1_test.pkl')
-dg_daily2_test = pd.read_pickle('./data_processed/dg_daily2_test.pkl')
-dg_daily3_test = pd.read_pickle('./data_processed/dg_daily3_test.pkl')
-dg_header1_test = pd.read_pickle('./data_processed/dg_header1_test.pkl')
-dg_header2_test = pd.read_pickle('./data_processed/dg_header2_test.pkl')
-dg_header3_test = pd.read_pickle('./data_processed/dg_header3_test.pkl')
+# dg_daily1_test = pd.read_pickle('./data_processed/dg_daily1_test.pkl')
+# dg_daily2_test = pd.read_pickle('./data_processed/dg_daily2_test.pkl')
+# dg_daily3_test = pd.read_pickle('./data_processed/dg_daily3_test.pkl')
+# dg_header1_test = pd.read_pickle('./data_processed/dg_header1_test.pkl')
+# dg_header2_test = pd.read_pickle('./data_processed/dg_header2_test.pkl')
+# dg_header3_test = pd.read_pickle('./data_processed/dg_header3_test.pkl')
 
 dg_daily1_20000101_20201231 = pd.read_pickle('./data_processed/dg_daily1_20000101_20201231.pkl')
 dg_daily2_20000101_20201231 = pd.read_pickle('./data_processed/dg_daily2_20000101_20201231.pkl')
 dg_daily3_20000101_20201231 = pd.read_pickle('./data_processed/dg_daily3_20000101_20201231.pkl')
+dg_daily4_20000101_20201231 = pd.read_pickle('./data_processed/dg_daily4_20000101_20201231.pkl')
+dg_daily5_20000101_20201231 = pd.read_pickle('./data_processed/dg_daily5_20000101_20201231.pkl')
 dg_header1_20000101_20201231 = pd.read_pickle('./data_processed/dg_header1_20000101_20201231.pkl')
 dg_header2_20000101_20201231 = pd.read_pickle('./data_processed/dg_header2_20000101_20201231.pkl')
 dg_header3_20000101_20201231 = pd.read_pickle('./data_processed/dg_header3_20000101_20201231.pkl')
+dg_header4_20000101_20201231 = pd.read_pickle('./data_processed/dg_header4_20000101_20201231.pkl')
+dg_header5_20000101_20201231 = pd.read_pickle('./data_processed/dg_header5_20000101_20201231.pkl')
 
 dg_daily1_20210101_Current = pd.read_pickle('./data_processed/dg_daily1_20210101_Current.pkl')
 dg_daily2_20210101_Current = pd.read_pickle('./data_processed/dg_daily2_20210101_Current.pkl')
 dg_daily3_20210101_Current = pd.read_pickle('./data_processed/dg_daily3_20210101_Current.pkl')
+dg_daily4_20210101_Current = pd.read_pickle('./data_processed/dg_daily4_20210101_Current.pkl')
+dg_daily5_20210101_Current = pd.read_pickle('./data_processed/dg_daily5_20210101_Current.pkl')
 dg_header1_20210101_Current = pd.read_pickle('./data_processed/dg_header1_20210101_Current.pkl')
 dg_header2_20210101_Current = pd.read_pickle('./data_processed/dg_header2_20210101_Current.pkl')
 dg_header3_20210101_Current = pd.read_pickle('./data_processed/dg_header3_20210101_Current.pkl')
+dg_header4_20210101_Current = pd.read_pickle('./data_processed/dg_header4_20210101_Current.pkl')
+dg_header5_20210101_Current = pd.read_pickle('./data_processed/dg_header5_20210101_Current.pkl')
 
 
 ########################################################################################################################
 # 자료 병합 테스트
-processed_daily1 = get_processed_daily_data(dg_daily1_test, dg_header1_test)
-processed_daily2 = get_processed_daily_data(dg_daily2_test, dg_header2_test)
-processed_daily3 = get_processed_daily_data(dg_daily3_test, dg_header3_test)
-
-processed_daily = pd.merge(processed_daily1, processed_daily2, left_on=["Date", "Symbol"], right_on=["Date", "Symbol"], how='outer')
-processed_daily = pd.merge(processed_daily, processed_daily3, left_on=["Date", "Symbol"], right_on=["Date", "Symbol"], how='outer')
+# processed_daily1 = get_processed_daily_data(dg_daily1_test, dg_header1_test)
+# processed_daily2 = get_processed_daily_data(dg_daily2_test, dg_header2_test)
+# processed_daily3 = get_processed_daily_data(dg_daily3_test, dg_header3_test)
+#
+# processed_daily = pd.merge(processed_daily1, processed_daily2, left_on=["Date", "Symbol"], right_on=["Date", "Symbol"], how='outer')
+# processed_daily = pd.merge(processed_daily, processed_daily3, left_on=["Date", "Symbol"], right_on=["Date", "Symbol"], how='outer')
 
 # 20000101 부터 20201231 까지 자료 병합
 processed_daily1_20000101_20201231 = get_processed_daily_data(dg_daily1_20000101_20201231, dg_header1_20000101_20201231)
 processed_daily2_20000101_20201231 = get_processed_daily_data(dg_daily2_20000101_20201231, dg_header2_20000101_20201231)
 processed_daily3_20000101_20201231 = get_processed_daily_data(dg_daily3_20000101_20201231, dg_header3_20000101_20201231)
+processed_daily4_20000101_20201231 = get_processed_daily_data(dg_daily4_20000101_20201231, dg_header4_20000101_20201231)
+processed_daily5_20000101_20201231 = get_processed_daily_data(dg_daily5_20000101_20201231, dg_header5_20000101_20201231)
 
 processed_daily_20000101_20201231 = pd.merge(processed_daily1_20000101_20201231, processed_daily2_20000101_20201231, left_on=["Date", "Symbol"], right_on=["Date", "Symbol"], how='outer')
 processed_daily_20000101_20201231 = pd.merge(processed_daily_20000101_20201231, processed_daily3_20000101_20201231, left_on=["Date", "Symbol"], right_on=["Date", "Symbol"], how='outer')
+processed_daily_20000101_20201231 = pd.merge(processed_daily_20000101_20201231, processed_daily4_20000101_20201231, left_on=["Date", "Symbol"], right_on=["Date", "Symbol"], how='outer')
+processed_daily_20000101_20201231 = pd.merge(processed_daily_20000101_20201231, processed_daily5_20000101_20201231, left_on=["Date", "Symbol"], right_on=["Date", "Symbol"], how='outer')
 
 # 20210101 부터 Current 까지 자료 병합
 processed_daily1_20210101_Current = get_processed_daily_data(dg_daily1_20210101_Current, dg_header1_20210101_Current)
 processed_daily2_20210101_Current = get_processed_daily_data(dg_daily2_20210101_Current, dg_header2_20210101_Current)
 processed_daily3_20210101_Current = get_processed_daily_data(dg_daily3_20210101_Current, dg_header3_20210101_Current)
+processed_daily4_20210101_Current = get_processed_daily_data(dg_daily4_20210101_Current, dg_header4_20210101_Current)
+processed_daily5_20210101_Current = get_processed_daily_data(dg_daily5_20210101_Current, dg_header5_20210101_Current)
 
 processed_daily_20210101_Current = pd.merge(processed_daily1_20210101_Current, processed_daily2_20210101_Current, left_on=["Date", "Symbol"], right_on=["Date", "Symbol"], how='outer')
 processed_daily_20210101_Current = pd.merge(processed_daily_20210101_Current, processed_daily3_20210101_Current, left_on=["Date", "Symbol"], right_on=["Date", "Symbol"], how='outer')
+processed_daily_20210101_Current = pd.merge(processed_daily_20210101_Current, processed_daily4_20210101_Current, left_on=["Date", "Symbol"], right_on=["Date", "Symbol"], how='outer')
+processed_daily_20210101_Current = pd.merge(processed_daily_20210101_Current, processed_daily5_20210101_Current, left_on=["Date", "Symbol"], right_on=["Date", "Symbol"], how='outer')
 
 ########################################################################################################################
 # 모든 자료를 합치고 정렬
@@ -96,7 +112,7 @@ new_column_names2 = column_names[1:-1]
 new_column_names = new_column_names1 + new_column_names2
 processed_daily_20000101_Current = processed_daily_20000101_Current[new_column_names]
 
-# NaN 데이터 제거하기
+# NaN 데이터 제거하기 (날짜가 NaN인 자료들이 있다)
 processed_daily_20000101_Current = processed_daily_20000101_Current[~pd.isnull(processed_daily_20000101_Current["Date"])]
 
 # 데이터 저장하기
