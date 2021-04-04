@@ -4,83 +4,75 @@
 import pandas as pd
 import numpy as np
 
+
 ########################################################################################################################
 # Import Pickle Dataset
 fs_IFRSC = pd.read_pickle('./data_processed/fs_IFRSC.pkl')
+fs_IFRSN = pd.read_pickle('./data_processed/fs_IFRSN.pkl')
+fs_GAAPC = pd.read_pickle('./data_processed/fs_GAAPC.pkl')
+fs_GAAPN = pd.read_pickle('./data_processed/fs_GAAPN.pkl')
+
+tmp_fs_IFRSN = fs_IFRSN.loc[fs_IFRSN["Name"] == "현대차"]
+tmp_fs_IFRSC = fs_IFRSC.loc[fs_IFRSC["Name"] == "현대차"]
+tmp_fs_GAAPC = fs_GAAPC.loc[fs_GAAPC["Name"] == "현대차"]
+tmp_fs_GAAPN = fs_GAAPN.loc[fs_GAAPN["Name"] == "현대차"]
+
+processed_daily_20000101_Current = pd.read_pickle('./data_processed/processed_daily_20000101_Current.pkl')
+
+processed_daily_sample = pd.read_pickle('./data_processed/processed_daily_sample.pkl')
 fs_IFRSC_sample = pd.read_pickle('./data_processed/fs_IFRSC_sample.pkl')
-dg_GeneralHistoric_Annual = pd.read_pickle('./data_processed/dg_GeneralHistoric_Annual.pkl')
-dg_GeneralHistoric_Quarterly = pd.read_pickle('./data_processed/dg_GeneralHistoric_Quarterly.pkl')
-
-# df_dataset = fs_IFRSC_sample[fs_IFRSC_sample["회계년"] <= 2021].copy()
-df_dataset = fs_IFRSC.copy()
-########################################################################################################################
-# 각 주기(1Q, 2Q, 3Q, 4Q) 별로 결산월이 (3, 6, 9, 12) 가 아니라 (12, 12, 12, 12) 로 입력된 자료들이 있다.
-# 이런 자료들은 분기 데이터가 없고 annual 자료만 있을 가능성 높다. 따라서 골라내야 한다.
-
-# 인덱스 자료(Symbol, Name, 결산월, 회계년, 주기)만 따로 저장
-df_index0 = df_dataset.iloc[:, 0:6]
-
-# 주기(1Q, 2Q, 3Q, 4Q)에 따라 결산월을 각 기업x회계년마다 한줄로 변환
-df_index1 = df_index0.pivot(index=["Symbol", "회계년"], columns="주기", values="결산월")
-df_index1.index = df_index1.index.set_names(['Symbol', '회계년'])
-df_index1.reset_index(inplace=True)
-
-# 주기(1Q, 2Q, 3Q, 4Q)에 따라 총자산(천원) 을 각 기업x회계년마다 한줄로 변환
-df_index2 = df_index0.pivot(index=["Symbol", "회계년"], columns="주기", values="총자산(천원)")
-df_index2.index = df_index2.index.set_names(['Symbol', '회계년'])
-df_index2.reset_index(inplace=True)
-df_index2.rename(columns={"1Q":"AT_1Q", "2Q":"AT_2Q", "3Q":"AT_3Q", "4Q":"AT_4Q"}, inplace=True)
-
-df_index3 = pd.merge(
-    df_index1, df_index2,
-    left_on=["Symbol", "회계년"], right_on=["Symbol", "회계년"], how='left')
-
-# 주기(1Q, 2Q, 3Q, 4Q)에 따라 결산월자료가 모두 동일하면 1, 아니면 0 을 입력
-cond_same_settle_month = \
-    (df_index3["1Q"] == df_index3["2Q"]) & (df_index3["1Q"] == df_index3["3Q"]) & (df_index3["1Q"] == df_index3["4Q"])
-df_index3['d_same_settle_month'] = np.where(cond_same_settle_month, 1, 0)
-
-# 1,2,3분기의 총자산이 nan이고 4분기 총자산이 입력되어 있는 경우를 표시
-cond_nan_123Q = np.isnan(df_index3["AT_1Q"]) & np.isnan(df_index3["AT_2Q"]) & np.isnan(df_index3["AT_3Q"]) & (~np.isnan(df_index3["AT_4Q"]))
-df_index3['d_nan_123Q'] = np.where(cond_nan_123Q, 1, 0)
-
-# 기업x회계년 마다 더미변수를 연결
-df_index4 = pd.merge(
-    df_index0, df_index3[["Symbol", "회계년", "d_same_settle_month", "d_nan_123Q"]],
-    left_on=["Symbol", "회계년"], right_on=["Symbol", "회계년"], how='left')
-
-# 기업x회계년 마다 GeneralHistoric_Quarterly 연결
-df_index5 = pd.merge(
-    df_index4, dg_GeneralHistoric_Quarterly[["Symbol", "회계년", "주기", "결산월(Hist)", "거래소(시장)"]],
-    left_on=["Symbol", "회계년", "주기"], right_on=["Symbol", "회계년", "주기"], how='left')
-
-
-# 기업코드 별로 결산월(Hist) 값이 모두 비어있는 기업코드 체크
-check_null_settle_month = df_index5.groupby("Symbol")['결산월(Hist)'].apply(lambda x: x.isnull().all())
-
-# 기업코드 별로 결산월(Hist) 값이 하나인(unique) 기업코드 체크
-check_unique_settle_month = df_index5.groupby(df_index5["Symbol"])["결산월(Hist)"].nunique().eq(1)
-
-df_index5 = pd.merge(df_index5, check_null_settle_month, left_on=["Symbol"], right_index=True, how='left')
-df_index5.rename(columns={"결산월(Hist)_x":"결산월(Hist)", "결산월(Hist)_y":"check_null_settle_month"}, inplace=True)
-df_index5 = pd.merge(df_index5, check_unique_settle_month, left_on=["Symbol"], right_index=True, how='left')
-df_index5.rename(columns={"결산월(Hist)_x":"결산월(Hist)", "결산월(Hist)_y":"check_unique_settle_month"}, inplace=True)
 
 ########################################################################################################################
-
-
-
-# tmp = df_index5[(df_index5["check_null_settle_month"] == False) & (df_index5["check_unique_settle_month"] == False)]
-tmp = df_index5[(df_index5["결산월(Hist)"] == 11)]
-tmp2 = df_index5[(df_index5["Name"] == "농우바이오")]
+# 만약 사용가능날짜가 2021-04-01 인데, 아직 DataGuide 업데이트가 안된 거라면 그 전 정보를 사용
+# 아직 업데이트 안된 기업들 추려내기
+date_current = pd.to_datetime("20210401", errors='coerce', format='%Y%m%d')
+df_not_updated = fs_IFRSN.loc[(fs_IFRSN["사용가능날짜"] == date_current) & np.isnan(fs_IFRSN["총자산(천원)"])]
 
 ########################################################################################################################
-# 기업x회계년 마다 더미변수를 연결
-df_dataset1 = pd.merge(
-    df_dataset, df_index1[["Symbol", "회계년", "d_same_settle_month"]],
-    left_on=["Symbol", "회계년"], right_on=["Symbol", "회계년"], how='left')
+# 기업코드x월별 자료를 만들고 각 월마다 들어가야하는 최신 레포트 사용가능날짜를 연결
+list_symbol = fs_IFRSC["Symbol"]
+list_symbol = list_symbol.drop_duplicates()
+list_symbol = list_symbol.tolist()
+
+list_YYYYMMDD = []
+for year in range(2000, 2022):
+    for month in range(1, 13):
+        YYYYMMDD = year * 10000 + month * 100 + 1
+        list_YYYYMMDD.append(YYYYMMDD)
+
+index_symbol_YYYYMMDD = pd.MultiIndex.from_product([list_symbol, list_YYYYMMDD], names=["Symbol", "YYYYMMDD"])
+df_fs_monthly = pd.DataFrame(index=index_symbol_YYYYMMDD)
+df_fs_monthly = df_fs_monthly.reset_index()
+df_fs_monthly["FS_DATE"] = pd.to_datetime(df_fs_monthly["YYYYMMDD"], errors='coerce', format='%Y%m%d')
+
+df_fs_monthly = pd.merge(
+    df_fs_monthly, fs_IFRSC[["Symbol", "사용가능날짜"]],
+    left_on=["Symbol", "FS_DATE"], right_on=["Symbol", "사용가능날짜"], how='left')
+
+df_fs_monthly["사용가능날짜"] = df_fs_monthly.groupby("Symbol")["사용가능날짜"].transform(lambda x: x.fillna(method='ffill'))
+
+# 아직 업데이트가 되지 않은 기업들은 그 전 자료 사용
+cond_tmp = (df_fs_monthly['Symbol'].isin(df_not_updated['Symbol'])) & (df_fs_monthly['FS_DATE'] == date_current)
+df_fs_monthly.loc[cond_tmp, "FS_DATE"] = pd.to_datetime("20210301", errors='coerce', format='%Y%m%d')
 
 
-# 이베스트투자증권 결산월이 3월에서 12월로 변경
-# 유유제약 결산월 3월에서 9월로 변경 2017년
+########################################################################################################################
+# FS_DATE: 일간 자료의 날짜를 매월 1일로 조정
+processed_daily_sample["FS_DATE"] = \
+    processed_daily_sample["Date"].dt.year * 10000 + processed_daily_sample["Date"].dt.month * 100 + 1
+processed_daily_sample["FS_DATE"] = pd.to_datetime(processed_daily_sample["FS_DATE"], errors='coerce', format='%Y%m%d')
+
+# FS_DATE 를 기준으로 매달 사용 가능한 최근 재무정보의 사용가능날짜 연결
+processed_daily_sample = pd.merge(
+    processed_daily_sample, df_fs_monthly[["Symbol", "FS_DATE", "사용가능날짜"]],
+    left_on=["Symbol", "FS_DATE"], right_on=["Symbol", "FS_DATE"], how='left')
+
+########################################################################################################################
+# 사용가능날짜를 기준으로 재무제표 정보를 연결
+cond = (fs_IFRSN["check_nan_123Q"] == False)
+
+processed_daily_sample = pd.merge(
+    processed_daily_sample, fs_IFRSN.loc[cond, ["Symbol", "사용가능날짜", "당기순이익(직전4분기)(천원)"]],
+    left_on=["Symbol", "사용가능날짜"], right_on=["Symbol", "사용가능날짜"], how='left')
+
 

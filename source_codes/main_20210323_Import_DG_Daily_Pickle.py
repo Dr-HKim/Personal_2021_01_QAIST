@@ -117,3 +117,15 @@ processed_daily_20000101_Current = processed_daily_20000101_Current[~pd.isnull(p
 
 # 데이터 저장하기
 processed_daily_20000101_Current.to_pickle('./data_processed/processed_daily_20000101_Current.pkl')
+
+########################################################################################################################
+# Import Pickle Dataset
+processed_daily_20000101_Current = pd.read_pickle('./data_processed/processed_daily_20000101_Current.pkl')
+
+date_start = pd.to_datetime("20150101", errors='coerce', format='%Y%m%d')
+processed_daily_sample = processed_daily_20000101_Current.loc[processed_daily_20000101_Current["Date"] > date_start]
+
+# 데이터 저장하기
+processed_daily_sample.to_pickle('./data_processed/processed_daily_sample.pkl')
+
+
