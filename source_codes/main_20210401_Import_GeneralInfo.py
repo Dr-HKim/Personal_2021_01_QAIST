@@ -106,3 +106,60 @@ dg_GeneralHistoric_1997_2000_data.to_pickle('./data_processed/dg_GeneralHistoric
 dg_GeneralHistoric_1997_2000_header = pd.read_excel(
     './data_raw/DG_GeneralHistoric.xlsx', sheet_name="Sheet4", header=None, skiprows=7, nrows=4)
 dg_GeneralHistoric_1997_2000_header.to_pickle('./data_processed/dg_GeneralHistoric_1997_2000_header.pkl')
+
+
+########################################################################################################################
+# Import Pickle Dataset
+dg_GeneralHistoric_Annual_2000_2021_data = \
+    pd.read_pickle('./data_processed/dg_GeneralHistoric_Annual_2000_2021_data.pkl')
+dg_GeneralHistoric_Annual_2000_2021_header = \
+    pd.read_pickle('./data_processed/dg_GeneralHistoric_Annual_2000_2021_header.pkl')
+
+dg_GeneralHistoric_Annual = dg_GeneralHistoric_Annual_2000_2021_data.copy()
+
+# Column Index 설정하기
+column_index1 = dg_GeneralHistoric_Annual_2000_2021_header.iloc[3, 0:5].tolist()
+column_index2 = dg_GeneralHistoric_Annual_2000_2021_header.iloc[2, 5:].tolist()
+column_index = column_index1 + column_index2
+dg_GeneralHistoric_Annual.columns = column_index  # Column Index 설정
+
+# 데이터 정렬하기
+dg_GeneralHistoric_Annual = dg_GeneralHistoric_Annual.sort_values(by=["Symbol", "회계년", "주기"])
+
+# 데이터 저장하기
+dg_GeneralHistoric_Annual.to_pickle('./data_processed/dg_GeneralHistoric_Annual.pkl')
+
+
+########################################################################################################################
+# Import Pickle Dataset
+dg_GeneralHistoric_2020_2021_data = \
+    pd.read_pickle('./data_processed/dg_GeneralHistoric_2020_2021_data.pkl')
+dg_GeneralHistoric_2013_2019_data = \
+    pd.read_pickle('./data_processed/dg_GeneralHistoric_2013_2019_data.pkl')
+dg_GeneralHistoric_2009_2012_data = \
+    pd.read_pickle('./data_processed/dg_GeneralHistoric_2009_2012_data.pkl')
+dg_GeneralHistoric_2005_2008_data = \
+    pd.read_pickle('./data_processed/dg_GeneralHistoric_2005_2008_data.pkl')
+dg_GeneralHistoric_2001_2004_data = \
+    pd.read_pickle('./data_processed/dg_GeneralHistoric_2001_2004_data.pkl')
+dg_GeneralHistoric_1997_2000_data = \
+    pd.read_pickle('./data_processed/dg_GeneralHistoric_1997_2000_data.pkl')
+dg_GeneralHistoric_2020_2021_header = \
+    pd.read_pickle('./data_processed/dg_GeneralHistoric_2020_2021_header.pkl')
+
+# 데이터 합치기
+dg_GeneralHistoric_Quarterly = pd.concat([
+    dg_GeneralHistoric_2020_2021_data, dg_GeneralHistoric_2013_2019_data, dg_GeneralHistoric_2009_2012_data,
+    dg_GeneralHistoric_2005_2008_data, dg_GeneralHistoric_2001_2004_data, dg_GeneralHistoric_1997_2000_data])
+
+# Column Index 설정하기
+column_index1 = dg_GeneralHistoric_2020_2021_header.iloc[3, 0:5].tolist()
+column_index2 = dg_GeneralHistoric_2020_2021_header.iloc[2, 5:].tolist()
+column_index = column_index1 + column_index2
+dg_GeneralHistoric_Quarterly.columns = column_index  # Column Index 설정
+
+# 데이터 정렬하기
+dg_GeneralHistoric_Quarterly = dg_GeneralHistoric_Quarterly.sort_values(by=["Symbol", "회계년", "주기"])
+
+# 데이터 저장하기
+dg_GeneralHistoric_Quarterly.to_pickle('./data_processed/dg_GeneralHistoric_Quarterly.pkl')
