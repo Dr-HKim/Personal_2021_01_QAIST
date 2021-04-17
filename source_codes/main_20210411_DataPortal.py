@@ -115,6 +115,7 @@ data_url = "".join(
 data_response = requests.get(data_url)
 data_xml = BeautifulSoup(data_response.text, "xml")
 data_xml_row = data_xml.find_all("item")
+print(data_xml)
 data_xml_row
 
 # XML에 포함된 항목들을 리스트로 저장
