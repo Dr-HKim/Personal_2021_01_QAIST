@@ -64,15 +64,15 @@ df_lawd_cd_nodup = df_lawd_cd.drop_duplicates(subset=['LAWD_CD']).copy()  # 중�
 
 # 국토교통부_아파트매매 실거래 상세 자료는 2008년 1월부터 자료가 존재한다.
 list_yyyymm = []
-for n_year in range(2000, 2021):
+for n_year in range(2016, 2021):
     if n_year + 1 == 2021:
         for n_month in range(0, 3):
             list_yyyymm.append((n_year + 1) * 100 + n_month + 1)
     else:
         for n_month in range(0, 12):
             list_yyyymm.append((n_year + 1) * 100 + n_month + 1)
+list_yyyymm.reverse()
 list_yyyymm
-
 total_lawd_cd = df_lawd_cd_nodup["LAWD_CD"]
 tmp_lawd_cd = df_lawd_cd_nodup["LAWD_CD"][3:10]
 
@@ -82,10 +82,11 @@ df_dataset = get_apt_data(LAWD_CD=11120, DEAL_YMD=202102)  # DataFrame 구성을
 time_this_code_start = datetime.now()
 print("This code started at: " + str(time_this_code_start))
 
-
-for lawd_cd in total_lawd_cd:
-    df_tmp = get_apt_data(LAWD_CD=lawd_cd, DEAL_YMD=202102)
-    df_dataset = pd.concat([df_dataset, df_tmp])
+# 전국의 한달 자료 받는데 9분 소요
+for yyyymm in list_yyyymm:
+    for lawd_cd in total_lawd_cd:
+        df_tmp = get_apt_data(LAWD_CD=lawd_cd, DEAL_YMD=yyyymm)
+        df_dataset = pd.concat([df_dataset, df_tmp])
 
 # StopWatch: 코드 종료
 time_this_code_end = datetime.now()
