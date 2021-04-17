@@ -88,6 +88,10 @@ for yyyymm in list_yyyymm:
         df_tmp = get_apt_data(LAWD_CD=lawd_cd, DEAL_YMD=yyyymm)
         df_dataset = pd.concat([df_dataset, df_tmp])
 
+# df_dataset 저장
+df_dataset.to_pickle('./data_raw/df_dataset.pkl')
+
+
 # StopWatch: 코드 종료
 time_this_code_end = datetime.now()
 print("This code finished at: " + str(time_this_code_end))
