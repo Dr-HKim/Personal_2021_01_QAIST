@@ -68,7 +68,7 @@ tmp_lawd_cd = df_lawd_cd_nodup_exist["LAWD_CD"][3:10]
 
 # 국토교통부_아파트매매 실거래 상세 자료는 2008년 1월부터 자료가 존재한다.
 list_yyyymm = []
-for n_year in range(2016, 2021):
+for n_year in range(2010, 2021):
     if n_year + 1 == 2021:
         for n_month in range(0, 3):
             list_yyyymm.append((n_year + 1) * 100 + n_month + 1)
