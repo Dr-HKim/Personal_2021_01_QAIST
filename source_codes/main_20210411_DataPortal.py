@@ -61,6 +61,10 @@ df_tmp3 = get_apt_data(LAWD_CD=11120, DEAL_YMD=202102)
 df_lawd_cd = pd.read_csv('./data_raw/법정동코드 전체자료.txt', sep="\t", engine='python', encoding="CP949")
 df_lawd_cd["LAWD_CD"] = df_lawd_cd["법정동코드"].divmod(100000)[0]
 df_lawd_cd_nodup = df_lawd_cd.drop_duplicates(subset=['LAWD_CD']).copy()  # 중복값 제외
+df_lawd_cd_nodup_exist = df_lawd_cd_nodup[df_lawd_cd_nodup["폐지여부"] == "존재"].copy()
+
+total_lawd_cd = df_lawd_cd_nodup_exist["LAWD_CD"]
+tmp_lawd_cd = df_lawd_cd_nodup_exist["LAWD_CD"][3:10]
 
 # 국토교통부_아파트매매 실거래 상세 자료는 2008년 1월부터 자료가 존재한다.
 list_yyyymm = []
@@ -73,24 +77,22 @@ for n_year in range(2016, 2021):
             list_yyyymm.append((n_year + 1) * 100 + n_month + 1)
 list_yyyymm.reverse()
 list_yyyymm
-total_lawd_cd = df_lawd_cd_nodup["LAWD_CD"]
-tmp_lawd_cd = df_lawd_cd_nodup["LAWD_CD"][3:10]
 
-df_dataset = get_apt_data(LAWD_CD=11120, DEAL_YMD=202102)  # DataFrame 구성을 위해 공백 자료를 하나 만든다.
 
 # StopWatch: 코드 시작
 time_this_code_start = datetime.now()
 print("This code started at: " + str(time_this_code_start))
 
+df_dataset_null = get_apt_data(LAWD_CD=11120, DEAL_YMD=202102)  # DataFrame 구성을 위해 공백 자료를 하나 만든다.
+
 # 전국의 한달 자료 받는데 9분 소요
 for yyyymm in list_yyyymm:
+    df_dataset = df_dataset_null.copy()
     for lawd_cd in total_lawd_cd:
-        df_tmp = get_apt_data(LAWD_CD=lawd_cd, DEAL_YMD=yyyymm)
-        df_dataset = pd.concat([df_dataset, df_tmp])
-
-# df_dataset 저장
-df_dataset.to_pickle('./data_raw/df_dataset.pkl')
-
+        df_apt = get_apt_data(LAWD_CD=lawd_cd, DEAL_YMD=yyyymm)
+        df_apt.to_pickle("./data_raw/df_apt_" + str(yyyymm) + "_" + str(lawd_cd) + ".pkl")
+        df_dataset = pd.concat([df_dataset, df_apt])
+    df_dataset.to_pickle("./data_raw/df_dataset_" + str(yyyymm) + ".pkl")
 
 # StopWatch: 코드 종료
 time_this_code_end = datetime.now()
