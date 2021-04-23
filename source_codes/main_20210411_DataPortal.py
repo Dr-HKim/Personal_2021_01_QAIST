@@ -72,7 +72,7 @@ yyyymm_end = 202012  # 종료 년월
 
 list_yyyymm = []
 for n in range(yyyymm_start, yyyymm_end):
-    if (divmod(n, 100)[1] < 13) & (divmod(n, 100)[1] != 0) :
+    if (divmod(n, 100)[1] < 13) & (divmod(n, 100)[1] != 0):
         list_yyyymm.append(n)
 
 list_yyyymm.reverse()
@@ -97,7 +97,7 @@ print("This code started at: " + str(time_this_code_start))
 
 df_dataset_null = get_apt_data(LAWD_CD=11120, DEAL_YMD=202102)  # DataFrame 구성을 위해 공백 자료를 하나 만든다.
 
-# 전국의 한달 자료 받는데 9분 소요
+# 전국의 한달 자료 받는데 약 9분 소요
 for yyyymm in list_yyyymm:
     df_dataset = df_dataset_null.copy()
     for lawd_cd in total_lawd_cd:
