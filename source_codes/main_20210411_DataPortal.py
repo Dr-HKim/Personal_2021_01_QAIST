@@ -51,7 +51,7 @@ def get_apt_data(LAWD_CD, DEAL_YMD, numOfRows=10000, serviceKey=get_data_service
 
 
 ########################################################################################################################
-
+# 함수 작동 여부 확인
 df_tmp1 = get_apt_data(LAWD_CD=11110, DEAL_YMD=202102)
 df_tmp2 = get_apt_data(LAWD_CD=11320, DEAL_YMD=202102)
 df_tmp3 = get_apt_data(LAWD_CD=11120, DEAL_YMD=202102)
@@ -65,6 +65,18 @@ df_lawd_cd_nodup_exist = df_lawd_cd_nodup[df_lawd_cd_nodup["폐지여부"] == "�
 
 total_lawd_cd = df_lawd_cd_nodup_exist["LAWD_CD"]
 tmp_lawd_cd = df_lawd_cd_nodup_exist["LAWD_CD"][3:10]
+
+
+yyyymm_start = 202009  # 시작 년월
+yyyymm_end = 202012  # 종료 년월
+
+list_yyyymm = []
+for n in range(yyyymm_start, yyyymm_end):
+    if (divmod(n, 100)[1] < 13) & (divmod(n, 100)[1] != 0) :
+        list_yyyymm.append(n)
+
+list_yyyymm.reverse()
+
 
 # 국토교통부_아파트매매 실거래 상세 자료는 2008년 1월부터 자료가 존재한다.
 list_yyyymm = []
