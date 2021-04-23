@@ -67,28 +67,19 @@ total_lawd_cd = df_lawd_cd_nodup_exist["LAWD_CD"]
 tmp_lawd_cd = df_lawd_cd_nodup_exist["LAWD_CD"][3:10]
 
 
-yyyymm_start = 202009  # 시작 년월
+# 국토교통부_아파트매매 실거래 상세 자료는 2008년 1월부터 자료가 존재한다.
+# 그런데 2006년으로 입력해도 자료가 있다.
+
+# 시작 시점과 종료 시점 입력
+yyyymm_start = 202010  # 시작 년월
 yyyymm_end = 202012  # 종료 년월
 
 list_yyyymm = []
-for n in range(yyyymm_start, yyyymm_end):
-    if (divmod(n, 100)[1] < 13) & (divmod(n, 100)[1] != 0):
-        list_yyyymm.append(n)
+for n_yyyymm in range(yyyymm_start, yyyymm_end+1):
+    if (divmod(n_yyyymm, 100)[1] != 0) & (divmod(n_yyyymm, 100)[1] < 13):
+        list_yyyymm.append(n_yyyymm)
 
 list_yyyymm.reverse()
-
-
-# 국토교통부_아파트매매 실거래 상세 자료는 2008년 1월부터 자료가 존재한다.
-list_yyyymm = []
-for n_year in range(2010, 2021):
-    if n_year + 1 == 2021:
-        for n_month in range(0, 3):
-            list_yyyymm.append((n_year + 1) * 100 + n_month + 1)
-    else:
-        for n_month in range(0, 12):
-            list_yyyymm.append((n_year + 1) * 100 + n_month + 1)
-list_yyyymm.reverse()
-list_yyyymm
 
 
 # StopWatch: 코드 시작
@@ -102,7 +93,7 @@ for yyyymm in list_yyyymm:
     df_dataset = df_dataset_null.copy()
     for lawd_cd in total_lawd_cd:
         df_apt = get_apt_data(LAWD_CD=lawd_cd, DEAL_YMD=yyyymm)
-        df_apt.to_pickle("./data_raw/df_apt_" + str(yyyymm) + "_" + str(lawd_cd) + ".pkl")
+        # df_apt.to_pickle("./data_raw/df_apt_" + str(yyyymm) + "_" + str(lawd_cd) + ".pkl")
         df_dataset = pd.concat([df_dataset, df_apt])
     df_dataset.to_pickle("./data_raw/df_dataset_" + str(yyyymm) + ".pkl")
 
