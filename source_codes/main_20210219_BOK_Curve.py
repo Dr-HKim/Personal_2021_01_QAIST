@@ -173,6 +173,7 @@ BOK028Y015 = get_bok_data(STAT_CODE="028Y015", CYCLE_TYPE="YY", START_DATE="1976
 BOK028Y015.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
 BOK028Y015_01 = BOK028Y015[BOK028Y015["ITEM_NAME1"] == "KOSPI_종가"].copy()  # 국내총생산(GDP)(실질, 원계열, 전년동기)
 
+# 그림: 경제성장률과 코스피지수의 추이
 kospi_index = BOK028Y015_01.copy()
 kospi_index["L1_DATA_VALUE"] = kospi_index["DATA_VALUE"].shift(1)
 kospi_index["GROWTH_RATE"] = (kospi_index["DATA_VALUE"]/kospi_index["L1_DATA_VALUE"]-1)*100
@@ -204,10 +205,24 @@ plt.savefig("./data_processed/fig2_kospi_growth_and_real_gdp_growth.png")
 
 
 ########################################################################################################################
-# 그림: 경제성장률과 코스피지수의 추이
+kosis_url = get_kosis_url()
+kosis_response = requests.get(kosis_url)  # Open API URL 호출
+data = kosis_response.json()
+dfItem = pd.DataFrame.from_records(data)
+
+import investpy
+
+tmp = investpy.indices.get_indices_dict(country=None, columns=None, as_json=False)
+dfItem = pd.DataFrame.from_records(tmp)
+
+tmp2 = investpy.indices.search_indices(by="name", value="MSCI Emerging Markets")
+
+df = investpy.get_index_historical_data(index="MSCI Emerging Markets", country="world",
+                                        from_date='30/01/2012',
+                                        to_date='27/04/2021')
 
 
-
+########################################################################################################################
 # 실질GDP (전년동기대비변동률, %)
 # 10.1.2 국민계정(2015년 기준년) - 주요지표 - 분기지표 [111Y055] (1960Q1 부터)
 BOK111Y055 = get_bok_data(STAT_CODE="111Y055", CYCLE_TYPE="QQ", START_DATE="19601", END_DATE=QQ_END_DATE)
