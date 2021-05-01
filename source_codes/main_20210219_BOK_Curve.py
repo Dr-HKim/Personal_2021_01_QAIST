@@ -210,16 +210,6 @@ kosis_response = requests.get(kosis_url)  # Open API URL 호출
 data = kosis_response.json()
 dfItem = pd.DataFrame.from_records(data)
 
-import investpy
-
-tmp = investpy.indices.get_indices_dict(country=None, columns=None, as_json=False)
-dfItem = pd.DataFrame.from_records(tmp)
-
-tmp2 = investpy.indices.search_indices(by="name", value="MSCI Emerging Markets")
-
-df = investpy.get_index_historical_data(index="MSCI Emerging Markets", country="world",
-                                        from_date='30/01/2012',
-                                        to_date='27/04/2021')
 
 
 ########################################################################################################################
