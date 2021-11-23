@@ -1,5 +1,11 @@
 import pandas as pd
+import numpy as np
 from datetime import datetime
+
+
+# StopWatch: 코드 시작
+time_start = datetime.now()
+print("Procedure started at: " + str(time_start))
 
 
 dg_fs_IFRSN_2020_2021_data = pd.read_excel(
@@ -10,6 +16,10 @@ dg_fs_IFRSN_2020_2021_header = pd.read_excel(
     './data_raw/DG_AllNetFiscal_2020_2021_update.xlsx', sheet_name="IFRSN", header=None, skiprows=7, nrows=4)
 dg_fs_IFRSN_2020_2021_header.to_pickle('./data_processed/dg_fs_IFRSN_2020_2021_update_header.pkl')
 
+# StopWatch
+time_import = datetime.now()
+print("Import DG IFRSN 2020_2021 finished at: " + str(time_import))
+print("Elapsed: " + str(time_import - time_start))
 
 ########################################################################################################################
 # Import Pickle Dataset
@@ -270,4 +280,7 @@ fs_IFRSN_sample = fs_IFRSN.loc[fs_IFRSN["회계년"] > 2015]
 
 fs_IFRSN_sample.to_pickle('./data_processed/fs_IFRSN_sample.pkl')
 
-
+# StopWatch
+time_finish = datetime.now()
+print("Update DG IFRSN 2020_2021 finished at: " + str(time_finish))
+print("Elapsed: " + str(time_finish - time_start))
