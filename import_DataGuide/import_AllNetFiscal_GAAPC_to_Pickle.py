@@ -6,13 +6,13 @@ import numpy as np
 
 ########################################################################################################################
 # Import Pickle Dataset
-dg_fs_GAAPC_2000_2009_data = pd.read_pickle('./data_processed/dg_fs_GAAPC_2000_2009_data.pkl')
-dg_fs_GAAPC_2010_2019_data = pd.read_pickle('./data_processed/dg_fs_GAAPC_2010_2019_data.pkl')
-dg_fs_GAAPC_2020_2021_data = pd.read_pickle('./data_processed/dg_fs_GAAPC_2020_2021_data.pkl')
+dg_fs_GAAPC_2000_2009_data = pd.read_pickle('./DataGuide_processed/dg_fs_GAAPC_2000_2009_data.pkl')
+dg_fs_GAAPC_2010_2019_data = pd.read_pickle('./DataGuide_processed/dg_fs_GAAPC_2010_2019_data.pkl')
+dg_fs_GAAPC_2020_2021_data = pd.read_pickle('./DataGuide_processed/dg_fs_GAAPC_2020_2021_data.pkl')
 
-dg_fs_GAAPC_2000_2009_header = pd.read_pickle('./data_processed/dg_fs_GAAPC_2000_2009_header.pkl')
-dg_fs_GAAPC_2010_2019_header = pd.read_pickle('./data_processed/dg_fs_GAAPC_2010_2019_header.pkl')
-dg_fs_GAAPC_2020_2021_header = pd.read_pickle('./data_processed/dg_fs_GAAPC_2020_2021_header.pkl')
+dg_fs_GAAPC_2000_2009_header = pd.read_pickle('./DataGuide_processed/dg_fs_GAAPC_2000_2009_header.pkl')
+dg_fs_GAAPC_2010_2019_header = pd.read_pickle('./DataGuide_processed/dg_fs_GAAPC_2010_2019_header.pkl')
+dg_fs_GAAPC_2020_2021_header = pd.read_pickle('./DataGuide_processed/dg_fs_GAAPC_2020_2021_header.pkl')
 
 ########################################################################################################################
 # 데이터 합치기
@@ -30,7 +30,7 @@ fs_GAAPC = fs_GAAPC.sort_values(by=["Symbol", "회계년", "주기"])
 
 ########################################################################################################################
 # Import Pickle Dataset
-dg_GeneralHistoric_Quarterly = pd.read_pickle('./data_processed/dg_GeneralHistoric_Quarterly.pkl')
+dg_GeneralHistoric_Quarterly = pd.read_pickle('./DataGuide_processed/dg_GeneralHistoric_Quarterly.pkl')
 
 # 기업x회계년 마다 GeneralHistoric_Quarterly 연결
 fs_GAAPC = pd.merge(
@@ -255,12 +255,12 @@ fs_GAAPC = fs_GAAPC[new_column_names]
 
 ########################################################################################################################
 # 데이터 저장하기
-fs_GAAPC.to_pickle('./data_processed/fs_GAAPC.pkl')
+fs_GAAPC.to_pickle('./DataGuide_processed/fs_GAAPC.pkl')
 
 # 재무제표 자료는 2011년 이후부터 분기별 자료 사용 가능
-fs_GAAPC = pd.read_pickle('./data_processed/fs_GAAPC.pkl')
+fs_GAAPC = pd.read_pickle('./DataGuide_processed/fs_GAAPC.pkl')
 fs_GAAPC_sample = fs_GAAPC.loc[fs_GAAPC["회계년"] > 2015]
 
-fs_GAAPC_sample.to_pickle('./data_processed/fs_GAAPC_sample.pkl')
+fs_GAAPC_sample.to_pickle('./DataGuide_processed/fs_GAAPC_sample.pkl')
 
 

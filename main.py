@@ -14,3 +14,8 @@ if __name__ == '__main__':
     print_hi('PyCharm')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+
+import import_DataGuide.import_Daily
+import import_DataGuide.import_AllNetFiscal_IFRSN
+
