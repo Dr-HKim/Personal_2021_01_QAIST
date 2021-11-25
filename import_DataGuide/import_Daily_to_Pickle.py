@@ -116,17 +116,17 @@ processed_daily_20000101_Current = processed_daily_20000101_Current[new_column_n
 processed_daily_20000101_Current = processed_daily_20000101_Current[~pd.isnull(processed_daily_20000101_Current["Date"])]
 
 # 데이터 저장하기
-processed_daily_20000101_Current.to_pickle('./DataGuide_processed/processed_daily_20000101_Current.pkl')
+processed_daily_20000101_Current.to_pickle('./DataGuide_processed/dg_daily_20000101_Current.pkl')
 
 ########################################################################################################################
 # 저장한 데이터를 불러와서 일부만 샘플로 다시 저장
 # Import Pickle Dataset
-processed_daily_20000101_Current = pd.read_pickle('./DataGuide_processed/processed_daily_20000101_Current.pkl')
+processed_daily_20000101_Current = pd.read_pickle('./DataGuide_processed/dg_daily_20000101_Current.pkl')
 
 date_start = pd.to_datetime("20150101", errors='coerce', format='%Y%m%d')
 processed_daily_sample = processed_daily_20000101_Current.loc[processed_daily_20000101_Current["Date"] > date_start]
 
 # 데이터 저장하기
-processed_daily_sample.to_pickle('./DataGuide_processed/processed_daily_sample.pkl')
+processed_daily_sample.to_pickle('./DataGuide_processed/dg_daily_sample.pkl')
 
 

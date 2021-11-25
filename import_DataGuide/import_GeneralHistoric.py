@@ -36,11 +36,11 @@ print("Elapsed (in GeneralInfo Annual 2000_2021): " + str(time_end_GeneralInfo_2
 
 dg_GeneralHistoric_2020_2021_data = pd.read_excel(
     './DataGuide/DG_GeneralHistoric_2020_2021.xlsx', header=None, skiprows=11, skipfooter=0)
-dg_GeneralHistoric_2020_2021_data.to_pickle('./DataGuide_processed/dg_GeneralHistoric_2020_2021_data.pkl')
+dg_GeneralHistoric_2020_2021_data.to_pickle('./DataGuide_processed/dg_GeneralHistoric_Quarterly_2020_2021_data.pkl')
 
 dg_GeneralHistoric_2020_2021_header = pd.read_excel(
     './DataGuide/DG_GeneralHistoric_2020_2021.xlsx', header=None, skiprows=7, nrows=4)
-dg_GeneralHistoric_2020_2021_header.to_pickle('./DataGuide_processed/dg_GeneralHistoric_2020_2021_header.pkl')
+dg_GeneralHistoric_2020_2021_header.to_pickle('./DataGuide_processed/dg_GeneralHistoric_Quarterly_2020_2021_header.pkl')
 
 # StopWatch
 time_end_GeneralInfo_2020_2021 = datetime.now()
@@ -49,11 +49,11 @@ print("Elapsed (in GeneralInfo_2013_2019): " + str(time_end_GeneralInfo_2020_202
 
 dg_GeneralHistoric_2013_2019_data = pd.read_excel(
     './DataGuide/DG_GeneralHistoric_2013_2019.xlsx', header=None, skiprows=11, skipfooter=0)
-dg_GeneralHistoric_2013_2019_data.to_pickle('./DataGuide_processed/dg_GeneralHistoric_2013_2019_data.pkl')
+dg_GeneralHistoric_2013_2019_data.to_pickle('./DataGuide_processed/dg_GeneralHistoric_Quarterly_2013_2019_data.pkl')
 
 dg_GeneralHistoric_2013_2019_header = pd.read_excel(
     './DataGuide/DG_GeneralHistoric_2013_2019.xlsx', header=None, skiprows=7, nrows=4)
-dg_GeneralHistoric_2013_2019_header.to_pickle('./DataGuide_processed/dg_GeneralHistoric_2013_2019_header.pkl')
+dg_GeneralHistoric_2013_2019_header.to_pickle('./DataGuide_processed/dg_GeneralHistoric_Quarterly_2013_2019_header.pkl')
 
 # StopWatch
 time_end_GeneralInfo_2013_2019 = datetime.now()
@@ -62,11 +62,11 @@ print("Elapsed (in GeneralInfo_2013_2019): " + str(time_end_GeneralInfo_2013_201
 
 dg_GeneralHistoric_2009_2012_data = pd.read_excel(
     './DataGuide/DG_GeneralHistoric_1997_2012.xlsx', sheet_name="Sheet1", header=None, skiprows=11, skipfooter=0)
-dg_GeneralHistoric_2009_2012_data.to_pickle('./DataGuide_processed/dg_GeneralHistoric_2009_2012_data.pkl')
+dg_GeneralHistoric_2009_2012_data.to_pickle('./DataGuide_processed/dg_GeneralHistoric_Quarterly_2009_2012_data.pkl')
 
 dg_GeneralHistoric_2009_2012_header = pd.read_excel(
     './DataGuide/DG_GeneralHistoric_1997_2012.xlsx', sheet_name="Sheet1", header=None, skiprows=7, nrows=4)
-dg_GeneralHistoric_2009_2012_header.to_pickle('./DataGuide_processed/dg_GeneralHistoric_2009_2012_header.pkl')
+dg_GeneralHistoric_2009_2012_header.to_pickle('./DataGuide_processed/dg_GeneralHistoric_Quarterly_2009_2012_header.pkl')
 
 # StopWatch
 time_end_GeneralInfo_2009_2012 = datetime.now()
@@ -75,11 +75,11 @@ print("Elapsed (in GeneralInfo_2009_2012): " + str(time_end_GeneralInfo_2009_201
 
 dg_GeneralHistoric_2005_2008_data = pd.read_excel(
     './DataGuide/DG_GeneralHistoric_1997_2012.xlsx', sheet_name="Sheet2", header=None, skiprows=11, skipfooter=0)
-dg_GeneralHistoric_2005_2008_data.to_pickle('./DataGuide_processed/dg_GeneralHistoric_2005_2008_data.pkl')
+dg_GeneralHistoric_2005_2008_data.to_pickle('./DataGuide_processed/dg_GeneralHistoric_Quarterly_2005_2008_data.pkl')
 
 dg_GeneralHistoric_2005_2008_header = pd.read_excel(
     './DataGuide/DG_GeneralHistoric_1997_2012.xlsx', sheet_name="Sheet2", header=None, skiprows=7, nrows=4)
-dg_GeneralHistoric_2005_2008_header.to_pickle('./DataGuide_processed/dg_GeneralHistoric_2005_2008_header.pkl')
+dg_GeneralHistoric_2005_2008_header.to_pickle('./DataGuide_processed/dg_GeneralHistoric_Quarterly_2005_2008_header.pkl')
 
 # StopWatch
 time_end_GeneralInfo_2005_2008 = datetime.now()
@@ -88,11 +88,11 @@ print("Elapsed (in GeneralInfo_2005_2008): " + str(time_end_GeneralInfo_2005_200
 
 dg_GeneralHistoric_2001_2004_data = pd.read_excel(
     './DataGuide/DG_GeneralHistoric_1997_2012.xlsx', sheet_name="Sheet3", header=None, skiprows=11, skipfooter=0)
-dg_GeneralHistoric_2001_2004_data.to_pickle('./DataGuide_processed/dg_GeneralHistoric_2001_2004_data.pkl')
+dg_GeneralHistoric_2001_2004_data.to_pickle('./DataGuide_processed/dg_GeneralHistoric_Quarterly_2001_2004_data.pkl')
 
 dg_GeneralHistoric_2001_2004_header = pd.read_excel(
     './DataGuide/DG_GeneralHistoric_1997_2012.xlsx', sheet_name="Sheet3", header=None, skiprows=7, nrows=4)
-dg_GeneralHistoric_2001_2004_header.to_pickle('./DataGuide_processed/dg_GeneralHistoric_2001_2004_header.pkl')
+dg_GeneralHistoric_2001_2004_header.to_pickle('./DataGuide_processed/dg_GeneralHistoric_Quarterly_2001_2004_header.pkl')
 
 # StopWatch
 time_end_GeneralInfo_2001_2004 = datetime.now()
@@ -101,11 +101,11 @@ print("Elapsed (in GeneralInfo_2001_2004): " + str(time_end_GeneralInfo_2001_200
 
 dg_GeneralHistoric_1997_2000_data = pd.read_excel(
     './DataGuide/DG_GeneralHistoric_1997_2012.xlsx', sheet_name="Sheet4", header=None, skiprows=11, skipfooter=0)
-dg_GeneralHistoric_1997_2000_data.to_pickle('./DataGuide_processed/dg_GeneralHistoric_1997_2000_data.pkl')
+dg_GeneralHistoric_1997_2000_data.to_pickle('./DataGuide_processed/dg_GeneralHistoric_Quarterly_1997_2000_data.pkl')
 
 dg_GeneralHistoric_1997_2000_header = pd.read_excel(
     './DataGuide/DG_GeneralHistoric_1997_2012.xlsx', sheet_name="Sheet4", header=None, skiprows=7, nrows=4)
-dg_GeneralHistoric_1997_2000_header.to_pickle('./DataGuide_processed/dg_GeneralHistoric_1997_2000_header.pkl')
+dg_GeneralHistoric_1997_2000_header.to_pickle('./DataGuide_processed/dg_GeneralHistoric_Quarterly_1997_2000_header.pkl')
 
 # StopWatch
 time_end_GeneralInfo_1997_2000 = datetime.now()

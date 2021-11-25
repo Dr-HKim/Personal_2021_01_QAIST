@@ -1,7 +1,8 @@
 # Created by Kim Hyeongjun on 03/22/2021.
 # Copyright © 2021 dr-hkim.github.io. All rights reserved.
 # 데이터가이드 일간 데이터 엑셀을 불러와서 Pickle 형태로 저장
-# 전체 약 5시간 소요
+# 20000101_20201231 약 2시간 30분 소요
+# 20210101_Current 약 10분 소요
 
 import pandas as pd
 from datetime import datetime

@@ -255,12 +255,12 @@ fs_IFRSN = fs_IFRSN[new_column_names]
 
 ########################################################################################################################
 # 데이터 저장하기
-fs_IFRSN.to_pickle('./DataGuide_processed/fs_IFRSN.pkl')
+fs_IFRSN.to_pickle('./DataGuide_processed/dg_fs_IFRSN.pkl')
 
 # 재무제표 자료는 2011년 이후부터 분기별 자료 사용 가능
-fs_IFRSN = pd.read_pickle('./DataGuide_processed/fs_IFRSN.pkl')
+fs_IFRSN = pd.read_pickle('./DataGuide_processed/dg_fs_IFRSN.pkl')
 fs_IFRSN_sample = fs_IFRSN.loc[fs_IFRSN["회계년"] > 2015]
 
-fs_IFRSN_sample.to_pickle('./DataGuide_processed/fs_IFRSN_sample.pkl')
+fs_IFRSN_sample.to_pickle('./DataGuide_processed/dg_fs_IFRSN_sample.pkl')
 
 

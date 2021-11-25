@@ -1,7 +1,8 @@
 # Created by Kim Hyeongjun on 03/22/2021.
 # Copyright © 2021 dr-hkim.github.io. All rights reserved.
 # 데이터가이드 재무제표 엑셀을 불러와서 Pickle 형태로 저장
-# 전체 약 -시간 소요
+# IFRSN_2020_2021 약 12분 소요
+# 전체 약 1시간 소요
 
 import pandas as pd
 from datetime import datetime
