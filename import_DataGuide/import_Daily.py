@@ -84,7 +84,20 @@ dg_daily5_header_20000101_20201231.to_pickle('./DataGuide_processed/dg_daily5_he
 # StopWatch
 time_tmp5 = datetime.now()
 print("Load Daily5 finished at: " + str(time_tmp5))
-print("Elapsed (in total): " + str(time_tmp5 - time_tmp4))
+print("Elapsed (in total): " + str(time_tmp5 - time_start))
+
+dg_daily7_data_20000101_20201231 = pd.read_excel(
+    './DataGuide/DG_DAILY7_20000101_20201231.xlsx', sheet_name="DAILY7", header=None, skiprows=14, skipfooter=0)
+dg_daily7_data_20000101_20201231.to_pickle('./DataGuide_processed/dg_daily7_data_20000101_20201231.pkl')
+
+dg_daily7_header_20000101_20201231 = pd.read_excel(
+    './DataGuide/DG_DAILY7_20000101_20201231.xlsx', sheet_name="DAILY7", header=None, skiprows=8, nrows=6)
+dg_daily7_header_20000101_20201231.to_pickle('./DataGuide_processed/dg_daily7_header_20000101_20201231.pkl')
+
+# StopWatch
+time_tmp7 = datetime.now()
+print("Load Daily7 finished at: " + str(time_tmp7))
+print("Elapsed (in total): " + str(time_tmp7 - time_start))
 
 ########################################################################################################################
 # 데이터가이드 일간 데이터 불러오기
@@ -136,6 +149,15 @@ dg_daily5_header_20210101_Current = pd.read_excel(
     './DataGuide/DG_DAILY_20210101_Current.xlsx', sheet_name="DAILY5", header=None, skiprows=8, nrows=6)
 dg_daily5_header_20210101_Current.to_pickle('./DataGuide_processed/dg_daily5_header_20210101_Current.pkl')
 
+
+
+dg_daily7_data_20210101_Current = pd.read_excel(
+    './DataGuide/DG_DAILY7_20210101_Current.xlsx', sheet_name="DAILY7", header=None, skiprows=14, skipfooter=0)
+dg_daily7_data_20210101_Current.to_pickle('./DataGuide_processed/dg_daily7_data_20210101_Current.pkl')
+
+dg_daily7_header_20210101_Current = pd.read_excel(
+    './DataGuide/DG_DAILY7_20210101_Current.xlsx', sheet_name="DAILY7", header=None, skiprows=8, nrows=6)
+dg_daily7_header_20210101_Current.to_pickle('./DataGuide_processed/dg_daily7_header_20210101_Current.pkl')
 
 
 
