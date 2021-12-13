@@ -86,18 +86,6 @@ time_tmp5 = datetime.now()
 print("Load Daily5 finished at: " + str(time_tmp5))
 print("Elapsed (in total): " + str(time_tmp5 - time_start))
 
-dg_daily7_data_20000101_20201231 = pd.read_excel(
-    './DataGuide/DG_DAILY7_20000101_20201231.xlsx', sheet_name="DAILY7", header=None, skiprows=14, skipfooter=0)
-dg_daily7_data_20000101_20201231.to_pickle('./DataGuide_processed/dg_daily7_data_20000101_20201231.pkl')
-
-dg_daily7_header_20000101_20201231 = pd.read_excel(
-    './DataGuide/DG_DAILY7_20000101_20201231.xlsx', sheet_name="DAILY7", header=None, skiprows=8, nrows=6)
-dg_daily7_header_20000101_20201231.to_pickle('./DataGuide_processed/dg_daily7_header_20000101_20201231.pkl')
-
-# StopWatch
-time_tmp7 = datetime.now()
-print("Load Daily7 finished at: " + str(time_tmp7))
-print("Elapsed (in total): " + str(time_tmp7 - time_start))
 
 ########################################################################################################################
 # 데이터가이드 일간 데이터 불러오기
@@ -150,6 +138,24 @@ dg_daily5_header_20210101_Current = pd.read_excel(
 dg_daily5_header_20210101_Current.to_pickle('./DataGuide_processed/dg_daily5_header_20210101_Current.pkl')
 
 
+# StopWatch
+time_end_headers = datetime.now()
+print("Load Headers finished at: " + str(time_end_headers))
+print("Elapsed (in total): " + str(time_end_headers - time_start))
+
+
+########################################################################################################################
+# StopWatch: 코드 시작
+time_start = datetime.now()
+print("Procedure started at: " + str(time_start))
+
+dg_daily7_data_20000101_20201231 = pd.read_excel(
+    './DataGuide/DG_DAILY7_20000101_20201231.xlsx', sheet_name="DAILY7", header=None, skiprows=14, skipfooter=0)
+dg_daily7_data_20000101_20201231.to_pickle('./DataGuide_processed/dg_daily7_data_20000101_20201231.pkl')
+
+dg_daily7_header_20000101_20201231 = pd.read_excel(
+    './DataGuide/DG_DAILY7_20000101_20201231.xlsx', sheet_name="DAILY7", header=None, skiprows=8, nrows=6)
+dg_daily7_header_20000101_20201231.to_pickle('./DataGuide_processed/dg_daily7_header_20000101_20201231.pkl')
 
 dg_daily7_data_20210101_Current = pd.read_excel(
     './DataGuide/DG_DAILY7_20210101_Current.xlsx', sheet_name="DAILY7", header=None, skiprows=14, skipfooter=0)
@@ -159,12 +165,10 @@ dg_daily7_header_20210101_Current = pd.read_excel(
     './DataGuide/DG_DAILY7_20210101_Current.xlsx', sheet_name="DAILY7", header=None, skiprows=8, nrows=6)
 dg_daily7_header_20210101_Current.to_pickle('./DataGuide_processed/dg_daily7_header_20210101_Current.pkl')
 
-
-
 # StopWatch
-time_end_headers = datetime.now()
-print("Load Headers finished at: " + str(time_end_headers))
-print("Elapsed (in total): " + str(time_end_headers - time_start))
+time_tmp7 = datetime.now()
+print("Load Daily7 finished at: " + str(time_tmp7))
+print("Elapsed (in total): " + str(time_tmp7 - time_start))
 
 
 

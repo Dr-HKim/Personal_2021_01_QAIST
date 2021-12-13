@@ -2,6 +2,7 @@
 # Copyright © 2021 dr-hkim.github.io. All rights reserved.
 
 import pandas as pd
+import numpy as np
 
 
 def get_processed_daily_data(dg_daily, dg_header):
@@ -147,6 +148,15 @@ processed_daily_20000101_Current = processed_daily_20000101_Current[new_column_n
 
 # NaN 데이터 제거하기 (날짜가 NaN인 자료들이 있다)
 processed_daily_20000101_Current = processed_daily_20000101_Current[~pd.isnull(processed_daily_20000101_Current["Date"])]
+
+# 주요 변수 가운데 결측치가 없는 자료만 선택
+cond_no_daily_data = (~np.isnan(processed_daily_20000101_Current["고가(원)"])) & \
+                     (~np.isnan(processed_daily_20000101_Current["시가(원)"])) & \
+                     (~np.isnan(processed_daily_20000101_Current["저가(원)"])) & \
+                     (~np.isnan(processed_daily_20000101_Current["종가(원)"])) & \
+                     (~np.isnan(processed_daily_20000101_Current["기준가(원)"]))
+processed_daily_20000101_Current = processed_daily_20000101_Current[cond_no_daily_data].copy()
+
 
 # 데이터 저장하기
 processed_daily_20000101_Current.to_pickle('./DataGuide_processed/dg_daily_20000101_Current.pkl')
