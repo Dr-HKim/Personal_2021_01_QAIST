@@ -16,6 +16,6 @@ if __name__ == '__main__':
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 
 
-import import_DataGuide.import_Daily
-import import_DataGuide.import_AllNetFiscal_IFRSN
+import DataGuide_import.import_Daily
+import DataGuide_import.import_AllNetFiscal_IFRSN
 
