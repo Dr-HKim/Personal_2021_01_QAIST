@@ -46,3 +46,12 @@ ax.set_title('Gap Return')
 ax.grid(True)
 ax.legend(loc='upper left')
 
+
+
+# 시각화
+plt.plot(kb_data02["날짜"], kb_data02["전국_전체"], color='r', label="Nationwide")
+plt.plot(kb_data02["날짜"], kb_data02["서울_전체"], color='g', label="Seoul")
+plt.xlabel('Dates', fontsize=10)
+plt.ylabel('Rates (%)', fontsize=10)
+plt.legend(loc='upper left')
+plt.show()

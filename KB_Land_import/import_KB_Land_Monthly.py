@@ -163,35 +163,35 @@ kb_data30 = get_kb_jeonse_to_purchase_data(kb_data30_value, kb_data30_header, st
 kb_data30.to_pickle('./KB_Land_processed/kb_data30.pkl')  # 자료 저장
 
 ########################################################################################################################
-kb_data_header = kb_data27_header.copy()
-kb_data_value = kb_data27_value.copy()
-start_yyyymm = 201106
-
-# 헤더 다루기
-kb_data_header_tr = kb_data_header.transpose()
-kb_data_header_tr[0] = kb_data_header_tr[0].replace('\n', ' ', regex=True)  # 특수문자 제거
-kb_data_header_tr[0] = kb_data_header_tr[0].replace('/ ', '/', regex=True)  # "제주/ 서귀포" 를 "제주/서귀포"
-kb_data_header_tr["name"] = kb_data_header_tr[0] # 헤더 생성
-kb_data_header_tr["name"][0] = "날짜"
-
-# 데이터에 헤더를 Column Index 로 설정
-kb_data = kb_data_value.copy()
-kb_data.columns = kb_data_header_tr["name"]  # Column Index 설정
-
-# 데이터가 없는 자료 제외 (마지막에 데이터가 아닌 텍스트 자료 있음)
-cond_no_data = ~kb_data['날짜'].isna()
-kb_data = kb_data[cond_no_data].copy()
-kb_data = kb_data.apply(lambda col: pd.to_numeric(col, errors='coerce'))  # object 타입을 float64 로 변경
-
-# 날짜 구조가 이상하게 되어있으므로 수정
-kb_data["YYYYMM0"] = start_yyyymm  # 시작시점
-kb_data["n_of_months"] = range(0, len(kb_data))  # 0 부터 1 씩 증가하는 숫자 입력
-kb_data["YYYYMM"] = get_yyyymm_add_months(kb_data["YYYYMM0"], kb_data["n_of_months"])
-kb_data.pop("YYYYMM0")
-kb_data.pop("n_of_months")
-kb_data["YYYYMMDD"] = kb_data["YYYYMM"] * 100 + 1
-
-# 날짜를 datetime 형태로 입력
-kb_data["날짜"] = pd.to_datetime(kb_data['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
-
+# kb_data_header = kb_data27_header.copy()
+# kb_data_value = kb_data27_value.copy()
+# start_yyyymm = 201106
+#
+# # 헤더 다루기
+# kb_data_header_tr = kb_data_header.transpose()
+# kb_data_header_tr[0] = kb_data_header_tr[0].replace('\n', ' ', regex=True)  # 특수문자 제거
+# kb_data_header_tr[0] = kb_data_header_tr[0].replace('/ ', '/', regex=True)  # "제주/ 서귀포" 를 "제주/서귀포"
+# kb_data_header_tr["name"] = kb_data_header_tr[0] # 헤더 생성
+# kb_data_header_tr["name"][0] = "날짜"
+#
+# # 데이터에 헤더를 Column Index 로 설정
+# kb_data = kb_data_value.copy()
+# kb_data.columns = kb_data_header_tr["name"]  # Column Index 설정
+#
+# # 데이터가 없는 자료 제외 (마지막에 데이터가 아닌 텍스트 자료 있음)
+# cond_no_data = ~kb_data['날짜'].isna()
+# kb_data = kb_data[cond_no_data].copy()
+# kb_data = kb_data.apply(lambda col: pd.to_numeric(col, errors='coerce'))  # object 타입을 float64 로 변경
+#
+# # 날짜 구조가 이상하게 되어있으므로 수정
+# kb_data["YYYYMM0"] = start_yyyymm  # 시작시점
+# kb_data["n_of_months"] = range(0, len(kb_data))  # 0 부터 1 씩 증가하는 숫자 입력
+# kb_data["YYYYMM"] = get_yyyymm_add_months(kb_data["YYYYMM0"], kb_data["n_of_months"])
+# kb_data.pop("YYYYMM0")
+# kb_data.pop("n_of_months")
+# kb_data["YYYYMMDD"] = kb_data["YYYYMM"] * 100 + 1
+#
+# # 날짜를 datetime 형태로 입력
+# kb_data["날짜"] = pd.to_datetime(kb_data['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+#
 
