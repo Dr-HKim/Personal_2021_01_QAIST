@@ -1,5 +1,7 @@
 # Created by Kim Hyeongjun on 01/19/2021.
 # Copyright © 2021 dr-hkim.github.io. All rights reserved.
+# ecos.bok.or.kr 접속 (E-mail: yuii7890@naver.com)
+# 개발 가이드 > 통계코드검색
 
 import datetime
 import numpy as np
@@ -8,6 +10,16 @@ import requests
 import matplotlib.pyplot as plt
 from bs4 import BeautifulSoup
 from data_raw.def_authentication import *
+
+
+def align_yaxis(ax1, v1, ax2, v2):
+    """adjust ax2 ylimit so that v2 in ax2 is aligned to v1 in ax1"""
+    _, y1 = ax1.transData.transform((0, v1))
+    _, y2 = ax2.transData.transform((0, v2))
+    inv = ax2.transData.inverted()
+    _, dy = inv.transform((0, 0)) - inv.transform((0, y1-y2))
+    miny, maxy = ax2.get_ylim()
+    ax2.set_ylim(miny+dy, maxy+dy)
 
 
 def get_bok_data(STAT_CODE, CYCLE_TYPE, START_DATE, END_DATE, AUTH_KEY=get_bok_auth_key(), REQ_TYPE="xml", LANG="kr",
@@ -95,6 +107,7 @@ def get_bok_data(STAT_CODE, CYCLE_TYPE, START_DATE, END_DATE, AUTH_KEY=get_bok_a
 DD_END_DATE = "20211217"
 MM_END_DATE = "202111"
 QQ_END_DATE = "20213"
+YY_END_DATE = "2020"
 
 MM_START_DATE = "200301"
 QQ_START_DATE = "20031"
@@ -137,13 +150,200 @@ BOK064Y001_11 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0183000"]  # 시가총�
 # 10.1.2 국민계정(2015년 기준년) - 주요지표 - 분기지표 [111Y055] (1960Q1 부터)
 BOK111Y055 = get_bok_data(STAT_CODE="111Y055", CYCLE_TYPE="QQ", START_DATE="19601", END_DATE=QQ_END_DATE)
 BOK111Y055.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
-BOK111Y055_01 = BOK111Y055[BOK111Y055["ITEM_CODE1"] == "10111"]  # 국내총생산(GDP)(실질, 계절조정, 전기비)
+BOK111Y055_01 = BOK111Y055[BOK111Y055["ITEM_CODE1"] == "10111"].copy()  # 국내총생산(GDP)(실질, 계절조정, 전기비)
 
 # 10.7.1.1.2. 가계의 목적별 최종소비지출(계절조정, 실질, 분기) [111Y027] (1970Q1 부터)
 BOK111Y027 = get_bok_data(STAT_CODE="111Y027", CYCLE_TYPE="QQ", START_DATE="19701", END_DATE=QQ_END_DATE)
 BOK111Y027.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
-BOK111Y027_01 = BOK111Y027[BOK111Y027["ITEM_CODE1"] == "10116"]  # 가계 최종소비지출
+BOK111Y027_01 = BOK111Y027[BOK111Y027["ITEM_CODE1"] == "10116"].copy()  # 가계 최종소비지출
 
+########################################################################################################################
+# 10.1.1 국민계정(2015년 기준년) - 주요지표 - 연간지표 [111Y002][YY] (1953 부터)
+BOK111Y002 = get_bok_data(STAT_CODE="111Y002", CYCLE_TYPE="YY", START_DATE="1953", END_DATE=YY_END_DATE)
+BOK111Y002.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
+BOK111Y002_01 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "1010101"].copy()  # 국내총생산(GDP)(명목, 억달러)
+BOK111Y002_01["YYYYMMDD"] = BOK111Y002_01["TIME"] * 10000 + 101
+BOK111Y002_01["DATETIME"] = pd.to_datetime(BOK111Y002_01['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+BOK111Y002_01["GDP"] = BOK111Y002_01["DATA_VALUE"].copy() * 100000000  # 국내총생산(GDP)(명목, 달러)
+
+# 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
+BOK022Y013 = get_bok_data(STAT_CODE="022Y013", CYCLE_TYPE="MM", START_DATE="198001", END_DATE=MM_END_DATE)
+BOK022Y013.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
+BOK022Y013_00 = BOK022Y013[BOK022Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (백만달러)
+BOK022Y013_00["Current_Account"] = BOK022Y013_00["DATA_VALUE"].copy() * 1000000  # 경상수지(current account) (달러)
+BOK022Y013_00["Current_Account"] = BOK022Y013_00["Current_Account"].rolling(window=12).sum()  # 경상수지 12개월 누적
+
+df_CA_to_GDP = pd.merge(BOK022Y013_00, BOK111Y002_01[["DATETIME", "GDP"]], left_on='DATETIME', right_on='DATETIME', how='left')
+df_CA_to_GDP["GDP"] = df_CA_to_GDP["GDP"].fillna(method='ffill')
+df_CA_to_GDP["CA_to_GDP"] = df_CA_to_GDP["Current_Account"] / df_CA_to_GDP["GDP"] * 100  # GDP 대비 경상수지 (%)
+
+# 그림: 소비자물가지수와 생산자물가지수 상승률 추이 비교
+# 시각화: 월별 시계열 자료 2개를 같은 y 축으로 표시
+fig = plt.figure()
+plt.plot(df_CA_to_GDP["DATETIME"], df_CA_to_GDP["CA_to_GDP"], color='r', label="Current Account to GDP")
+
+xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
+plt.xlim(xlim_start, )
+plt.ylim(-5, 20)
+plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlabel('Dates', fontsize=10)
+plt.ylabel('Current Account to GDP (%)', fontsize=10)
+plt.legend(loc='upper left')
+plt.show()
+
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+plt.savefig("./BOK_processed/fig_current_account_to_gdp.png")
+
+
+
+########################################################################################################################
+# 7.4.2 소비자물가지수(2015=100)(전국, 특수분류)  [021Y126][MM,QQ,YY] (1975.01 부터)
+BOK021Y126 = get_bok_data(STAT_CODE="021Y126", CYCLE_TYPE="MM", START_DATE="197501", END_DATE=MM_END_DATE)
+BOK021Y126_00 = BOK021Y126[BOK021Y126["ITEM_CODE1"] == "00"].copy()  # 총지수
+BOK021Y126_QB = BOK021Y126[BOK021Y126["ITEM_CODE1"] == "QB"].copy()  # 농산물및석유류제외지수 (근원 소비자물가지수)
+BOK021Y126_00["pct_change_DATA_VALUE"] = (BOK021Y126_00["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
+BOK021Y126_QB["pct_change_DATA_VALUE"] = (BOK021Y126_QB["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
+
+# 7.1.1 생산자물가지수(2015=100)(기본분류)  [013Y202][MM,QQ,YY] (1965.01 부터)
+BOK013Y202 = get_bok_data(STAT_CODE="013Y202", CYCLE_TYPE="MM", START_DATE="196501", END_DATE=MM_END_DATE)
+BOK013Y202_AA = BOK013Y202[BOK013Y202["ITEM_CODE1"] == "*AA"].copy()  # 총지수
+BOK013Y202_AA["pct_change_DATA_VALUE"] = (BOK013Y202_AA["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
+
+
+# 그림: 소비자물가지수와 근원소비자물가지수 상승률 추이 비교
+# 시각화: 월별 시계열 자료 2개를 같은 y 축으로 표시
+fig = plt.figure()
+plt.plot(BOK021Y126_00["DATETIME"], BOK021Y126_00["pct_change_DATA_VALUE"], color='r', label="CPI")
+plt.plot(BOK021Y126_QB["DATETIME"], BOK021Y126_QB["pct_change_DATA_VALUE"], color='g', label="Core CPI")
+
+xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
+plt.xlim(xlim_start, )
+plt.ylim(-2, 12)
+plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlabel('Dates', fontsize=10)
+plt.ylabel('Percentage Changes (%)', fontsize=10)
+plt.legend(loc='upper left')
+plt.show()
+
+fig.set_size_inches(2400/300, 1800/300)  # 그래프 크기 지정, DPI=300
+plt.savefig("./BOK_processed/fig_cpi_and_core_cpi_growth_rates.png")
+
+
+# 그림: 소비자물가지수와 생산자물가지수 상승률 추이 비교
+# 시각화: 월별 시계열 자료 2개를 같은 y 축으로 표시
+fig = plt.figure()
+plt.plot(BOK021Y126_00["DATETIME"], BOK021Y126_00["pct_change_DATA_VALUE"], color='r', label="CPI")
+plt.plot(BOK013Y202_AA["DATETIME"], BOK013Y202_AA["pct_change_DATA_VALUE"], color='g', label="PPI")
+
+xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
+plt.xlim(xlim_start, )
+plt.ylim(-5, 20)
+plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlabel('Dates', fontsize=10)
+plt.ylabel('Percentage Changes (%)', fontsize=10)
+plt.legend(loc='upper left')
+plt.show()
+
+fig.set_size_inches(2400/300, 1800/300)  # 그래프 크기 지정, DPI=300
+plt.savefig("./BOK_processed/fig_cpi_and_ppi_growth_rates.png")
+
+########################################################################################################################
+# 8.8.2.1 평균환율, 기말환율 > 주요국통화의 대원화 환율 통계자료 [036Y004][HY,MM,QQ,YY] (1964.05 부터)
+BOK036Y004 = get_bok_data(STAT_CODE="036Y004", CYCLE_TYPE="MM", START_DATE="196405", END_DATE=MM_END_DATE)
+BOK036Y004_01 = BOK036Y004[(BOK036Y004["ITEM_CODE1"] == "0000001") & (BOK036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원/미국달러 말일자료
+BOK036Y004_01["pct_change_DATA_VALUE"] = (BOK036Y004_01["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
+
+# 그림: 소비자물가지수 상승률과 환율변동 비교
+# 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
+fig, ax1 = plt.subplots()
+xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
+
+# 첫번째 시계열
+color1 = "tab:red"
+ax1.set_xlabel("Dates")
+ax1.set_ylabel("CPI Growth (%)", color=color1)  # 데이터 레이블
+ax1.plot(BOK021Y126_00["DATETIME"], BOK021Y126_00["pct_change_DATA_VALUE"], color=color1)
+ax1.tick_params(axis="y")
+
+# 두번째 시계열
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+color2 = "tab:blue"
+ax2.set_ylabel("Percentage Change in Exchange Rate (%)", color=color2)  # 데이터 레이블
+ax2.plot(BOK036Y004_01["DATETIME"], BOK036Y004_01["pct_change_DATA_VALUE"], color=color2, linestyle='-')
+ax2.tick_params(axis='y')
+
+# 그래프 기타 설정
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+# ax1.set_ylim([0, 12])
+# ax2.set_ylim([60, 85])
+# align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
+plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlim(xlim_start, )
+plt.show()
+plt.savefig("./BOK_processed/fig_cpi_growth_to_exchange_rate_change.png")  # 그림 저장
+
+########################################################################################################################
+# KOSIS 데이터 불러오기
+kosis_auth_key = get_kosis_auth_key()
+kosis_user_id = get_kosis_user_id()
+
+# KOSIS 제조업 평균가동률 (1980.01 시작)
+kosis_url = \
+    "https://kosis.kr/openapi/statisticsData.do?method=getList&apiKey=" + kosis_auth_key \
+    + "&format=json&jsonVD=Y&userStatsId=" + kosis_user_id + "/101/DT_1F31502/2/1/20211225194325_2&prdSe=M&startPrdDe=" \
+    + "198001" + "&endPrdDe=" + MM_END_DATE
+kosis_response = requests.get(kosis_url)  # Open API URL 호출
+data = kosis_response.json()
+KOSIS_DT_1F31502 = pd.DataFrame.from_records(data)
+KOSIS_DT_1F31502['PRD_DE2'] = KOSIS_DT_1F31502['PRD_DE'] + "01"  # 날짜 입력 준비
+KOSIS_DT_1F31502["DATETIME"] = pd.to_datetime(KOSIS_DT_1F31502['PRD_DE2'], errors='coerce', format='%Y%m%d')  # 날짜
+KOSIS_DT_1F31502["DATA_VALUE"] = pd.to_numeric(KOSIS_DT_1F31502["DT"])  # 텍스트를 숫자로 변환
+KOSIS_DT_1F31502['DATA_VALUE_lag6'] = KOSIS_DT_1F31502['DATA_VALUE'].shift(6)  # lead
+
+# KOSIS 제조업 생산능력 및 가동률지수 (2015=100, 계절조정) (1980.01 시작)
+kosis_url = \
+    "https://kosis.kr/openapi/statisticsData.do?method=getList&apiKey=" + kosis_auth_key \
+    + "&format=json&jsonVD=Y&userStatsId=" + kosis_user_id + "/101/DT_1F31501/2/1/20211225210033_6&prdSe=M&startPrdDe=" \
+    + "197101" + "&endPrdDe=" + MM_END_DATE
+kosis_response = requests.get(kosis_url)  # Open API URL 호출
+data = kosis_response.json()
+KOSIS_DT_1F31501 = pd.DataFrame.from_records(data)
+KOSIS_DT_1F31501['PRD_DE2'] = KOSIS_DT_1F31501['PRD_DE'] + "01"  # 날짜 입력 준비
+KOSIS_DT_1F31501["DATETIME"] = pd.to_datetime(KOSIS_DT_1F31501['PRD_DE2'], errors='coerce', format='%Y%m%d')  # 날짜
+KOSIS_DT_1F31501["DATA_VALUE"] = pd.to_numeric(KOSIS_DT_1F31501["DT"])  # 텍스트를 숫자로 변환
+KOSIS_DT_1F31501['DATA_VALUE_lag6'] = KOSIS_DT_1F31501['DATA_VALUE'].shift(6)  # lead
+
+
+# 그림: 소비자물가지수 상승률과 공장 가동률 지수 추이 비교
+# 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
+fig, ax1 = plt.subplots()
+xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
+
+# 첫번째 시계열
+color1 = "tab:red"
+ax1.set_xlabel("Dates")
+ax1.set_ylabel("CPI Growth (%)", color=color1)  # 데이터 레이블
+ax1.plot(BOK021Y126_00["DATETIME"], BOK021Y126_00["pct_change_DATA_VALUE"], color=color1)
+ax1.tick_params(axis="y")
+
+# 두번째 시계열
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+color2 = "tab:blue"
+ax2.set_ylabel("Manufacturing Capacity Utilization Index (2015=100, 6 months lagged)", color=color2)  # 데이터 레이블
+ax2.plot(KOSIS_DT_1F31501["DATETIME"], KOSIS_DT_1F31501["DATA_VALUE_lag6"], color=color2, linestyle='-')
+ax2.tick_params(axis='y')
+
+# 그래프 기타 설정
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+# ax1.set_ylim([0, 12])
+# ax2.set_ylim([60, 85])
+# align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
+# plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlim(xlim_start, )
+plt.show()
+plt.savefig("./BOK_processed/fig_cpi_growth_to_capicity_utilization_index.png")  # 그림 저장
 
 ########################################################################################################################
 # 시각화
@@ -165,7 +365,7 @@ plt.show()
 
 BOK064Y001.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
 
-
+########################################################################################################################
 # 4.1.1 시장금리(일별) [060Y001] (1995.01.03 부터)
 BOK060Y001 = get_bok_data(STAT_CODE="060Y001", CYCLE_TYPE="DD", START_DATE="19950103", END_DATE="19970103")
 BOK060Y001_01 = BOK060Y001[BOK060Y001["ITEM_NAME1"] == "CD(91일)"]
