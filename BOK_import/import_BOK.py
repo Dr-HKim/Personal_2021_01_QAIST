@@ -111,8 +111,8 @@ MM_END_DATE = "202111"
 QQ_END_DATE = "20213"
 YY_END_DATE = "2020"
 
-MM_START_DATE = "200301"
-QQ_START_DATE = "20031"
+# MM_START_DATE = "200301"
+# QQ_START_DATE = "20031"
 
 ########################################################################################################################
 # # 6.1.1 증권/재정 - 주식거래 및 주가지수 - 주식시장(일별) [064Y001] (1995.01.03 부터)
@@ -169,61 +169,48 @@ BOK111Y002_00["YYYYMMDD"] = BOK111Y002_00["TIME"] * 10000 + 101
 BOK111Y002_00["DATETIME"] = pd.to_datetime(BOK111Y002_00['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
 BOK111Y002_00["GDP"] = BOK111Y002_00["DATA_VALUE"].copy() * 1000000000  # 국내총생산(GDP)(명목, 원)
 BOK111Y002_00["Actual_GDP"] = BOK111Y002_00["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 십억원)
-cycle, trend = sm.tsa.filters.hpfilter(BOK111Y002_00["Actual_GDP"], 1000)
-BOK111Y002_00["Potential_GDP"] = trend
-BOK111Y002_00["GDP_Gap"] = ((BOK111Y002_00["Actual_GDP"] - BOK111Y002_00["Potential_GDP"]) / BOK111Y002_00["Potential_GDP"]) * 100  # GDP 갭 (%)
 
-
-BOK111Y002_01 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "1010101"].copy()  # 국내총생산(GDP)(명목, 억달러)
-BOK111Y002_01["YYYYMMDD"] = BOK111Y002_01["TIME"] * 10000 + 101
-BOK111Y002_01["DATETIME"] = pd.to_datetime(BOK111Y002_01['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
-BOK111Y002_01["GDP"] = BOK111Y002_01["DATA_VALUE"].copy() * 100000000  # 국내총생산(GDP)(명목, 달러)
-BOK111Y002_01["Actual_GDP"] = BOK111Y002_01["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 억달러)
-cycle, trend = sm.tsa.filters.hpfilter(BOK111Y002_01["Actual_GDP"], 1000)
-BOK111Y002_01["Potential_GDP"] = trend
-BOK111Y002_01["GDP_Gap"] = ((BOK111Y002_01["Actual_GDP"] - BOK111Y002_01["Potential_GDP"]) / BOK111Y002_01["Potential_GDP"]) * 100  # GDP 갭 (%)
-
-
-# 그림: GDP 갭과 물가상승률 추이 비교
-# 시각화: 연도별 시계열 자료 2개를 같은 y 축으로 표시
-fig = plt.figure()
-plt.plot(BOK111Y002_00["DATETIME"], BOK111Y002_00["Actual_GDP"], color='r', label="Actual_GDP")
-plt.plot(BOK111Y002_00["DATETIME"], BOK111Y002_00["Potential_GDP"], color='g', label="Potential_GDP")
-
-xlim_start = pd.to_datetime("1970-01-01", errors='coerce', format='%Y-%m-%d')
-plt.xlim(xlim_start, )
-# plt.ylim(-50, 100)
-plt.axhline(y=0, color='green', linestyle='dotted')
-plt.xlabel('Dates', fontsize=10)
-plt.ylabel('Percentage Changes (%, %p)', fontsize=10)
-plt.legend(loc='upper left')
-plt.show()
-
-BOK111Y002_02 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "9010301"].copy()  # GDP 디플레이터 등락률 (%)
+BOK111Y002_02 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "90103"].copy()  # GDP 디플레이터 (2015=100)
 BOK111Y002_02["YYYYMMDD"] = BOK111Y002_02["TIME"] * 10000 + 101
 BOK111Y002_02["DATETIME"] = pd.to_datetime(BOK111Y002_02['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
-BOK111Y002_02["GDP_Deflator_Changes"] = BOK111Y002_02["DATA_VALUE"].copy()  # GDP 디플레이터 등락률 (%)
+BOK111Y002_02["GDP_Deflator"] = BOK111Y002_02["DATA_VALUE"].copy()  # GDP 디플레이터 등락률 (%)
+
+BOK111Y002_03 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "9010301"].copy()  # GDP 디플레이터 등락률 (%)
+BOK111Y002_03["YYYYMMDD"] = BOK111Y002_03["TIME"] * 10000 + 101
+BOK111Y002_03["DATETIME"] = pd.to_datetime(BOK111Y002_03['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+BOK111Y002_03["GDP_Deflator_Changes"] = BOK111Y002_03["DATA_VALUE"].copy()  # GDP 디플레이터 등락률 (%)
+
+BOK111Y002_00 = pd.merge(BOK111Y002_00, BOK111Y002_02[["DATETIME", "GDP_Deflator"]], left_on='DATETIME', right_on='DATETIME', how='left')
+BOK111Y002_00["Real_GDP"] = BOK111Y002_00["Actual_GDP"] / BOK111Y002_00["GDP_Deflator"]
+cycle, trend = sm.tsa.filters.hpfilter(BOK111Y002_00["Real_GDP"], 100)  # 람다=100 으로 놓는게 중요 (경험치...)
+BOK111Y002_00["Potential_GDP"] = trend
+BOK111Y002_00["GDP_Gap"] = ((BOK111Y002_00["Real_GDP"] - BOK111Y002_00["Potential_GDP"]) / BOK111Y002_00["Potential_GDP"]) * 100  # GDP 갭 (%)
+
 
 # 그림: GDP 갭과 물가상승률 추이 비교
 # 시각화: 연도별 시계열 자료 2개를 같은 y 축으로 표시
 fig = plt.figure()
 plt.plot(BOK111Y002_00["DATETIME"], BOK111Y002_00["GDP_Gap"], color='r', label="GDP Gap")
-plt.plot(BOK111Y002_02["DATETIME"], BOK111Y002_02["GDP_Deflator_Changes"], color='g', label="Changes in GDP Deflator")
+plt.plot(BOK111Y002_03["DATETIME"], BOK111Y002_03["GDP_Deflator_Changes"], color='g', label="Changes in GDP Deflator")
 
 xlim_start = pd.to_datetime("1970-01-01", errors='coerce', format='%Y-%m-%d')
 plt.xlim(xlim_start, )
-plt.ylim(-50, 35)
+plt.ylim(-10, 35)
 plt.axhline(y=0, color='green', linestyle='dotted')
 plt.xlabel('Dates', fontsize=10)
 plt.ylabel('Percentage Changes (%, %p)', fontsize=10)
-plt.legend(loc='upper left')
+plt.legend(loc='upper right')
 plt.show()
 
-fig.set_size_inches(2400/300, 1800/300)  # 그래프 크기 지정, DPI=300
-plt.savefig("./BOK_processed/fig_cpi_and_core_cpi_growth_rates.png")
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+plt.savefig("./BOK_processed/fig_gdp_gap_and_changes_in_gdp_deflator.png")
 
-
-
+########################################################################################################################
+BOK111Y002_01 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "1010101"].copy()  # 국내총생산(GDP)(명목, 억달러)
+BOK111Y002_01["YYYYMMDD"] = BOK111Y002_01["TIME"] * 10000 + 101
+BOK111Y002_01["DATETIME"] = pd.to_datetime(BOK111Y002_01['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+BOK111Y002_01["GDP"] = BOK111Y002_01["DATA_VALUE"].copy() * 100000000  # 국내총생산(GDP)(명목, 달러)
+BOK111Y002_01["Actual_GDP"] = BOK111Y002_01["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 억달러)
 
 # 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
 BOK022Y013 = get_bok_data(STAT_CODE="022Y013", CYCLE_TYPE="MM", START_DATE="198001", END_DATE=MM_END_DATE)
@@ -236,24 +223,65 @@ df_CA_to_GDP = pd.merge(BOK022Y013_00, BOK111Y002_01[["DATETIME", "GDP"]], left_
 df_CA_to_GDP["GDP"] = df_CA_to_GDP["GDP"].fillna(method='ffill')
 df_CA_to_GDP["CA_to_GDP"] = df_CA_to_GDP["Current_Account"] / df_CA_to_GDP["GDP"] * 100  # GDP 대비 경상수지 (%)
 
-# 그림: 소비자물가지수와 생산자물가지수 상승률 추이 비교
-# 시각화: 월별 시계열 자료 2개를 같은 y 축으로 표시
+
+# 그림: GDP 대비 경상수지와 GDP 갭 (%)
+# 시각화: 월별 시계열 자료 1개를 표시
 fig = plt.figure()
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+
 plt.plot(df_CA_to_GDP["DATETIME"], df_CA_to_GDP["CA_to_GDP"], color='r', label="Current Account to GDP")
+plt.plot(BOK111Y002_00["DATETIME"], BOK111Y002_00["GDP_Gap"], color='g', label="GDP Gap")
 
 xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
 plt.xlim(xlim_start, )
-plt.ylim(-5, 20)
+plt.ylim(-10, 15)
+plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlabel('Dates', fontsize=10)
+plt.ylabel('Percentage (%)', fontsize=10)
+plt.legend(loc='upper left')
+plt.show()
+
+plt.savefig("./BOK_processed/fig_current_account_to_gdp_and_gdp_gap.png")
+
+########################################################################################################################
+# 분기별 GDP 갭을 추정해보려 하였으나 실패
+# 10.2.1.2 국민계정(2015년 기준년) - 경제활동별, 지출항목별 규모 - 경제활동별 GDP 및 GNI
+# - 경제활동별 GDP 및 GNI(계절조정, 실질, 분기) [111Y013][QQ] (1960Q1 부터)
+#  [111Y011][QQ,YY]
+BOK111Y013 = get_bok_data(STAT_CODE="111Y011", CYCLE_TYPE="QQ", START_DATE="19601", END_DATE=QQ_END_DATE)
+BOK111Y013.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
+
+BOK111Y013_00 = BOK111Y013[BOK111Y013["ITEM_CODE1"] == "1400"].copy()  # 국내총생산(시장가격, GDP)(실질, 십억원)
+BOK111Y013_00["Year"], BOK111Y013_00["Quarter"] = BOK111Y013_00["TIME"].divmod(10)
+BOK111Y013_00["YYYYMMDD"] = BOK111Y013_00["Year"] * 10000 + (BOK111Y013_00["Quarter"] * 3 - 2) * 100 + 1
+BOK111Y013_00["DATETIME"] = pd.to_datetime(BOK111Y013_00['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+
+# BOK111Y013_00["Real_GDP"] = BOK111Y013_00["DATA_VALUE"].copy()  # 국내총생산(GDP)(실질, 십억원)
+BOK111Y013_00["Real_GDP"] = BOK111Y013_00["DATA_VALUE"].rolling(window=4).sum()  # 4분기 누적
+
+BOK111Y013_00a = BOK111Y013_00[BOK111Y013_00["Year"] >= 1970].copy()
+
+cycle, trend = sm.tsa.filters.hpfilter(BOK111Y013_00a["Real_GDP"], 50)
+BOK111Y013_00a["Potential_GDP"] = trend
+BOK111Y013_00a["GDP_Gap"] = ((BOK111Y013_00a["Real_GDP"] - BOK111Y013_00a["Potential_GDP"]) / BOK111Y013_00a["Potential_GDP"]) * 100  # GDP 갭 (%)
+
+
+# 그림: 분기별 GDP 갭 (%)
+# 시각화: 분기별 시계열 자료 1개를 표시
+fig = plt.figure()
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+plt.plot(BOK111Y013_00a["DATETIME"], BOK111Y013_00a["GDP_Gap"], color='r', label="GDP_Gap")
+
+xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
+plt.xlim(xlim_start, )
+plt.ylim(-10, 20)
 plt.axhline(y=0, color='green', linestyle='dotted')
 plt.xlabel('Dates', fontsize=10)
 plt.ylabel('Current Account to GDP (%)', fontsize=10)
 plt.legend(loc='upper left')
 plt.show()
 
-fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
 plt.savefig("./BOK_processed/fig_current_account_to_gdp.png")
-
-
 
 ########################################################################################################################
 # 7.4.2 소비자물가지수(2015=100)(전국, 특수분류)  [021Y126][MM,QQ,YY] (1975.01 부터)
@@ -344,6 +372,7 @@ plt.savefig("./BOK_processed/fig_cpi_growth_to_exchange_rate_change.png")  # 그
 
 ########################################################################################################################
 # KOSIS 데이터 불러오기
+# KOSIS Open API >  서비스이용 > 통계자료 > 자료등록
 kosis_auth_key = get_kosis_auth_key()
 kosis_user_id = get_kosis_user_id()
 
@@ -372,6 +401,37 @@ KOSIS_DT_1F31501['PRD_DE2'] = KOSIS_DT_1F31501['PRD_DE'] + "01"  # 날짜 입력
 KOSIS_DT_1F31501["DATETIME"] = pd.to_datetime(KOSIS_DT_1F31501['PRD_DE2'], errors='coerce', format='%Y%m%d')  # 날짜
 KOSIS_DT_1F31501["DATA_VALUE"] = pd.to_numeric(KOSIS_DT_1F31501["DT"])  # 텍스트를 숫자로 변환
 KOSIS_DT_1F31501['DATA_VALUE_lag6'] = KOSIS_DT_1F31501['DATA_VALUE'].shift(6)  # lead
+
+
+# 그림: GDP 갭과 공장 가동률 지수 추이 비교
+# 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
+fig, ax1 = plt.subplots()
+xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
+
+# 첫번째 시계열
+color1 = "tab:red"
+ax1.set_xlabel("Dates")
+ax1.set_ylabel("GDP Gap (%p)", color=color1)  # 데이터 레이블
+ax1.plot(BOK111Y002_00["DATETIME"], BOK111Y002_00["GDP_Gap"], color=color1)
+ax1.tick_params(axis="y")
+
+# 두번째 시계열
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+color2 = "tab:blue"
+ax2.set_ylabel("Manufacturing Capacity Utilization Index (2015=100)", color=color2)  # 데이터 레이블
+ax2.plot(KOSIS_DT_1F31501["DATETIME"], KOSIS_DT_1F31501["DATA_VALUE"], color=color2, linestyle='-')
+ax2.tick_params(axis='y')
+
+# 그래프 기타 설정
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+# ax1.set_ylim([0, 12])
+# ax2.set_ylim([60, 85])
+# align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
+# plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlim(xlim_start, )
+plt.show()
+plt.savefig("./BOK_processed/fig_gdp_gap_to_capicity_utilization_index.png")  # 그림 저장
 
 
 # 그림: 소비자물가지수 상승률과 공장 가동률 지수 추이 비교
