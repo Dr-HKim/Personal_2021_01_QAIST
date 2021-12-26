@@ -1,5 +1,6 @@
 # Created by Kim Hyeongjun on 01/19/2021.
 # Copyright © 2021 dr-hkim.github.io. All rights reserved.
+# https://ecos.bok.or.kr/jsp/openapi/OpenApiController.jsp
 # ecos.bok.or.kr 접속 (E-mail: yuii7890@naver.com)
 # 개발 가이드 > 통계코드검색
 
@@ -10,6 +11,7 @@ import requests
 import matplotlib.pyplot as plt
 from bs4 import BeautifulSoup
 from data_raw.def_authentication import *
+import statsmodels.api as sm  # HP Filtering
 
 
 def align_yaxis(ax1, v1, ax2, v2):
@@ -159,12 +161,69 @@ BOK111Y027_01 = BOK111Y027[BOK111Y027["ITEM_CODE1"] == "10116"].copy()  # 가계
 
 ########################################################################################################################
 # 10.1.1 국민계정(2015년 기준년) - 주요지표 - 연간지표 [111Y002][YY] (1953 부터)
-BOK111Y002 = get_bok_data(STAT_CODE="111Y002", CYCLE_TYPE="YY", START_DATE="1953", END_DATE=YY_END_DATE)
+BOK111Y002 = get_bok_data(STAT_CODE="111Y002", CYCLE_TYPE="YY", START_DATE="1970", END_DATE=YY_END_DATE)
 BOK111Y002.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
+
+BOK111Y002_00 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "10101"].copy()  # 국내총생산(GDP)(명목, 십억원)
+BOK111Y002_00["YYYYMMDD"] = BOK111Y002_00["TIME"] * 10000 + 101
+BOK111Y002_00["DATETIME"] = pd.to_datetime(BOK111Y002_00['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+BOK111Y002_00["GDP"] = BOK111Y002_00["DATA_VALUE"].copy() * 1000000000  # 국내총생산(GDP)(명목, 원)
+BOK111Y002_00["Actual_GDP"] = BOK111Y002_00["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 십억원)
+cycle, trend = sm.tsa.filters.hpfilter(BOK111Y002_00["Actual_GDP"], 1000)
+BOK111Y002_00["Potential_GDP"] = trend
+BOK111Y002_00["GDP_Gap"] = ((BOK111Y002_00["Actual_GDP"] - BOK111Y002_00["Potential_GDP"]) / BOK111Y002_00["Potential_GDP"]) * 100  # GDP 갭 (%)
+
+
 BOK111Y002_01 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "1010101"].copy()  # 국내총생산(GDP)(명목, 억달러)
 BOK111Y002_01["YYYYMMDD"] = BOK111Y002_01["TIME"] * 10000 + 101
 BOK111Y002_01["DATETIME"] = pd.to_datetime(BOK111Y002_01['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
 BOK111Y002_01["GDP"] = BOK111Y002_01["DATA_VALUE"].copy() * 100000000  # 국내총생산(GDP)(명목, 달러)
+BOK111Y002_01["Actual_GDP"] = BOK111Y002_01["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 억달러)
+cycle, trend = sm.tsa.filters.hpfilter(BOK111Y002_01["Actual_GDP"], 1000)
+BOK111Y002_01["Potential_GDP"] = trend
+BOK111Y002_01["GDP_Gap"] = ((BOK111Y002_01["Actual_GDP"] - BOK111Y002_01["Potential_GDP"]) / BOK111Y002_01["Potential_GDP"]) * 100  # GDP 갭 (%)
+
+
+# 그림: GDP 갭과 물가상승률 추이 비교
+# 시각화: 연도별 시계열 자료 2개를 같은 y 축으로 표시
+fig = plt.figure()
+plt.plot(BOK111Y002_00["DATETIME"], BOK111Y002_00["Actual_GDP"], color='r', label="Actual_GDP")
+plt.plot(BOK111Y002_00["DATETIME"], BOK111Y002_00["Potential_GDP"], color='g', label="Potential_GDP")
+
+xlim_start = pd.to_datetime("1970-01-01", errors='coerce', format='%Y-%m-%d')
+plt.xlim(xlim_start, )
+# plt.ylim(-50, 100)
+plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlabel('Dates', fontsize=10)
+plt.ylabel('Percentage Changes (%, %p)', fontsize=10)
+plt.legend(loc='upper left')
+plt.show()
+
+BOK111Y002_02 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "9010301"].copy()  # GDP 디플레이터 등락률 (%)
+BOK111Y002_02["YYYYMMDD"] = BOK111Y002_02["TIME"] * 10000 + 101
+BOK111Y002_02["DATETIME"] = pd.to_datetime(BOK111Y002_02['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+BOK111Y002_02["GDP_Deflator_Changes"] = BOK111Y002_02["DATA_VALUE"].copy()  # GDP 디플레이터 등락률 (%)
+
+# 그림: GDP 갭과 물가상승률 추이 비교
+# 시각화: 연도별 시계열 자료 2개를 같은 y 축으로 표시
+fig = plt.figure()
+plt.plot(BOK111Y002_00["DATETIME"], BOK111Y002_00["GDP_Gap"], color='r', label="GDP Gap")
+plt.plot(BOK111Y002_02["DATETIME"], BOK111Y002_02["GDP_Deflator_Changes"], color='g', label="Changes in GDP Deflator")
+
+xlim_start = pd.to_datetime("1970-01-01", errors='coerce', format='%Y-%m-%d')
+plt.xlim(xlim_start, )
+plt.ylim(-50, 35)
+plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlabel('Dates', fontsize=10)
+plt.ylabel('Percentage Changes (%, %p)', fontsize=10)
+plt.legend(loc='upper left')
+plt.show()
+
+fig.set_size_inches(2400/300, 1800/300)  # 그래프 크기 지정, DPI=300
+plt.savefig("./BOK_processed/fig_cpi_and_core_cpi_growth_rates.png")
+
+
+
 
 # 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
 BOK022Y013 = get_bok_data(STAT_CODE="022Y013", CYCLE_TYPE="MM", START_DATE="198001", END_DATE=MM_END_DATE)
