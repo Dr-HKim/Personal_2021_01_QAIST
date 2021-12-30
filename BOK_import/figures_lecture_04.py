@@ -36,12 +36,12 @@ BOK111Y002_00["DATETIME"] = pd.to_datetime(BOK111Y002_00['YYYYMMDD'].astype(str)
 BOK111Y002_00["GDP"] = BOK111Y002_00["DATA_VALUE"].copy() * 1000000000  # 국내총생산(GDP)(명목, 원)
 BOK111Y002_00["Actual_GDP"] = BOK111Y002_00["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 십억원)
 
-BOK111Y002_02 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "90103"].copy()  # GDP 디플레이터 (2015=100)
-BOK111Y002_02["YYYYMMDD"] = BOK111Y002_02["TIME"] * 10000 + 101
-BOK111Y002_02["DATETIME"] = pd.to_datetime(BOK111Y002_02['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
-BOK111Y002_02["GDP_Deflator"] = BOK111Y002_02["DATA_VALUE"].copy()  # GDP 디플레이터 (2015=100)
+BOK111Y002_03 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "90103"].copy()  # GDP 디플레이터 (2015=100)
+BOK111Y002_03["YYYYMMDD"] = BOK111Y002_03["TIME"] * 10000 + 101
+BOK111Y002_03["DATETIME"] = pd.to_datetime(BOK111Y002_03['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+BOK111Y002_03["GDP_Deflator"] = BOK111Y002_03["DATA_VALUE"].copy()  # GDP 디플레이터 (2015=100)
 
-BOK111Y002_00 = pd.merge(BOK111Y002_00, BOK111Y002_02[["DATETIME", "GDP_Deflator"]], left_on='DATETIME', right_on='DATETIME', how='left')
+BOK111Y002_00 = pd.merge(BOK111Y002_00, BOK111Y002_03[["DATETIME", "GDP_Deflator"]], left_on='DATETIME', right_on='DATETIME', how='left')
 BOK111Y002_00["Real_GDP"] = BOK111Y002_00["Actual_GDP"] / BOK111Y002_00["GDP_Deflator"]
 cycle, trend = sm.tsa.filters.hpfilter(BOK111Y002_00["Real_GDP"], 100)  # 람다=100 으로 놓는게 중요 (경험치...)
 BOK111Y002_00["Potential_GDP"] = trend

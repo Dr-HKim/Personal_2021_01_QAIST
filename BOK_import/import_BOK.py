@@ -168,59 +168,78 @@ BOK064Y001_UPDATE = get_bok_data(STAT_CODE="064Y001", CYCLE_TYPE="DD", START_DAT
 BOK064Y001 = pd.concat([BOK064Y001_19950103_20210131, BOK064Y001_UPDATE])
 BOK064Y001 = BOK064Y001.sort_values(by=['ITEM_CODE1', 'TIME'])
 BOK064Y001.to_pickle('./BOK_raw/BOK064Y001.pkl')
+# BOK064Y001_01 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0001000"]  # KOSPI지수
+# BOK064Y001_02 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0002000"]  # 거래량(주식시장, 잠정치)
+# BOK064Y001_03 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0003000"]  # 거래대금(주식시장 , 잠정치)
+# BOK064Y001_04 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0030000"]  # 외국인 순매수(주식시장, 잠정치)
+# BOK064Y001_05 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0087000"]  # 주식시장-거래량(만주, 시간외거래분 포함)
+# BOK064Y001_06 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0088000"]  # 주식시장-거래대금(억원, 시간외거래분 포함)
+# BOK064Y001_07 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0089000"]  # KOSDAQ지수
+# BOK064Y001_08 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0090000"]  # 거래량(만주 : 코스닥시장, 잠정치)
+# BOK064Y001_09 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0091000"]  # 거래대금(억원 : 코스닥시장, 잠정치)
+# BOK064Y001_10 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0113000"]  # 외국인 순매수(코스닥시장, 잠정치)
+# BOK064Y001_11 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0183000"]  # 시가총액(주식시장, 잠정치)
 
 # 6.1.2 증권/재정 - 주식거래 및 주가지수 [028Y015][MM, YY] (200002, 1976 부터)
 BOK028Y015 = get_bok_data(STAT_CODE="028Y015", CYCLE_TYPE="YY", START_DATE="1976", END_DATE="2020")
 BOK028Y015.to_pickle('./BOK_raw/BOK028Y015.pkl')
+# BOK028Y015_01 = BOK028Y015[BOK028Y015["ITEM_NAME1"] == "KOSPI_종가"].copy()  # 국내총생산(GDP)(실질, 원계열, 전년동기)
 
 # 7.1.1 생산자물가지수(2015=100)(기본분류)  [013Y202][MM,QQ,YY] (1965.01 부터)
 BOK013Y202 = get_bok_data(STAT_CODE="013Y202", CYCLE_TYPE="MM", START_DATE="196501", END_DATE=MM_END_DATE)
 BOK013Y202.to_pickle('./BOK_raw/BOK013Y202.pkl')
+# BOK013Y202_AA = BOK013Y202[BOK013Y202["ITEM_CODE1"] == "*AA"].copy()  # 총지수
+# BOK013Y202_AA["pct_change_DATA_VALUE"] = (BOK013Y202_AA["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
 
 # 7.4.2 소비자물가지수(2015=100)(전국, 특수분류)  [021Y126][MM,QQ,YY] (1975.01 부터)
 BOK021Y126 = get_bok_data(STAT_CODE="021Y126", CYCLE_TYPE="MM", START_DATE="197501", END_DATE=MM_END_DATE)
 BOK021Y126.to_pickle('./BOK_raw/BOK021Y126.pkl')
+# BOK021Y126_00 = BOK021Y126[BOK021Y126["ITEM_CODE1"] == "00"].copy()  # 총지수
+# BOK021Y126_QB = BOK021Y126[BOK021Y126["ITEM_CODE1"] == "QB"].copy()  # 농산물및석유류제외지수 (근원 소비자물가지수)
+# BOK021Y126_00["pct_change_DATA_VALUE"] = (BOK021Y126_00["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
+# BOK021Y126_QB["pct_change_DATA_VALUE"] = (BOK021Y126_QB["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
 
 # 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
 BOK022Y013 = get_bok_data(STAT_CODE="022Y013", CYCLE_TYPE="MM", START_DATE="198001", END_DATE=MM_END_DATE)
 BOK022Y013.to_pickle('./BOK_raw/BOK022Y013.pkl')
+# BOK022Y013_00 = BOK022Y013[BOK022Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (current account) (백만달러)
 
 # 8.8.2.1 평균환율, 기말환율 > 주요국통화의 대원화 환율 통계자료 [036Y004][HY,MM,QQ,YY] (1964.05 부터)
 BOK036Y004 = get_bok_data(STAT_CODE="036Y004", CYCLE_TYPE="MM", START_DATE="196405", END_DATE=MM_END_DATE)
 BOK036Y004.to_pickle('./BOK_raw/BOK036Y004.pkl')
+# BOK036Y004_01 = BOK036Y004[(BOK036Y004["ITEM_CODE1"] == "0000001") & (BOK036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원/미국달러 말일자료
 
 # 10.1.1 국민계정(2015년 기준년) - 주요지표 - 연간지표 [111Y002][YY] (1953 부터)
 BOK111Y002 = get_bok_data(STAT_CODE="111Y002", CYCLE_TYPE="YY", START_DATE="1970", END_DATE=YY_END_DATE)
 BOK111Y002.to_pickle('./BOK_raw/BOK111Y002.pkl')
+# BOK111Y002_00 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "10101"].copy()  # 국내총생산(GDP)(명목, 십억원)
+# BOK111Y002_01 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "1010101"].copy()  # 국내총생산(GDP)(명목, 억달러)
+# BOK111Y002_02 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "20101"].copy()  # 국내총생산(실질성장률)[%]
+# BOK111Y002_03 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "90103"].copy()  # GDP 디플레이터 (2015=100)
+# BOK111Y002_04 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "9010301"].copy()  # GDP 디플레이터 등락률 (%)
 
 # 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(~2007)[027Y131][YY] (1960 부터)
 BOK027Y131 = get_bok_data(STAT_CODE="027Y131", CYCLE_TYPE="YY", START_DATE="1960", END_DATE="2006")
 BOK027Y131.to_pickle('./BOK_raw/BOK027Y131.pkl')
+# BOK027Y131_01 = BOK027Y131[(BOK027Y131["ITEM_NAME1"] == "전산업") & (BOK027Y131["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+# BOK027Y131_02 = BOK027Y131[(BOK027Y131["ITEM_NAME1"] == "제조업") & (BOK027Y131["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+# BOK027Y131_03 = BOK027Y131[(BOK027Y131["ITEM_NAME1"] == "제조업") & (BOK027Y131["ITEM_NAME2"] == "매출액경상이익률(~2006)")].copy()  # 국내총생산(실질성장률)[%]
 
 # 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(2007~2010)[027Y331][YY]
 BOK027Y331 = get_bok_data(STAT_CODE="027Y331", CYCLE_TYPE="YY", START_DATE="2007", END_DATE="2008")
 BOK027Y331.to_pickle('./BOK_raw/BOK027Y331.pkl')
+# BOK027Y331_01 = BOK027Y331[(BOK027Y331["ITEM_NAME1"] == "전산업") & (BOK027Y331["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+# BOK027Y331_02 = BOK027Y331[(BOK027Y331["ITEM_NAME1"] == "제조업") & (BOK027Y331["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+# BOK027Y331_03 = BOK027Y331[(BOK027Y331["ITEM_NAME1"] == "제조업") & (BOK027Y331["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
 
 # 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(2009~, 전수조사) [027Y431][YY]
 BOK027Y431 = get_bok_data(STAT_CODE="027Y431", CYCLE_TYPE="YY", START_DATE="2009", END_DATE="2020")
 BOK027Y431.to_pickle('./BOK_raw/BOK027Y431.pkl')
+# BOK027Y431_01 = BOK027Y431[(BOK027Y431["ITEM_NAME1"] == "전산업") & (BOK027Y431["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+# BOK027Y431_02 = BOK027Y431[(BOK027Y431["ITEM_NAME1"] == "제조업") & (BOK027Y431["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+# BOK027Y431_03 = BOK027Y431[(BOK027Y431["ITEM_NAME1"] == "제조업") & (BOK027Y431["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
 
-BOK028Y015.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
-########################################################################################################################
-# 6.1.1 증권/재정 - 주식거래 및 주가지수 - 주식시장(일별) [064Y001] (1995.01.03 부터)
-BOK064Y001 = pd.read_pickle('./BOK_raw/BOK064Y001.pkl')
-
-BOK064Y001_01 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0001000"]  # KOSPI지수
-BOK064Y001_02 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0002000"]  # 거래량(주식시장, 잠정치)
-BOK064Y001_03 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0003000"]  # 거래대금(주식시장 , 잠정치)
-BOK064Y001_04 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0030000"]  # 외국인 순매수(주식시장, 잠정치)
-BOK064Y001_05 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0087000"]  # 주식시장-거래량(만주, 시간외거래분 포함)
-BOK064Y001_06 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0088000"]  # 주식시장-거래대금(억원, 시간외거래분 포함)
-BOK064Y001_07 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0089000"]  # KOSDAQ지수
-BOK064Y001_08 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0090000"]  # 거래량(만주 : 코스닥시장, 잠정치)
-BOK064Y001_09 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0091000"]  # 거래대금(억원 : 코스닥시장, 잠정치)
-BOK064Y001_10 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0113000"]  # 외국인 순매수(코스닥시장, 잠정치)
-BOK064Y001_11 = BOK064Y001[BOK064Y001["ITEM_CODE1"] == "0183000"]  # 시가총액(주식시장, 잠정치)
+# BOK028Y015.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
 
 ########################################################################################################################
 # 10.1.2 국민계정(2015년 기준년) - 주요지표 - 분기지표 [111Y055] (1960Q1 부터)
@@ -233,12 +252,10 @@ BOK111Y027 = get_bok_data(STAT_CODE="111Y027", CYCLE_TYPE="QQ", START_DATE="1970
 BOK111Y027.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
 BOK111Y027_01 = BOK111Y027[BOK111Y027["ITEM_CODE1"] == "10116"].copy()  # 가계 최종소비지출
 
-
 ########################################################################################################################
 # 분기별 GDP 갭을 추정해보려 하였으나 실패
 # 10.2.1.2 국민계정(2015년 기준년) - 경제활동별, 지출항목별 규모 - 경제활동별 GDP 및 GNI
 # - 경제활동별 GDP 및 GNI(계절조정, 실질, 분기) [111Y013][QQ] (1960Q1 부터)
-#  [111Y011][QQ,YY]
 BOK111Y013 = get_bok_data(STAT_CODE="111Y011", CYCLE_TYPE="QQ", START_DATE="19601", END_DATE=QQ_END_DATE)
 BOK111Y013.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
 

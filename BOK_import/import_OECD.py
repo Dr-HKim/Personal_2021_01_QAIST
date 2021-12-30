@@ -134,3 +134,5 @@ counts_location = df_oecd["location_name"].value_counts()
 # 데이터 저장
 df_oecd.to_pickle('./BOK_raw/OECD_MONTHLY.pkl')
 
+# # LOLITOTR_GYSA: 12-month rate of change of the trend restored CLI
+# df_oecd_cli = OECD_MONTHLY[(OECD_MONTHLY["location_id"] == "OECD") & (OECD_MONTHLY["subject_id"] == "LOLITOTR_GYSA")].copy()
