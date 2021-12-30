@@ -112,6 +112,9 @@ def get_oecd_data(response):
         print('Error: %s' % response.status_code)
 
 
+MM_END_DATE = "2021-11"
+
+########################################################################################################################
 # OECD 데이터 -> export -> Developer API -> Generate API queries
 oecd_response = get_oecd_response(
     dataset="MEI_CLI",
@@ -121,68 +124,13 @@ oecd_response = get_oecd_response(
                "ISL", "IRL", "ISR", "ITA", "JPN", "KOR", "LUX", "MEX", "NLD", "NZL", "NOR", "POL", "PRT",
                "SVK", "SVN", "ESP", "SWE", "CHE", "TUR", "GBR", "USA", "EA19", "G4E", "G-7", "NAFTA",
                "OECDE", "OECD", "ONM", "A5M", "BRA", "CHN", "IND", "IDN", "RUS", "ZAF"],
-    frequency="M", startDate="1990-01", endDate="2021-03"
+    frequency="M", startDate="1990-01", endDate=MM_END_DATE
 )
 
 df_oecd = get_oecd_data(oecd_response)
 counts_subjects = df_oecd[["subject_id", "subject_name"]].value_counts()
 counts_location = df_oecd["location_name"].value_counts()
 
-# LOLITOTR_GYSA: 12-month rate of change of the trend restored CLI
-df_oecd_cli = df_oecd[(df_oecd["location_id"] == "OECD") & (df_oecd["subject_id"] == "LOLITOTR_GYSA")].copy()
+# 데이터 저장
+df_oecd.to_pickle('./BOK_raw/OECD_MONTHLY.pkl')
 
-# YYYYMM 을 기준으로 그 달의 가장 마지막 날짜 입력
-df_oecd_cli["Date"] = pd.to_datetime(
-    get_yyyymm_add_months(df_oecd_cli["yyyymm"], 1) * 100 + 1, errors='coerce', format='%Y%m%d') + pd.Timedelta(days=-1)
-
-########################################################################################################################
-# MSCI 데이터 불러오기
-df_index_daily = pd.read_pickle('./data_processed/df_index_daily_20210430.pkl')
-
-# Daily to Monthly
-# 날짜를 YYYYMM 형태로 변환
-df_index_daily["YYYYMM"] = df_index_daily["Date"].dt.year * 100 + df_index_daily["Date"].dt.month
-
-# YYYYMM 그룹별 OHLC 구하기
-df_index_monthly = df_index_daily.groupby(by='YYYYMM', as_index=False).agg({
-    "MXEF_Close": "last", "MXEF_Open": "first", "MXEF_High": "max", "MXEF_Low": "min",
-    "MXWO_Close": "last", "MXWO_Open": "first", "MXWO_High": "max", "MXWO_Low": "min",
-    "KOSPI_Close": "last", "KOSPI_Open": "first", "KOSPI_High": "max", "KOSPI_Low": "min"})
-
-df_index_monthly["L12_MXEF_Close"] = df_index_monthly["MXEF_Close"].shift(12)  # lag
-df_index_monthly["MXEF_YoY"] = (df_index_monthly["MXEF_Close"]/df_index_monthly["L12_MXEF_Close"] - 1)*100
-df_index_monthly["L12_KOSPI_Close"] = df_index_monthly["KOSPI_Close"].shift(12)  # lag
-df_index_monthly["KOSPI_YoY"] = (df_index_monthly["KOSPI_Close"]/df_index_monthly["L12_KOSPI_Close"] - 1)*100
-
-# YYYYMM 을 기준으로 그 달의 가장 마지막 날짜 입력
-df_index_monthly["Date"] = pd.to_datetime(
-    get_yyyymm_add_months(df_index_monthly["YYYYMM"], 1) * 100 + 1, errors='coerce', format='%Y%m%d') + pd.Timedelta(days=-1)
-
-
-########################################################################################################################
-# 그림: OECD Composite leading indicator and MSCI Emerging Markets
-
-fig, ax1 = plt.subplots()
-
-color1 = "tab:red"
-ax1.set_xlim([pd.to_datetime("1990-01-01 00:00:00"), pd.to_datetime("2021-03-31 00:00:00")])
-ax1.set_xlabel("Date")
-ax1.set_ylabel("OECD Composite Leading Indicator", color=color1)
-ax1.plot(df_oecd_cli["Date"], df_oecd_cli["datavalue"], color=color1)
-ax1.tick_params(axis="y")
-
-ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-
-color2 = "tab:blue"
-ax2.set_ylabel("MSCI Emerging Markets Monthly YoY", color=color2)  # we already handled the x-label with ax1
-ax2.plot(df_index_monthly["Date"], df_index_monthly["MXEF_YoY"], color=color2, linestyle='-')
-ax2.tick_params(axis='y')
-
-fig.tight_layout()  # otherwise the right y-label is slightly clipped
-fig.set_size_inches(2400/300, 1800/300)  # 그래프 크기 지정, DPI=300
-align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
-plt.axhline(y=0, color='green', linestyle='dotted')
-plt.show()
-
-# 그림 저장
-plt.savefig("./data_processed/fig4_oecd_cli_and_msci_emerging_markets.png")

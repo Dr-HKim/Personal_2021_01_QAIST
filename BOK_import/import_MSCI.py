@@ -26,13 +26,15 @@ def align_yaxis(ax1, v1, ax2, v2):
     ax2.set_ylim(miny+dy, maxy+dy)
 
 
+DD_END_DATE = "28/12/2021"
+
 ########################################################################################################################
 # MXEF: MSCI Emerging Markets Index
 # MXWO: MSCI World Index
 
 # 데이터 불러오기
 df_msci0 = pd.read_excel(
-    './data_raw/msci_index.xlsx', sheet_name="Sheet1", header=0, skiprows=4, skipfooter=0)
+    './BOK_raw/MSCI_19800101_20210430_MXEF_MXWO.xlsx', sheet_name="Sheet1", header=0, skiprows=4, skipfooter=0)
 
 # 변수명 바꾸기
 df_msci0.rename(columns={
@@ -48,11 +50,12 @@ df_msci1 = df_msci0[df_msci0["Date"] < pd.to_datetime("20210401", errors='coerce
 df_msci_em0 = df_msci1[["Date", "MXEF_Open", "MXEF_High", "MXEF_Low", "MXEF_Close"]]
 df_msci_world0 = df_msci1[["Date", "MXWO_Open", "MXWO_High", "MXWO_Low", "MXWO_Close"]]
 
+########################################################################################################################
 # investpy 패키지를 사용하여 MSCI 자료 업데이트 받기
 df_msci_em_update = investpy.get_index_historical_data(
-    index="MSCI Emerging Markets", country="world", from_date="01/04/2021", to_date="30/04/2021")
+    index="MSCI Emerging Markets", country="world", from_date="01/04/2021", to_date=DD_END_DATE)
 df_msci_world_update = investpy.get_index_historical_data(
-    index="MSCI World", country="world", from_date="01/04/2021", to_date="30/04/2021")
+    index="MSCI World", country="world", from_date="01/04/2021", to_date=DD_END_DATE)
 
 df_msci_em_update.reset_index(level=0, inplace=True)
 df_msci_world_update.reset_index(level=0, inplace=True)
@@ -71,65 +74,23 @@ df_msci_world_update = df_msci_world_update[["Date", "MXWO_Open", "MXWO_High", "
 df_msci_em1 = pd.concat([df_msci_em0, df_msci_em_update])
 df_msci_world1 = pd.concat([df_msci_world0, df_msci_world_update])
 
+# MSCI Wold, MSCI Emerging Markets 데이터 합치고 정렬
+df_msci_index = pd.merge(df_msci_em1, df_msci_world1, left_on="Date", right_on="Date", how="outer")
+df_msci_index.sort_values(by=["Date"], inplace=True)
+
+# 데이터 저장
+df_msci_index.to_pickle('./BOK_raw/MSCI_DAILY.pkl')
+
+
+########################################################################################################################
 # investpy 패키지를 사용하여 KOSPI 자료 받기
 df_kospi = investpy.get_index_historical_data(
-    index="KOSPI", country="south korea", from_date="30/01/1900", to_date="30/04/2021")
+    index="KOSPI", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 df_kospi.reset_index(level=0, inplace=True)  # 날짜 인덱스를 칼럼으로
 df_kospi.rename(
     columns={"Open": "KOSPI_Open", "High": "KOSPI_High", "Low": "KOSPI_Low", "Close": "KOSPI_Close"}, inplace=True)
 df_kospi = df_kospi[["Date", "KOSPI_Open", "KOSPI_High", "KOSPI_Low", "KOSPI_Close"]]
-
-# MSCI Wold, MSCI Emerging Markets, KOSPI 데이터 합치고 정렬
-df_index_daily = pd.merge(df_msci_em1, df_msci_world1, left_on="Date", right_on="Date", how="outer")
-df_index_daily = pd.merge(df_index_daily, df_kospi, left_on="Date", right_on="Date", how="outer")
-df_index_daily.sort_values(by=["Date"], inplace=True)
+df_kospi.sort_values(by=["Date"], inplace=True)
 
 # 데이터 저장
-df_index_daily.to_pickle('./data_processed/df_index_daily_20210430.pkl')
-
-########################################################################################################################
-# 데이터 불러오기
-df_index_daily0 = pd.read_pickle('./data_processed/df_index_daily_20210430.pkl')
-
-# Daily to Monthly
-# 날짜를 YYYYMM 형태로 변환
-df_index_daily0["YYYYMM"] = df_index_daily0["Date"].dt.year * 100 + df_index_daily0["Date"].dt.month
-
-# YYYYMM 그룹별 OHLC 구하기
-df_index_monthly0 = df_index_daily0.groupby(by='YYYYMM', as_index=False).agg({
-    "MXEF_Close": "last", "MXEF_Open": "first", "MXEF_High": "max", "MXEF_Low": "min",
-    "MXWO_Close": "last", "MXWO_Open": "first", "MXWO_High": "max", "MXWO_Low": "min",
-    "KOSPI_Close": "last", "KOSPI_Open": "first", "KOSPI_High": "max", "KOSPI_Low": "min"})
-
-# YYYYMM 을 기준으로 그 달의 가장 마지막 날짜 입력
-df_index_monthly0["Date"] = pd.to_datetime(
-    get_yyyymm_add_months(df_index_monthly0["YYYYMM"], 1) * 100 + 1, errors='coerce', format='%Y%m%d') + pd.Timedelta(days=-1)
-
-########################################################################################################################
-# 그림: MSCI Emerging Markets and KOSPI
-
-fig, ax1 = plt.subplots()
-
-color1 = "tab:red"
-ax1.set_xlim([pd.to_datetime("1990-01-01 00:00:00"), pd.to_datetime("2021-03-31 00:00:00")])
-ax1.set_xlabel("Date")
-ax1.set_ylabel("KOSPI(1980.1.4=100)", color=color1)
-ax1.plot(df_index_monthly0["Date"], df_index_monthly0["KOSPI_Close"], color=color1)
-ax1.tick_params(axis="y")
-
-ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-
-color2 = "tab:blue"
-ax2.set_ylabel("MSCI Emerging Markets (1987.12.31=100)", color=color2)  # we already handled the x-label with ax1
-ax2.plot(df_index_monthly0["Date"], df_index_monthly0["MXEF_Close"], color=color2, linestyle='-')
-ax2.tick_params(axis='y')
-
-fig.tight_layout()  # otherwise the right y-label is slightly clipped
-fig.set_size_inches(2400/300, 1800/300)  # 그래프 크기 지정, DPI=300
-align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
-plt.show()
-
-# 그림 저장
-plt.savefig("./data_processed/fig3_kospi_and_msci_emerging_markets.png")
-
-########################################################################################################################
+df_kospi.to_pickle('./BOK_raw/KOSPI_DAILY.pkl')

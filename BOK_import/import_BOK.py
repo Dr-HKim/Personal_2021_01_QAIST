@@ -169,26 +169,43 @@ BOK064Y001 = pd.concat([BOK064Y001_19950103_20210131, BOK064Y001_UPDATE])
 BOK064Y001 = BOK064Y001.sort_values(by=['ITEM_CODE1', 'TIME'])
 BOK064Y001.to_pickle('./BOK_raw/BOK064Y001.pkl')
 
-# 10.1.1 국민계정(2015년 기준년) - 주요지표 - 연간지표 [111Y002][YY] (1953 부터)
-BOK111Y002 = get_bok_data(STAT_CODE="111Y002", CYCLE_TYPE="YY", START_DATE="1970", END_DATE=YY_END_DATE)
-BOK111Y002.to_pickle('./BOK_raw/BOK111Y002.pkl')
-
-# 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
-BOK022Y013 = get_bok_data(STAT_CODE="022Y013", CYCLE_TYPE="MM", START_DATE="198001", END_DATE=MM_END_DATE)
-BOK022Y013.to_pickle('./BOK_raw/BOK022Y013.pkl')
-
-# 7.4.2 소비자물가지수(2015=100)(전국, 특수분류)  [021Y126][MM,QQ,YY] (1975.01 부터)
-BOK021Y126 = get_bok_data(STAT_CODE="021Y126", CYCLE_TYPE="MM", START_DATE="197501", END_DATE=MM_END_DATE)
-BOK021Y126.to_pickle('./BOK_raw/BOK021Y126.pkl')
+# 6.1.2 증권/재정 - 주식거래 및 주가지수 [028Y015][MM, YY] (200002, 1976 부터)
+BOK028Y015 = get_bok_data(STAT_CODE="028Y015", CYCLE_TYPE="YY", START_DATE="1976", END_DATE="2020")
+BOK028Y015.to_pickle('./BOK_raw/BOK028Y015.pkl')
 
 # 7.1.1 생산자물가지수(2015=100)(기본분류)  [013Y202][MM,QQ,YY] (1965.01 부터)
 BOK013Y202 = get_bok_data(STAT_CODE="013Y202", CYCLE_TYPE="MM", START_DATE="196501", END_DATE=MM_END_DATE)
 BOK013Y202.to_pickle('./BOK_raw/BOK013Y202.pkl')
 
+# 7.4.2 소비자물가지수(2015=100)(전국, 특수분류)  [021Y126][MM,QQ,YY] (1975.01 부터)
+BOK021Y126 = get_bok_data(STAT_CODE="021Y126", CYCLE_TYPE="MM", START_DATE="197501", END_DATE=MM_END_DATE)
+BOK021Y126.to_pickle('./BOK_raw/BOK021Y126.pkl')
+
+# 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
+BOK022Y013 = get_bok_data(STAT_CODE="022Y013", CYCLE_TYPE="MM", START_DATE="198001", END_DATE=MM_END_DATE)
+BOK022Y013.to_pickle('./BOK_raw/BOK022Y013.pkl')
+
 # 8.8.2.1 평균환율, 기말환율 > 주요국통화의 대원화 환율 통계자료 [036Y004][HY,MM,QQ,YY] (1964.05 부터)
 BOK036Y004 = get_bok_data(STAT_CODE="036Y004", CYCLE_TYPE="MM", START_DATE="196405", END_DATE=MM_END_DATE)
 BOK036Y004.to_pickle('./BOK_raw/BOK036Y004.pkl')
 
+# 10.1.1 국민계정(2015년 기준년) - 주요지표 - 연간지표 [111Y002][YY] (1953 부터)
+BOK111Y002 = get_bok_data(STAT_CODE="111Y002", CYCLE_TYPE="YY", START_DATE="1970", END_DATE=YY_END_DATE)
+BOK111Y002.to_pickle('./BOK_raw/BOK111Y002.pkl')
+
+# 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(~2007)[027Y131][YY] (1960 부터)
+BOK027Y131 = get_bok_data(STAT_CODE="027Y131", CYCLE_TYPE="YY", START_DATE="1960", END_DATE="2006")
+BOK027Y131.to_pickle('./BOK_raw/BOK027Y131.pkl')
+
+# 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(2007~2010)[027Y331][YY]
+BOK027Y331 = get_bok_data(STAT_CODE="027Y331", CYCLE_TYPE="YY", START_DATE="2007", END_DATE="2008")
+BOK027Y331.to_pickle('./BOK_raw/BOK027Y331.pkl')
+
+# 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(2009~, 전수조사) [027Y431][YY]
+BOK027Y431 = get_bok_data(STAT_CODE="027Y431", CYCLE_TYPE="YY", START_DATE="2009", END_DATE="2020")
+BOK027Y431.to_pickle('./BOK_raw/BOK027Y431.pkl')
+
+BOK028Y015.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
 ########################################################################################################################
 # 6.1.1 증권/재정 - 주식거래 및 주가지수 - 주식시장(일별) [064Y001] (1995.01.03 부터)
 BOK064Y001 = pd.read_pickle('./BOK_raw/BOK064Y001.pkl')
