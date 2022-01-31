@@ -5,14 +5,58 @@ import pandas as pd
 import numpy as np
 import investpy
 import mplfinance as mpf
-import matplotlib.pyplot as pp
 import datetime as dt
+import matplotlib.pyplot as plt
 
 DD_END_DATE = "30/01/2022"
 
 # 미국 S&P 500 지수 (1979.12.26 부터)
 df_snp500 = investpy.get_index_historical_data(
     index="S&P 500", country="United States", from_date="30/01/1900", to_date=DD_END_DATE)
+df_snp500.to_pickle('./US_raw/df_snp500.pkl')
+
+# investpy 패키지를 사용하여 KOSPI 자료 받기
+df_kospi = investpy.get_index_historical_data(
+    index="KOSPI", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
+df_kospi.to_pickle('./US_raw/df_kospi.pkl')
+
+
+
+df_snp500 = pd.read_pickle('./US_raw/df_snp500.pkl')
+df_kospi = pd.read_pickle('./US_raw/df_kospi.pkl')
+df_snp500["snp500"] = df_snp500["Close"]
+df_kospi["KOSPI"] = df_kospi["Close"]
+
+df_index = pd.merge(df_snp500[["snp500"]], df_kospi[["KOSPI"]], left_index=True, right_index=True, how='outer')
+df_index["snp500"] = df_index["snp500"].fillna(method='ffill')
+df_index["KOSPI"] = df_index["KOSPI"].fillna(method='ffill')
+
+dt_start = pd.to_datetime("2010-01-01", errors='coerce', format='%Y-%m-%d')
+df_index = df_index[dt_start:]
+df_index["snp500_2000"] = df_index["snp500"] / (df_index["snp500"][0]) * 100
+df_index["KOSPI_2000"] = df_index["KOSPI"] / (df_index["KOSPI"][0]) * 100
+
+# 시각화: 월별 시계열 자료 3개를 같은 y 축으로 표시
+fig = plt.figure()
+# fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+fig.set_size_inches(1800/300, 1200/300)  # 그래프 크기 지정, DPI=300
+
+plt.plot(df_index.index, df_index["snp500_2000"], color='r', label="S&P 500 (2010=100)")
+plt.plot(df_index.index, df_index["KOSPI_2000"], color='b', label="KOSPI (2010=100)")
+
+# xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
+# plt.xlim(xlim_start, )
+#plt.ylim(-1, 20)
+plt.axhline(y=100, color='green', linestyle='dotted')
+plt.xlabel('Dates', fontsize=10)
+plt.ylabel('Index', fontsize=10)
+plt.legend(loc='upper left')
+plt.show()
+
+plt.savefig("./BOK_processed/fig1.4_snp500_kospi.png")
+
+
+
 
 
 df = df_snp500.copy()
@@ -24,7 +68,7 @@ df['6Mend'] = np.where(df.Date.dt.month <= 6, (df.Date.dt.year).astype(str)+'-1H
 df['YEnd'] = (df.Date.dt.to_period('Y').apply(lambda r: r.end_time)).dt.date
 
 
-
+# MDD (Maximum Drawdown) 계산하기
 df_snp500_n = df_snp500.copy()
 df_snp500_n.index = pd.to_datetime(df_snp500_n.index.values.astype('datetime64[M]'))
 df_snp500_n.index
@@ -51,7 +95,7 @@ tmp = df_snp500.index[df_snp500['Close'].asfreq('D').rolling(window, min_periods
 # Plot the results
 Daily_Drawdown.plot()
 Max_Daily_Drawdown.plot()
-pp.show()
+plt.show()
 
 
 df_snp500.index

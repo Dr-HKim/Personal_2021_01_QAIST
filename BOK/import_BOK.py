@@ -106,10 +106,10 @@ def get_bok_data(STAT_CODE, CYCLE_TYPE, START_DATE, END_DATE, AUTH_KEY=get_bok_a
     return df_BOK
 
 
-DD_END_DATE = "20211217"
-MM_END_DATE = "202111"
-QQ_END_DATE = "20213"
-YY_END_DATE = "2020"
+DD_END_DATE = "20220131"
+MM_END_DATE = "202201"
+QQ_END_DATE = "20214"
+YY_END_DATE = "2021"
 
 # MM_START_DATE = "200301"
 # QQ_START_DATE = "20031"
@@ -160,6 +160,27 @@ KOSIS_DT_1F31502["DATA_VALUE"] = pd.to_numeric(KOSIS_DT_1F31502["DT"])  # 텍스
 KOSIS_DT_1F31502.to_pickle('./BOK_raw/KOSIS_DT_1F31502.pkl')
 
 ########################################################################################################################
+# 4.1.1 시장금리(일별) [060Y001] (1995.01.03 부터)
+BOK060Y001 = get_bok_data(STAT_CODE="060Y001", CYCLE_TYPE="DD", START_DATE="19950103", END_DATE=DD_END_DATE)
+BOK060Y001.to_pickle('./BOK_raw/BOK060Y001.pkl')
+
+# 4.1.2 시장금리(월,분기,년) [028Y001] (1987.01, 1987Q1, 1987 부터)
+BOK028Y001 = get_bok_data(STAT_CODE="028Y001", CYCLE_TYPE="MM", START_DATE="198701", END_DATE=MM_END_DATE)
+BOK028Y001.to_pickle('./BOK_raw/BOK028Y001.pkl')
+
+# 4.2.1.1 예금은행 가중평균금리 - 수신금리 - 신규취급액 기준 [005Y001] (1996.01 부터)
+BOK005Y001 = get_bok_data(STAT_CODE="005Y001", CYCLE_TYPE="MM", START_DATE="199601", END_DATE=MM_END_DATE)
+BOK005Y001.to_pickle('./BOK_raw/BOK005Y001.pkl')
+
+# 4.2.2.1 예금은행 가중평균금리 - 대출금리 - 신규취급액 기준 [005Y003] (1996.01 부터)
+BOK005Y003 = get_bok_data(STAT_CODE="005Y003", CYCLE_TYPE="MM", START_DATE="199601", END_DATE=MM_END_DATE)
+BOK005Y003.to_pickle('./BOK_raw/BOK005Y003.pkl')
+
+BOK060Y001_01 = BOK060Y001[BOK060Y001["ITEM_NAME1"] == "CD(91일)"]
+BOK028Y001_01 = BOK028Y001[BOK028Y001["ITEM_NAME1"] == "국고채(5년)"]
+BOK005Y003_01 = BOK005Y003[BOK005Y003["ITEM_NAME1"] == " 주택담보대출"]
+
+########################################################################################################################
 # 6.1.1 증권/재정 - 주식거래 및 주가지수 - 주식시장(일별) [064Y001] (1995.01.03 부터)
 # BOK064Y001_19950103_20210131 불러오기
 BOK064Y001_19950103_20210131 = pd.read_pickle('./BOK_raw/BOK064Y001_19950103_20210131.pkl')
@@ -194,6 +215,9 @@ BOK013Y202.to_pickle('./BOK_raw/BOK013Y202.pkl')
 # 7.4.2 소비자물가지수(2015=100)(전국, 특수분류)  [021Y126][MM,QQ,YY] (1975.01 부터)
 BOK021Y126 = get_bok_data(STAT_CODE="021Y126", CYCLE_TYPE="MM", START_DATE="197501", END_DATE=MM_END_DATE)
 BOK021Y126.to_pickle('./BOK_raw/BOK021Y126.pkl')
+
+BOK021Y126_YY = get_bok_data(STAT_CODE="021Y126", CYCLE_TYPE="YY", START_DATE="1975", END_DATE=YY_END_DATE)
+BOK021Y126_YY.to_pickle('./BOK_raw/BOK021Y126_YY.pkl')
 # BOK021Y126_00 = BOK021Y126[BOK021Y126["ITEM_CODE1"] == "00"].copy()  # 총지수
 # BOK021Y126_QB = BOK021Y126[BOK021Y126["ITEM_CODE1"] == "QB"].copy()  # 농산물및석유류제외지수 (근원 소비자물가지수)
 # BOK021Y126_00["pct_change_DATA_VALUE"] = (BOK021Y126_00["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
@@ -240,6 +264,8 @@ BOK027Y431.to_pickle('./BOK_raw/BOK027Y431.pkl')
 # BOK027Y431_03 = BOK027Y431[(BOK027Y431["ITEM_NAME1"] == "제조업") & (BOK027Y431["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
 
 # BOK028Y015.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
+
+
 
 ########################################################################################################################
 # 10.1.2 국민계정(2015년 기준년) - 주요지표 - 분기지표 [111Y055] (1960Q1 부터)
