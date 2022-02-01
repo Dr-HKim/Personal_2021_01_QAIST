@@ -233,6 +233,8 @@ BOK036Y004 = get_bok_data(STAT_CODE="036Y004", CYCLE_TYPE="MM", START_DATE="1964
 BOK036Y004.to_pickle('./BOK_raw/BOK036Y004.pkl')
 # BOK036Y004_01 = BOK036Y004[(BOK036Y004["ITEM_CODE1"] == "0000001") & (BOK036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원/미국달러 말일자료
 
+
+########################################################################################################################
 # 10.1.1 국민계정(2015년 기준년) - 주요지표 - 연간지표 [111Y002][YY] (1953 부터)
 BOK111Y002 = get_bok_data(STAT_CODE="111Y002", CYCLE_TYPE="YY", START_DATE="1970", END_DATE=YY_END_DATE)
 BOK111Y002.to_pickle('./BOK_raw/BOK111Y002.pkl')
@@ -241,6 +243,16 @@ BOK111Y002.to_pickle('./BOK_raw/BOK111Y002.pkl')
 # BOK111Y002_02 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "20101"].copy()  # 국내총생산(실질성장률)[%]
 # BOK111Y002_03 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "90103"].copy()  # GDP 디플레이터 (2015=100)
 # BOK111Y002_04 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "9010301"].copy()  # GDP 디플레이터 등락률 (%)
+
+# 10.1.2 국민계정(2015년 기준년) - 주요지표 - 분기지표 [111Y055] (1960Q1 부터)
+BOK111Y055 = get_bok_data(STAT_CODE="111Y055", CYCLE_TYPE="QQ", START_DATE="19601", END_DATE=QQ_END_DATE)
+BOK111Y055.to_pickle('./BOK_raw/BOK111Y055.pkl')
+# BOK111Y055_01 = BOK111Y055[BOK111Y055["ITEM_CODE1"] == "10111"].copy()  # 국내총생산(GDP)(실질, 계절조정, 전기비)
+
+# 10.7.1.1.2. 가계의 목적별 최종소비지출(계절조정, 실질, 분기) [111Y027] (1970Q1 부터)
+BOK111Y027 = get_bok_data(STAT_CODE="111Y027", CYCLE_TYPE="QQ", START_DATE="19701", END_DATE=QQ_END_DATE)
+BOK111Y027.to_pickle('./BOK_raw/BOK111Y027.pkl')
+# BOK111Y027_01 = BOK111Y027[BOK111Y027["ITEM_CODE1"] == "10116"].copy()  # 가계 최종소비지출
 
 # 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(~2007)[027Y131][YY] (1960 부터)
 BOK027Y131 = get_bok_data(STAT_CODE="027Y131", CYCLE_TYPE="YY", START_DATE="1960", END_DATE="2006")
@@ -264,19 +276,6 @@ BOK027Y431.to_pickle('./BOK_raw/BOK027Y431.pkl')
 # BOK027Y431_03 = BOK027Y431[(BOK027Y431["ITEM_NAME1"] == "제조업") & (BOK027Y431["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
 
 # BOK028Y015.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
-
-
-
-########################################################################################################################
-# 10.1.2 국민계정(2015년 기준년) - 주요지표 - 분기지표 [111Y055] (1960Q1 부터)
-BOK111Y055 = get_bok_data(STAT_CODE="111Y055", CYCLE_TYPE="QQ", START_DATE="19601", END_DATE=QQ_END_DATE)
-BOK111Y055.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
-BOK111Y055_01 = BOK111Y055[BOK111Y055["ITEM_CODE1"] == "10111"].copy()  # 국내총생산(GDP)(실질, 계절조정, 전기비)
-
-# 10.7.1.1.2. 가계의 목적별 최종소비지출(계절조정, 실질, 분기) [111Y027] (1970Q1 부터)
-BOK111Y027 = get_bok_data(STAT_CODE="111Y027", CYCLE_TYPE="QQ", START_DATE="19701", END_DATE=QQ_END_DATE)
-BOK111Y027.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
-BOK111Y027_01 = BOK111Y027[BOK111Y027["ITEM_CODE1"] == "10116"].copy()  # 가계 최종소비지출
 
 ########################################################################################################################
 # 분기별 GDP 갭을 추정해보려 하였으나 실패

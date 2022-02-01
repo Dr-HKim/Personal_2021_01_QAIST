@@ -83,3 +83,109 @@ plt.legend(loc='upper left')
 plt.show()
 
 plt.savefig("./BOK_processed/fig4.1_current_account_to_gdp_and_gdp_gap.png")
+
+
+########################################################################################################################
+# 그림 4.2 GDP 대비 경상수지와 저축률 (%)
+
+# GDP 대비 경상수지 계산
+
+# 10.1.1 국민계정(2015년 기준년) - 주요지표 - 연간지표 [111Y002][YY] (1953 부터)
+BOK111Y002 = pd.read_pickle('./BOK_raw/BOK111Y002.pkl')
+BOK111Y002_01 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "1010101"].copy()  # 국내총생산(GDP)(명목, 억달러)
+BOK111Y002_01["YYYYMMDD"] = BOK111Y002_01["TIME"] * 10000 + 101
+BOK111Y002_01["DATETIME"] = pd.to_datetime(BOK111Y002_01['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+BOK111Y002_01["GDP"] = BOK111Y002_01["DATA_VALUE"].copy() * 100000000  # 국내총생산(GDP)(명목, 달러)
+BOK111Y002_01["Actual_GDP"] = BOK111Y002_01["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 억달러)
+
+# 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
+BOK022Y013 = pd.read_pickle('./BOK_raw/BOK022Y013.pkl')
+BOK022Y013_00 = BOK022Y013[BOK022Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (백만달러)
+BOK022Y013_00["Current_Account"] = BOK022Y013_00["DATA_VALUE"].copy() * 1000000  # 경상수지(current account) (달러)
+BOK022Y013_00["Current_Account"] = BOK022Y013_00["Current_Account"].rolling(window=12).sum()  # 경상수지 12개월 누적
+
+df_CA_to_GDP = pd.merge(BOK022Y013_00, BOK111Y002_01[["DATETIME", "GDP"]], left_on='DATETIME', right_on='DATETIME', how='left')
+df_CA_to_GDP["GDP"] = df_CA_to_GDP["GDP"].fillna(method='ffill')
+df_CA_to_GDP["CA_to_GDP"] = df_CA_to_GDP["Current_Account"] / df_CA_to_GDP["GDP"] * 100  # GDP 대비 경상수지 (%)
+
+
+BOK111Y002_02 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "8010400"].copy()  # 가계순저축률 (%)
+BOK111Y002_02["YYYYMMDD"] = BOK111Y002_02["TIME"] * 10000 + 1231
+BOK111Y002_02["DATETIME"] = pd.to_datetime(BOK111Y002_02['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+
+# 그림 4.2 GDP 대비 경상수지와 가계순저축률 (%)
+# 시각화: 월별 시계열 자료 1개를 표시
+fig = plt.figure()
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+
+plt.plot(df_CA_to_GDP["DATETIME"], df_CA_to_GDP["CA_to_GDP"], color='r', label="Current Account to GDP (%)")
+plt.plot(BOK111Y002_02["DATETIME"], BOK111Y002_02["DATA_VALUE"], color='g', label="Households Net Saving Ratio (%)")
+
+xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
+plt.xlim(xlim_start, )
+plt.ylim(-10, 30)
+plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlabel('Dates', fontsize=10)
+plt.ylabel('Percentage (%)', fontsize=10)
+plt.legend(loc='upper left')
+plt.show()
+
+plt.savefig("./BOK_processed/fig4.2_current_account_to_gdp_and_households_net_saving_ratio.png")
+
+
+########################################################################################################################
+# 그림 4.3 실질실효환율과 경상수지 추이
+
+# BIS 실질실효환율(real effective exchange rate) 데이터 불러오기
+df_bis_data = pd.read_excel(
+    './BOK_raw/BIS_Effective_Exchange_Rates.xlsx', sheet_name="Real", header=None, skiprows=5, skipfooter=0)
+df_bis_header = pd.read_excel(
+    './BOK_raw/BIS_Effective_Exchange_Rates.xlsx', sheet_name="Real", header=None, skiprows=3, nrows=1)
+df_bis_header[0] = "DATETIME"
+df_bis_header = df_bis_header.transpose()
+df_bis_header = df_bis_header[0].tolist()
+df_bis_data.columns = df_bis_header
+df_bis_data["Korea_100"] = df_bis_data["Korea"] - 100
+
+# 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
+BOK022Y013 = pd.read_pickle('./BOK_raw/BOK022Y013.pkl')
+BOK022Y013_00 = BOK022Y013[BOK022Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (백만달러)
+BOK022Y013_00["Current_Account"] = BOK022Y013_00["DATA_VALUE"].copy() / 1000  # 경상수지(current account) (십억 달러)
+BOK022Y013_00["Current_Account"] = BOK022Y013_00["Current_Account"].rolling(window=12).sum()  # 경상수지 12개월 누적
+
+
+# 그림 4.3 실질실효환율과 경상수지 추이
+# 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
+fig, ax1 = plt.subplots()
+xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
+
+# 첫번째 시계열
+color1 = "tab:red"
+ax1.set_xlabel("Dates")
+ax1.set_ylabel("Real Effective Exchange Rates (%)", color=color1)  # 데이터 레이블
+ax1.plot(df_bis_data["DATETIME"], df_bis_data["Korea_100"], color=color1)
+ax1.tick_params(axis="y")
+
+# 두번째 시계열
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+color2 = "tab:blue"
+ax2.set_ylabel("Current Account (billion dollars)", color=color2)  # 데이터 레이블
+ax2.plot(BOK022Y013_00["DATETIME"], BOK022Y013_00["Current_Account"], color=color2, linestyle='-')
+ax2.tick_params(axis='y')
+
+# 그래프 기타 설정
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+ax1.set_ylim([-30, 35])
+ax2.set_ylim([-90, 120])
+align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
+plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlim(xlim_start, )
+plt.show()
+plt.savefig("./BOK_processed/fig4.3_real_effective_exchange_rates_and_current_account.png")  # 그림 저장
+
+
+
+
+
+
