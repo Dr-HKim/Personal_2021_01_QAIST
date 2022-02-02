@@ -24,6 +24,14 @@ def align_yaxis(ax1, v1, ax2, v2):
     ax2.set_ylim(miny+dy, maxy+dy)
 
 
+def get_yyyymm_add_months(n_yyyymm, n_months):
+    n_yyyy, n_mm = divmod(n_yyyymm, 100)
+    n_months_y, n_months_m = divmod(n_mm + n_months - 1, 12)
+    output_yyyy = n_yyyy + n_months_y
+    output_mm = n_months_m + 1
+    output_yyyymm = output_yyyy * 100 + output_mm
+    return output_yyyymm
+
 ########################################################################################################################
 # 그림 4.1 GDP 대비 경상수지와 GDP 갭 (%)
 # 10.1.1 국민계정(2015년 기준년) - 주요지표 - 연간지표 [111Y002][YY] (1953 부터)
@@ -134,7 +142,7 @@ plt.savefig("./BOK_processed/fig4.2_current_account_to_gdp_and_households_net_sa
 
 
 ########################################################################################################################
-# 그림 4.3 실질실효환율과 경상수지 추이
+# 그림 4.4 실질실효환율과 경상수지 추이
 
 # BIS 실질실효환율(real effective exchange rate) 데이터 불러오기
 df_bis_data = pd.read_excel(
@@ -154,7 +162,7 @@ BOK022Y013_00["Current_Account"] = BOK022Y013_00["DATA_VALUE"].copy() / 1000  # 
 BOK022Y013_00["Current_Account"] = BOK022Y013_00["Current_Account"].rolling(window=12).sum()  # 경상수지 12개월 누적
 
 
-# 그림 4.3 실질실효환율과 경상수지 추이
+# 그림 4.4 실질실효환율과 경상수지 추이
 # 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
 fig, ax1 = plt.subplots()
 xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
@@ -182,10 +190,169 @@ align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
 plt.axhline(y=0, color='green', linestyle='dotted')
 plt.xlim(xlim_start, )
 plt.show()
-plt.savefig("./BOK_processed/fig4.3_real_effective_exchange_rates_and_current_account.png")  # 그림 저장
+plt.savefig("./BOK_processed/fig4.4_real_effective_exchange_rates_and_current_account.png")  # 그림 저장
 
 
 
+########################################################################################################################
+# 그림 4.5 OECD 경기선행지수 (Composite Leading Indicators)
+# 데이터 불러오기
+OECD_MONTHLY = pd.read_pickle('./BOK_raw/OECD_MONTHLY.pkl')
 
+# YYYYMM 을 기준으로 그 달의 가장 마지막 날짜 입력
+OECD_MONTHLY["DATETIME"] = pd.to_datetime(
+    get_yyyymm_add_months(OECD_MONTHLY["yyyymm"], 1) * 100 + 1, errors='coerce', format='%Y%m%d') + pd.Timedelta(days=-1)
+
+# LOLITOTR_GYSA: 12-month rate of change of the trend restored CLI
+# LOLITONO: Normalised (CLI)
+# LOLITOAA: Amplitude adjusted (CLI)
+# 장기 추세를 제거하고 최근 수치에 가중치를 두는 방식으로 진폭조정된(Amplitude adjusted) CLI
+# 100이 넘으면 경기 상승, 100을 밑돌면 경기 하강
+df_oecd_cli = OECD_MONTHLY[(OECD_MONTHLY["location_id"] == "OECD") & (OECD_MONTHLY["subject_id"] == "LOLITOAA")].copy()
+df_korea_cli = OECD_MONTHLY[(OECD_MONTHLY["location_id"] == "KOR") & (OECD_MONTHLY["subject_id"] == "LOLITOAA")].copy()
+
+# 그림 4.5 OECD 경기선행지수 (Composite Leading Indicators)
+# 시각화: 월별 시계열 자료 1개를 표시
+fig = plt.figure()
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+
+plt.plot(df_oecd_cli["DATETIME"], df_oecd_cli["datavalue"], color='r', label="OECD Composite Leading Indicators")
+plt.plot(df_korea_cli["DATETIME"], df_korea_cli["datavalue"], color='g', label="Korea Composite Leading Indicators")
+
+xlim_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
+plt.xlim(xlim_start, )
+# plt.ylim(-1, 7)
+plt.axhline(y=100, color='green', linestyle='dotted')
+plt.xlabel('Dates', fontsize=10)
+plt.ylabel('Composite Leading Indicators', fontsize=10)
+plt.legend(loc='upper right')
+plt.show()
+
+plt.savefig("./BOK_processed/fig4.5_composite_leading_indicators_oecd_kor.png")  # 그림 저장
+
+########################################################################################################################
+# 그림 4.7 한국은행 기준금리와 소비자물가지수 상승률 (%)
+# 2.6 한국은행 기준금리 및 여수신금리 [098Y001][DD, MM, QQ, YY] (1994.01.03 부터)
+BOK098Y001_DD = pd.read_pickle('./BOK_raw/BOK098Y001_DD.pkl')
+BOK098Y001_DD_01 = BOK098Y001_DD[BOK098Y001_DD["ITEM_CODE1"] == "0101000"].copy()  # 한국은행 기준금리
+
+# 7.4.2 소비자물가지수(2020=100)(전국, 특수분류)  [021Y126][MM,QQ,YY] (1975.01 부터)
+BOK021Y126 = pd.read_pickle('./BOK_raw/BOK021Y126.pkl')
+BOK021Y126_00 = BOK021Y126[BOK021Y126["ITEM_CODE1"] == "00"].copy()  # 총지수
+BOK021Y126_00["pct_change_DATA_VALUE"] = (BOK021Y126_00["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
+
+# 그림 4.7 한국은행 기준금리와 소비자물가지수 상승률 (%)
+# 시각화: 월별 시계열 자료 1개를 표시
+fig = plt.figure()
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+
+plt.plot(BOK098Y001_DD_01["DATETIME"], BOK098Y001_DD_01["DATA_VALUE"], color='r', label="BOK Base Rate (%)")
+plt.plot(BOK021Y126_00["DATETIME"], BOK021Y126_00["pct_change_DATA_VALUE"], color='g', label="CPI Percent Changes (%)")
+
+xlim_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
+plt.xlim(xlim_start, )
+plt.ylim(-1, 7)
+plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlabel('Dates', fontsize=10)
+plt.ylabel('Percentage (%)', fontsize=10)
+plt.legend(loc='upper left')
+plt.show()
+
+plt.savefig("./BOK_processed/fig4.7_bok_base_rate_and_cpi_percent_changes.png")  # 그림 저장
+
+
+########################################################################################################################
+# 그림 4.8 경상수지와 코스피 지수
+
+# 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
+BOK022Y013 = pd.read_pickle('./BOK_raw/BOK022Y013.pkl')
+BOK022Y013_00 = BOK022Y013[BOK022Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (백만달러)
+BOK022Y013_00["Current_Account_3M"] = BOK022Y013_00["DATA_VALUE"].rolling(window=3).sum() / 1000  # 경상수지 3개월 누적 (십억달러)
+BOK022Y013_00["Current_Account_12M"] = BOK022Y013_00["DATA_VALUE"].rolling(window=12).sum() / 1000  # 경상수지 12개월 누적 (십억달러)
+BOK022Y013_00["Current_Account_cum"] = BOK022Y013_00["DATA_VALUE"].cumsum() / 1000  # 경상수지 누적 (십억달러)
+
+# 코스피지수
+df_kospi = pd.read_pickle('./US_raw/df_kospi.pkl')
+df_kospi_monthly = df_kospi.shift(-1).resample('M').last()
+
+# 그림 4.8 경상수지와 코스피 지수
+# 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
+fig, ax1 = plt.subplots()
+xlim_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
+
+# 첫번째 시계열
+color1 = "tab:red"
+ax1.set_xlabel("Dates")
+ax1.set_ylabel("Current Account (12 months cumulative)", color=color1)  # 데이터 레이블
+ax1.plot(BOK022Y013_00["DATETIME"], BOK022Y013_00["Current_Account_12M"], color=color1)
+ax1.tick_params(axis="y")
+
+# 두번째 시계열
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+color2 = "tab:blue"
+ax2.set_ylabel("KOSPI", color=color2)  # 데이터 레이블
+ax2.plot(df_kospi_monthly.index, df_kospi_monthly["Close"], color=color2, linestyle='-')
+ax2.tick_params(axis='y')
+
+# 그래프 기타 설정
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+ax1.set_ylim([-10, 120])
+ax2.set_ylim([0, 3500])
+# align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
+# plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlim(xlim_start, )
+plt.show()
+
+plt.savefig("./BOK_processed/fig4.8_current_account_and_kospi.png")  # 그림 저장
+
+
+########################################################################################################################
+# 그림 4.9 실질실효환율과 달러/원 환율 추이
+
+# BIS 실질실효환율(real effective exchange rate) 데이터 불러오기
+df_bis_data = pd.read_excel(
+    './BOK_raw/BIS_Effective_Exchange_Rates.xlsx', sheet_name="Real", header=None, skiprows=5, skipfooter=0)
+df_bis_header = pd.read_excel(
+    './BOK_raw/BIS_Effective_Exchange_Rates.xlsx', sheet_name="Real", header=None, skiprows=3, nrows=1)
+df_bis_header[0] = "DATETIME"
+df_bis_header = df_bis_header.transpose()
+df_bis_header = df_bis_header[0].tolist()
+df_bis_data.columns = df_bis_header
+df_bis_data["Korea_100"] = df_bis_data["Korea"] - 100
+
+# 8.8.2.1 평균환율, 기말환율 > 주요국통화의 대원화 환율 통계자료 [036Y004][HY,MM,QQ,YY] (1964.05 부터)
+BOK036Y004 = pd.read_pickle('./BOK_raw/BOK036Y004.pkl')
+BOK036Y004_00 = BOK036Y004[(BOK036Y004["ITEM_CODE1"] == "0000001") & (BOK036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
+
+# 그림 4.4 실질실효환율과 경상수지 추이
+# 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
+fig, ax1 = plt.subplots()
+xlim_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
+
+# 첫번째 시계열
+color1 = "tab:red"
+ax1.set_ylabel("USD/KRW", color=color1)  # 데이터 레이블
+ax1.plot(BOK036Y004_00["DATETIME"], BOK036Y004_00["DATA_VALUE"], color=color1, linestyle='-')
+ax1.tick_params(axis='y')
+
+# 두번째 시계열
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+color2 = "tab:blue"
+ax2.set_ylabel("Real Effective Exchange Rates (%)", color=color2)  # 데이터 레이블
+ax2.set_xlabel("Dates")
+ax2.plot(df_bis_data["DATETIME"], df_bis_data["Korea_100"], color=color2)
+ax2.tick_params(axis="y")
+
+# 그래프 기타 설정
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+ax1.set_ylim([800, 1600])
+ax2.set_ylim([-40, 40])
+# align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
+plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlim(xlim_start, )
+plt.show()
+plt.savefig("./BOK_processed/fig4.9_real_effective_exchange_rates_and_usdkrw.png")  # 그림 저장
 
 

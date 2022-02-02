@@ -112,7 +112,7 @@ def get_oecd_data(response):
         print('Error: %s' % response.status_code)
 
 
-MM_END_DATE = "2021-11"
+MM_END_DATE = "2021-12"
 
 ########################################################################################################################
 # OECD 데이터 -> export -> Developer API -> Generate API queries
@@ -130,6 +130,16 @@ oecd_response = get_oecd_response(
 df_oecd = get_oecd_data(oecd_response)
 counts_subjects = df_oecd[["subject_id", "subject_name"]].value_counts()
 counts_location = df_oecd["location_name"].value_counts()
+
+# OECD 경기선행지수
+# LOLITOTR_GYSA: 12-month rate of change of the trend restored CLI
+# LOLITONO: Normalised (CLI)
+# LOLITOAA: Amplitude adjusted (CLI)
+# 장기 추세를 제거하고 최근 수치에 가중치를 두는 방식으로 진폭조정된(Amplitude adjusted) CLI
+# 100이 넘으면 경기 상승, 100을 밑돌면 경기 하강
+df_oecd_cli = df_oecd[(df_oecd["location_id"] == "OECD") & (df_oecd["subject_id"] == "LOLITOTR_GYSA")].copy()
+df_oecd_cli2 = df_oecd[(df_oecd["location_id"] == "OECD") & (df_oecd["yyyymm"] > 202107)].copy()
+
 
 # 데이터 저장
 df_oecd.to_pickle('./BOK_raw/OECD_MONTHLY.pkl')

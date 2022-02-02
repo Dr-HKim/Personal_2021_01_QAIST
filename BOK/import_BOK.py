@@ -160,6 +160,11 @@ KOSIS_DT_1F31502["DATA_VALUE"] = pd.to_numeric(KOSIS_DT_1F31502["DT"])  # 텍스
 KOSIS_DT_1F31502.to_pickle('./BOK_raw/KOSIS_DT_1F31502.pkl')
 
 ########################################################################################################################
+# 2.6 한국은행 기준금리 및 여수신금리 [098Y001][DD, MM, QQ, YY] (1994.01.03 부터)
+BOK098Y001_DD = get_bok_data(STAT_CODE="098Y001", CYCLE_TYPE="DD", START_DATE="19940103", END_DATE=DD_END_DATE)
+BOK098Y001_DD.to_pickle('./BOK_raw/BOK098Y001_DD.pkl')
+
+
 # 4.1.1 시장금리(일별) [060Y001] (1995.01.03 부터)
 BOK060Y001 = get_bok_data(STAT_CODE="060Y001", CYCLE_TYPE="DD", START_DATE="19950103", END_DATE=DD_END_DATE)
 BOK060Y001.to_pickle('./BOK_raw/BOK060Y001.pkl')
