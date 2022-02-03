@@ -20,6 +20,13 @@ df_kospi = investpy.get_index_historical_data(
     index="KOSPI", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 df_kospi.to_pickle('./US_raw/df_kospi.pkl')
 
+# investpy 패키지를 사용하여 삼성전자 자료 받기
+df_kospi = investpy.get_stock_historical_data(
+    stock="005930", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
+
+# investpy 패키지를 사용하여 ETF 자료 받기
+df_data = investpy.get_etf_historical_data(
+    etf="Samsung KODEX KOSPI 200 Securities", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 
 
 df_snp500 = pd.read_pickle('./US_raw/df_snp500.pkl')
