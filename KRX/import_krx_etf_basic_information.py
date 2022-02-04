@@ -137,10 +137,11 @@ form_data = {
 }
 r = requests.post(gen_req_url, form_data, headers=headers)
 
+df = pd.read_csv(BytesIO(r.content), encoding='cp949')
+
 
 df = pd.read_excel(BytesIO(r.content))
 
-df = pd.read_csv(BytesIO(r.content), encoding='cp949')
 df = pd.read_csv(BytesIO(r.content), encoding='euc-kr')
 
 
