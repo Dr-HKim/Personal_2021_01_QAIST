@@ -75,7 +75,7 @@ df.to_pickle('./KRX_raw/krx_etf_basic_information.pkl')
 # download.cmd > Headers > General > Request URL:
 # http://data.krx.co.kr/comm/fileDn/download_excel/download.cmd
 
-tdate = 20211231  # 날짜 (필요없음)
+tdate = 20211230  # 날짜
 
 gen_req_url = 'http://data.krx.co.kr/comm/fileDn/GenerateOTP/generate.cmd'
 query_str_parms = {
@@ -103,5 +103,47 @@ df = pd.read_excel(BytesIO(r.content))
 df['갱신일자'] = tdate
 
 file_name = 'krx_etf_market_price_' + str(tdate) + '.pkl'
+
+df.to_pickle('./KRX_raw/' + file_name)
+
+
+
+########################################################################################################################
+# 통계 > 기본통계 > 증권상품 > ETF > 13102 전종목 등락률
+
+strDd = 20211201  # 시작날짜
+endDd = 20211229  # 종료날짜
+
+gen_req_url = 'http://data.krx.co.kr/comm/fileDn/GenerateOTP/generate.cmd'
+query_str_parms = {
+    'locale': 'ko_KR',
+    'strDd': str(strDd),
+    'endDd': str(endDd),
+    'share': '1',
+    'money': '1',
+    'csvxls_isNo': 'false',
+    'name': 'fileDown',
+    'url': 'dbms/MDC/STAT/standard/MDCSTAT04401'
+}
+headers = {
+    'Referer': 'http://data.krx.co.kr/contents/MDC/MDI/mdiLoader',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.81 Safari/537.36'  # generate.cmd 에서 찾아서 입력
+}
+r = requests.get(gen_req_url, query_str_parms, headers=headers)
+
+gen_req_url = 'http://data.krx.co.kr/comm/fileDn/download_csv/download.cmd'
+form_data = {
+    'code': r.content
+}
+r = requests.post(gen_req_url, form_data, headers=headers)
+
+
+df = pd.read_excel(BytesIO(r.content))
+
+df = pd.read_csv(BytesIO(r.content), encoding='cp949')
+df = pd.read_csv(BytesIO(r.content), encoding='euc-kr')
+
+
+file_name = 'krx_etf_market_price_' + str(strDd) + "_" + str(endDd) + '.pkl'
 
 df.to_pickle('./KRX_raw/' + file_name)
