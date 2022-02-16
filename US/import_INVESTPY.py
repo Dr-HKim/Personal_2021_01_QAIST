@@ -8,7 +8,7 @@ import mplfinance as mpf
 import datetime as dt
 import matplotlib.pyplot as plt
 
-DD_END_DATE = "12/02/2022"
+DD_END_DATE = "15/02/2022"
 
 # 미국 S&P 500 지수 (1979.12.26 부터)
 df_snp500 = investpy.get_index_historical_data(
@@ -35,6 +35,13 @@ df_069500 = investpy.get_etf_historical_data(
     etf="Samsung KODEX KOSPI 200 Securities", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 df_069500.to_pickle('./US_raw/df_069500.pkl')
 
+# Economic Calendar
+df_economic_calendar_us_20000101_20220215 = investpy.economic_calendar(
+    countries=["united states"], from_date="01/01/2000", to_date="15/02/2022")
+df_economic_calendar_us_20000101_20220215.to_pickle('./US_raw/df_economic_calendar_us_20000101_20220215.pkl')
+
+df_economic_calendar = df_economic_calendar_us_20000101_20220215.copy()
+df_PMI = df_economic_calendar[df_economic_calendar['event'].str.contains("ISM Manufacturing PMI")]
 
 df_snp500 = pd.read_pickle('./US_raw/df_snp500.pkl')
 df_kospi = pd.read_pickle('./US_raw/df_kospi.pkl')

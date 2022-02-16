@@ -3,6 +3,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
+def get_yyyymm_add_months(n_yyyymm, n_months):
+    n_yyyy, n_mm = divmod(n_yyyymm, 100)
+    n_months_y, n_months_m = divmod(n_mm + n_months - 1, 12)
+    output_yyyy = n_yyyy + n_months_y
+    output_mm = n_months_m + 1
+    output_yyyymm = output_yyyy * 100 + output_mm
+    return output_yyyymm
+
+
 # 데이터: https://databank.worldbank.org/source/world-development-indicators#
 # Import XLSX File
 df_worldbank = pd.read_excel(
@@ -95,4 +105,85 @@ plt.show()
 plt.savefig("./BOK_processed/fig7.2_consumption_as_percent_of_gdp.png")
 
 
+########################################################################################################################
+# 미국 실질 가계 소비 지출 (Monthly)
+# Real Personal Consumption Expenditures (PCEC96)
+# Units: Billions of Chained 2012 Dollars, Seasonally Adjusted Annual Rate
+fred_PCEC96 = pd.read_pickle('./US_raw/fred_PCEC96.pkl')
+fred_PCEC96_pct_change = fred_PCEC96.pct_change(periods=12) * 100
 
+# 미국 산업 생산
+# Industrial Production: Total Index (INDPRO)
+# Units: Index 2017=100, Seasonally Adjusted
+fred_INDPRO = pd.read_pickle('./US_raw/fred_INDPRO.pkl')
+fred_INDPRO_pct_change = fred_INDPRO.pct_change(periods=12) * 100
+
+# 한국 수출 통계
+# Exports: Value Goods for the Republic of Korea (XTEXVA01KRM667S)
+# Units: US Dollars Monthly Level, Seasonally Adjusted
+fred_XTEXVA01KRM667S = pd.read_pickle('./US_raw/fred_XTEXVA01KRM667S.pkl')
+fred_XTEXVA01KRM667S_pct_change = fred_XTEXVA01KRM667S.pct_change(periods=12) * 100
+
+# 그림 7.3 미국 가계의 소비지출과 산업생산 증가율 추이
+# 시각화: 월별 시계열 자료 3개를 같은 y 축으로 표시
+fig = plt.figure()
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+# fig.set_size_inches(1800/300, 1200/300)  # 그래프 크기 지정, DPI=300
+
+plt.plot(fred_PCEC96_pct_change.index, fred_PCEC96_pct_change, color='b', label="Real Personal Consumption Expenditures")
+plt.plot(fred_INDPRO_pct_change.index, fred_INDPRO_pct_change, color='r', label="Industrial Production")
+
+xlim_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
+xlim_end = pd.to_datetime("2023-01-01", errors='coerce', format='%Y-%m-%d')
+
+plt.xlim(xlim_start, )
+plt.ylim(-20, 30)
+plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlabel('Dates', fontsize=10)
+plt.ylabel('Percent Change from Year Ago (%)', fontsize=10)
+plt.legend(loc='upper left')
+plt.show()
+
+plt.savefig("./BOK_processed/fig7.3_personal_consumption_expenditure_and_industrial_production.png")
+
+
+# 그림 7.4 미국 산업생산과 한국 수출 증가율 추이
+# 시각화: 월별 시계열 자료 3개를 같은 y 축으로 표시
+fig = plt.figure()
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+# fig.set_size_inches(1800/300, 1200/300)  # 그래프 크기 지정, DPI=300
+
+plt.plot(fred_INDPRO_pct_change.index, fred_INDPRO_pct_change, color='r', label="Industrial Production")
+plt.plot(fred_XTEXVA01KRM667S_pct_change.index, fred_XTEXVA01KRM667S_pct_change, color='g', label="Exports (Korea)")
+
+xlim_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
+xlim_end = pd.to_datetime("2023-01-01", errors='coerce', format='%Y-%m-%d')
+
+plt.xlim(xlim_start, )
+plt.ylim(-40, 50)
+plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlabel('Dates', fontsize=10)
+plt.ylabel('Percent Change from Year Ago (%)', fontsize=10)
+plt.legend(loc='lower right')
+plt.show()
+
+plt.savefig("./BOK_processed/fig7.4_industrial_production_and_Korea_exports.png")
+########################################################################################################################
+# 그림 7.5 OECD 경기선행지수와 미국 실질가계소비
+
+# OECD 경기선행지수
+OECD_MONTHLY = pd.read_pickle('./BOK_raw/OECD_MONTHLY.pkl')
+
+# LOLITOTR_GYSA: 12-month rate of change of the trend restored CLI
+df_oecd_cli = OECD_MONTHLY[(OECD_MONTHLY["location_id"] == "OECD") & (OECD_MONTHLY["subject_id"] == "LOLITOTR_GYSA")].copy()
+
+# YYYYMM 을 기준으로 그 달의 가장 마지막 날짜 입력
+df_oecd_cli["Date"] = pd.to_datetime(
+    get_yyyymm_add_months(df_oecd_cli["yyyymm"], 1) * 100 + 1, errors='coerce', format='%Y%m%d') + pd.Timedelta(days=-1)
+df_oecd_cli["L12_MXEF_Close"] = df_oecd_cli["MXEF_Close"].shift(3)  # lag 3 months
+
+# 미국 실질 가계 소비 지출 (Monthly)
+# Real Personal Consumption Expenditures (PCEC96)
+# Units: Billions of Chained 2012 Dollars, Seasonally Adjusted Annual Rate
+fred_PCEC96 = pd.read_pickle('./US_raw/fred_PCEC96.pkl')
+fred_PCEC96_pct_change = fred_PCEC96.pct_change(periods=12) * 100
