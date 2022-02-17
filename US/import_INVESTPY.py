@@ -40,9 +40,18 @@ df_economic_calendar_us_20000101_20220215 = investpy.economic_calendar(
     countries=["united states"], from_date="01/01/2000", to_date="15/02/2022")
 df_economic_calendar_us_20000101_20220215.to_pickle('./US_raw/df_economic_calendar_us_20000101_20220215.pkl')
 
-df_economic_calendar = df_economic_calendar_us_20000101_20220215.copy()
-df_PMI = df_economic_calendar[df_economic_calendar['event'].str.contains("ISM Manufacturing PMI")]
+########################################################################################################################
+df_economic_calendar = pd.read_pickle('./US_raw/df_economic_calendar_us_20000101_20220215.pkl')
 
+df_PMI = df_economic_calendar[df_economic_calendar['event'].str.contains("ISM Manufacturing PMI")].copy()
+df_PMI["datetime_announced"] = pd.to_datetime(df_PMI["date"], errors='coerce', format="%d/%m/%Y")
+df_PMI["datetime"] = df_PMI["datetime_announced"] + pd.DateOffset(months=-1)
+df_PMI["datetime"].dt.day = 1
+df_PMI["datetime"] = df_PMI["datetime_announced"].apply(lambda dt: dt.replace(day=1))
+
+
+
+########################################################################################################################
 df_snp500 = pd.read_pickle('./US_raw/df_snp500.pkl')
 df_kospi = pd.read_pickle('./US_raw/df_kospi.pkl')
 df_snp500["snp500"] = df_snp500["Close"]
