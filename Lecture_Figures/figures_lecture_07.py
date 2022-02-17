@@ -1,7 +1,19 @@
+# 7강 미국 소비시장
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+
+def align_yaxis(ax1, v1, ax2, v2):
+    """adjust ax2 ylimit so that v2 in ax2 is aligned to v1 in ax1"""
+    _, y1 = ax1.transData.transform((0, v1))
+    _, y2 = ax2.transData.transform((0, v2))
+    inv = ax2.transData.inverted()
+    _, dy = inv.transform((0, 0)) - inv.transform((0, y1-y2))
+    miny, maxy = ax2.get_ylim()
+    ax2.set_ylim(miny+dy, maxy+dy)
 
 
 def get_yyyymm_add_months(n_yyyymm, n_months):
@@ -169,19 +181,150 @@ plt.savefig("./Lecture_Figures_output/fig7.4_industrial_production_and_Korea_exp
 ########################################################################################################################
 # 그림 7.5 OECD 경기선행지수와 미국 실질가계소비
 
-# OECD 경기선행지수
+# OECD 경기선행지수 (OECD Composite Leading Indicator)
 OECD_MONTHLY = pd.read_pickle('./Market_Watch_Data/oecd_monthly.pkl')
 
 # LOLITOTR_GYSA: 12-month rate of change of the trend restored CLI
 df_oecd_cli = OECD_MONTHLY[(OECD_MONTHLY["location_id"] == "OECD") & (OECD_MONTHLY["subject_id"] == "LOLITOTR_GYSA")].copy()
+df_oecd_cli["datetime"] = df_oecd_cli["datetime"].apply(lambda dt: dt.replace(day=1))
 
-# YYYYMM 을 기준으로 그 달의 가장 마지막 날짜 입력
-df_oecd_cli["Date"] = pd.to_datetime(
-    get_yyyymm_add_months(df_oecd_cli["yyyymm"], 1) * 100 + 1, errors='coerce', format='%Y%m%d') + pd.Timedelta(days=-1)
-df_oecd_cli["L12_MXEF_Close"] = df_oecd_cli["MXEF_Close"].shift(3)  # lag 3 months
+# df_oecd_cli["L12_MXEF_Close"] = df_oecd_cli["MXEF_Close"].shift(3)  # lag 3 months
 
 # 미국 실질 가계 소비 지출 (Monthly)
 # Real Personal Consumption Expenditures (PCEC96)
 # Units: Billions of Chained 2012 Dollars, Seasonally Adjusted Annual Rate
 fred_PCEC96 = pd.read_pickle('./Market_Watch_Data/fred_PCEC96.pkl')
 fred_PCEC96_pct_change = fred_PCEC96.pct_change(periods=12) * 100
+
+
+# 그림 7.5 OECD 경기선행지수와 미국 실질가계소비
+# 시각화: 월별 시계열 자료 3개를 같은 y 축으로 표시
+fig = plt.figure()
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+# fig.set_size_inches(1800/300, 1200/300)  # 그래프 크기 지정, DPI=300
+
+plt.plot(df_oecd_cli.datetime, df_oecd_cli.datavalue, color='r', label="OECD Composite Leading Indicator")
+plt.plot(fred_PCEC96_pct_change.index, fred_PCEC96_pct_change, color='g', label="Real Personal Consumption Expenditures")
+
+xlim_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
+xlim_end = pd.to_datetime("2023-01-01", errors='coerce', format='%Y-%m-%d')
+
+plt.xlim(xlim_start, )
+plt.ylim(-20, 30)
+plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlabel('Dates', fontsize=10)
+plt.ylabel('Percent Change from Year Ago (%)', fontsize=10)
+plt.legend(loc='lower right')
+plt.show()
+
+plt.savefig("./Lecture_Figures_output/fig7.5_oecd_cli_and_personal_consumption_expenditures.png")
+
+########################################################################################################################
+# 그림 7.6 ISM 신규주문지수와 미국 실질가계소비
+
+# ISM 신규주문지수
+investpy_economic_calendar = pd.read_pickle('./Market_Watch_Data/investpy_economic_calendar_us_20000101_20220215.pkl')
+
+investpy_new_orders = investpy_economic_calendar[investpy_economic_calendar['event'].str.contains("ISM Manufacturing New Orders")].copy()
+investpy_new_orders["datetime_announced"] = pd.to_datetime(investpy_new_orders["date"], errors='coerce', format="%d/%m/%Y")
+investpy_new_orders["datetime"] = investpy_new_orders["datetime_announced"] + pd.DateOffset(months=-1)
+investpy_new_orders["datetime"] = investpy_new_orders["datetime"].apply(lambda dt: dt.replace(day=1))
+investpy_new_orders["index"] = pd.to_numeric(investpy_new_orders["actual"])
+investpy_new_orders["pct_change"] = investpy_new_orders["index"].pct_change(periods=12) * 100
+investpy_new_orders["index_ma_3m"] = investpy_new_orders["index"].rolling(window=3).mean()
+
+
+# 미국 실질 가계 소비 지출 (Monthly)
+# Real Personal Consumption Expenditures (PCEC96)
+# Units: Billions of Chained 2012 Dollars, Seasonally Adjusted Annual Rate
+fred_PCEC96 = pd.read_pickle('./Market_Watch_Data/fred_PCEC96.pkl')
+fred_PCEC96_pct_change = fred_PCEC96.pct_change(periods=12) * 100
+
+
+# 그림 7.6 ISM 신규주문지수와 미국 실질가계소비
+# 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
+fig, ax1 = plt.subplots()
+xlim_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
+
+# 첫번째 시계열
+color1 = "tab:blue"
+ax1.set_xlabel("Dates")
+ax1.set_ylabel("Real Personal Consumption Expenditures", color=color1)  # 데이터 레이블
+ax1.plot(fred_PCEC96_pct_change.index, fred_PCEC96_pct_change, color=color1)
+ax1.tick_params(axis="y")
+
+# 두번째 시계열
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+color2 = "tab:red"
+ax2.set_ylabel("ISM Manufacturing New Orders Index (3 months moving average)", color=color2)  # 데이터 레이블
+ax2.plot(investpy_new_orders.datetime, investpy_new_orders["index_ma_3m"], color=color2, linestyle='-')
+ax2.tick_params(axis='y')
+
+# 그래프 기타 설정
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+ax1.set_ylim([-5, 10])
+#ax2.set_ylim([0, 80])
+# align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
+# plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlim(xlim_start, )
+plt.show()
+
+# 그림 저장
+plt.savefig("./Lecture_Figures_output/fig7.6_ism_new_orders_and_personal_consumption_expenditures.png")  # 그림 저장
+
+
+########################################################################################################################
+# 그림 7.7 ISM 신규주문지수와 한국 수출
+
+# ISM 신규주문지수
+investpy_economic_calendar = pd.read_pickle('./Market_Watch_Data/investpy_economic_calendar_us_20000101_20220215.pkl')
+
+investpy_new_orders = investpy_economic_calendar[investpy_economic_calendar['event'].str.contains("ISM Manufacturing New Orders")].copy()
+investpy_new_orders["datetime_announced"] = pd.to_datetime(investpy_new_orders["date"], errors='coerce', format="%d/%m/%Y")
+investpy_new_orders["datetime"] = investpy_new_orders["datetime_announced"] + pd.DateOffset(months=-1)
+investpy_new_orders["datetime"] = investpy_new_orders["datetime"].apply(lambda dt: dt.replace(day=1))
+investpy_new_orders["index"] = pd.to_numeric(investpy_new_orders["actual"])
+investpy_new_orders["pct_change"] = investpy_new_orders["index"].pct_change(periods=12) * 100
+investpy_new_orders["index_ma_3m"] = investpy_new_orders["index"].rolling(window=3).mean()
+
+# 한국 수출 통계
+# Exports: Value Goods for the Republic of Korea (XTEXVA01KRM667S)
+# Units: US Dollars Monthly Level, Seasonally Adjusted
+fred_XTEXVA01KRM667S = pd.read_pickle('./Market_Watch_Data/fred_XTEXVA01KRM667S.pkl')
+fred_XTEXVA01KRM667S_pct_change = fred_XTEXVA01KRM667S.pct_change(periods=12) * 100
+fred_XTEXVA01KRM667S_3m_ma = fred_XTEXVA01KRM667S.rolling(window=3).mean()
+fred_XTEXVA01KRM667S_3m_ma_pct_change = fred_XTEXVA01KRM667S_3m_ma.pct_change(periods=12) * 100
+
+# 그림 7.7 ISM 신규주문지수와 한국 수출
+# 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
+fig, ax1 = plt.subplots()
+xlim_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
+
+# 첫번째 시계열
+color1 = "tab:blue"
+ax1.set_xlabel("Dates")
+ax1.set_ylabel("Korea Exports 3 Months Moving Average (%, YoY)", color=color1)  # 데이터 레이블
+ax1.plot(fred_XTEXVA01KRM667S_3m_ma_pct_change.index, fred_XTEXVA01KRM667S_3m_ma_pct_change, color=color1)
+ax1.tick_params(axis="y")
+
+# 두번째 시계열
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+color2 = "tab:red"
+ax2.set_ylabel("ISM Manufacturing New Orders Index (3 months moving average)", color=color2)  # 데이터 레이블
+ax2.plot(investpy_new_orders.datetime, investpy_new_orders["index_ma_3m"], color=color2, linestyle='-')
+ax2.tick_params(axis='y')
+
+# 그래프 기타 설정
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+ax1.set_ylim([-50, 50])
+#ax2.set_ylim([0, 80])
+# align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
+# plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlim(xlim_start, )
+plt.show()
+
+# 그림 저장
+plt.savefig("./Lecture_Figures_output/fig7.7_ism_new_orders_and_korea_exports.png")  # 그림 저장
+

@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import investpy
 import datetime as dt
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 # import mplfinance as mpf  # 캔들차트
 
 DD_END_DATE = "15/02/2022"
@@ -39,6 +39,28 @@ investpy_069500.to_pickle('./Market_Watch_Data/investpy_069500.pkl')
 # investpy_economic_calendar_us_20000101_20220215 = investpy.economic_calendar(
 #     countries=["united states"], from_date="01/01/2000", to_date="15/02/2022")
 # investpy_economic_calendar_us_20000101_20220215.to_pickle('./Market_Watch_Data/investpy_economic_calendar_us_20000101_20220215.pkl')
+
+# # Economic Calendar US (20000101~20220131)
+# investpy_economic_calendar_us_20000101_20220131 = investpy.economic_calendar(
+#     countries=["united states"], from_date="01/01/2000", to_date="31/01/2022")
+# investpy_economic_calendar_us_20000101_20220131.to_pickle('./Market_Watch_Data/investpy_economic_calendar_us_20000101_20220131.pkl')
+
+# Economic Calendar US (20000101~20220131)
+investpy_economic_calendar_us_20000101_20220131 = \
+    pd.read_pickle('./Market_Watch_Data/investpy_economic_calendar_us_20000101_20220131.pkl')
+
+# Economic Calendar US (20220201~Current)
+investpy_economic_calendar_us_20220201_current = investpy.economic_calendar(
+    countries=["united states"], from_date="01/02/2022", to_date=DD_END_DATE)
+investpy_economic_calendar_us_20220201_current.to_pickle(
+    './Market_Watch_Data/investpy_economic_calendar_us_20220201_current.pkl')
+
+# Economic Calendar US 합치기
+investpy_economic_calendar_us = pd.concat(
+    [investpy_economic_calendar_us_20000101_20220131, investpy_economic_calendar_us_20220201_current])
+
+# 데이터 저장
+investpy_economic_calendar_us.to_pickle('./Market_Watch_Data/investpy_economic_calendar_us.pkl')
 
 
 ########################################################################################################################

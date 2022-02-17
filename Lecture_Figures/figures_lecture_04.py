@@ -1,3 +1,4 @@
+# 4강 경기순환
 # Created by Kim Hyeongjun on 01/19/2021.
 # Copyright © 2021 dr-hkim.github.io. All rights reserved.
 # https://ecos.bok.or.kr/jsp/openapi/OpenApiController.jsp
@@ -14,6 +15,15 @@ from data_raw.def_authentication import *
 import statsmodels.api as sm  # HP Filtering
 
 
+def get_yyyymm_add_months(n_yyyymm, n_months):
+    n_yyyy, n_mm = divmod(n_yyyymm, 100)
+    n_months_y, n_months_m = divmod(n_mm + n_months - 1, 12)
+    output_yyyy = n_yyyy + n_months_y
+    output_mm = n_months_m + 1
+    output_yyyymm = output_yyyy * 100 + output_mm
+    return output_yyyymm
+
+
 def align_yaxis(ax1, v1, ax2, v2):
     """adjust ax2 ylimit so that v2 in ax2 is aligned to v1 in ax1"""
     _, y1 = ax1.transData.transform((0, v1))
@@ -24,335 +34,210 @@ def align_yaxis(ax1, v1, ax2, v2):
     ax2.set_ylim(miny+dy, maxy+dy)
 
 
-def get_yyyymm_add_months(n_yyyymm, n_months):
-    n_yyyy, n_mm = divmod(n_yyyymm, 100)
-    n_months_y, n_months_m = divmod(n_mm + n_months - 1, 12)
-    output_yyyy = n_yyyy + n_months_y
-    output_mm = n_months_m + 1
-    output_yyyymm = output_yyyy * 100 + output_mm
-    return output_yyyymm
-
 ########################################################################################################################
-# 그림 4.1 GDP 대비 경상수지와 GDP 갭 (%)
-# 10.1.1 국민계정(2015년 기준년) - 주요지표 - 연간지표 [111Y002][YY] (1953 부터)
+# 그림 2.2 실질경제성장률과 기업의 매출액순이익률
+
+# 10.1.1 국민계정(2015년 기준년) - 주요지표 - 연간지표 [111Y002] (1953 부터)
 BOK_111Y002 = pd.read_pickle('./Market_Watch_Data/BOK_111Y002.pkl')
+BOK_111Y002_01 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "20101"].copy()  # 국내총생산(실질성장률)[%]
 
-# GDP 갭 계산
-BOK_111Y002_00 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "10101"].copy()  # 국내총생산(GDP)(명목, 십억원)
-BOK_111Y002_00["YYYYMMDD"] = BOK_111Y002_00["TIME"] * 10000 + 101
-BOK_111Y002_00["DATETIME"] = pd.to_datetime(BOK_111Y002_00['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
-BOK_111Y002_00["GDP"] = BOK_111Y002_00["DATA_VALUE"].copy() * 1000000000  # 국내총생산(GDP)(명목, 원)
-BOK_111Y002_00["Actual_GDP"] = BOK_111Y002_00["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 십억원)
+# 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(~2007)[027Y131][YY] (1960 부터)
+BOK_027Y131 = pd.read_pickle('./Market_Watch_Data/BOK_027Y131.pkl')
+BOK_027Y131_01 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "전산업") & (BOK_027Y131["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_027Y131_02 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "제조업") & (BOK_027Y131["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_027Y131_03 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "제조업") & (BOK_027Y131["ITEM_NAME2"] == "매출액경상이익률(~2006)")].copy()  # 국내총생산(실질성장률)[%]
 
-BOK_111Y002_03 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "90103"].copy()  # GDP 디플레이터 (2015=100)
-BOK_111Y002_03["YYYYMMDD"] = BOK_111Y002_03["TIME"] * 10000 + 101
-BOK_111Y002_03["DATETIME"] = pd.to_datetime(BOK_111Y002_03['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
-BOK_111Y002_03["GDP_Deflator"] = BOK_111Y002_03["DATA_VALUE"].copy()  # GDP 디플레이터 (2015=100)
+# 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(2007~2010)[027Y331][YY]
+BOK_027Y331 = pd.read_pickle('./Market_Watch_Data/BOK_027Y331.pkl')
+BOK_027Y331_01 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "전산업") & (BOK_027Y331["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_027Y331_02 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "제조업") & (BOK_027Y331["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_027Y331_03 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "제조업") & (BOK_027Y331["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
 
-BOK_111Y002_00 = pd.merge(BOK_111Y002_00, BOK_111Y002_03[["DATETIME", "GDP_Deflator"]], left_on='DATETIME', right_on='DATETIME', how='left')
-BOK_111Y002_00["Real_GDP"] = BOK_111Y002_00["Actual_GDP"] / BOK_111Y002_00["GDP_Deflator"]
-cycle, trend = sm.tsa.filters.hpfilter(BOK_111Y002_00["Real_GDP"], 100)  # 람다=100 으로 놓는게 중요 (경험치...)
-BOK_111Y002_00["Potential_GDP"] = trend
-BOK_111Y002_00["GDP_Gap"] = ((BOK_111Y002_00["Real_GDP"] - BOK_111Y002_00["Potential_GDP"]) / BOK_111Y002_00["Potential_GDP"]) * 100  # GDP 갭 (%)
+# 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(2009~, 전수조사) [027Y431][YY]
+BOK_027Y431 = pd.read_pickle('./Market_Watch_Data/BOK_027Y431.pkl')
+BOK_027Y431_01 = BOK_027Y431[(BOK_027Y431["ITEM_NAME1"] == "전산업") & (BOK_027Y431["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_027Y431_02 = BOK_027Y431[(BOK_027Y431["ITEM_NAME1"] == "제조업") & (BOK_027Y431["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_027Y431_03 = BOK_027Y431[(BOK_027Y431["ITEM_NAME1"] == "제조업") & (BOK_027Y431["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
 
-BOK_111Y002_01 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "1010101"].copy()  # 국내총생산(GDP)(명목, 억달러)
-BOK_111Y002_01["YYYYMMDD"] = BOK_111Y002_01["TIME"] * 10000 + 101
-BOK_111Y002_01["DATETIME"] = pd.to_datetime(BOK_111Y002_01['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
-BOK_111Y002_01["GDP"] = BOK_111Y002_01["DATA_VALUE"].copy() * 100000000  # 국내총생산(GDP)(명목, 달러)
-BOK_111Y002_01["Actual_GDP"] = BOK_111Y002_01["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 억달러)
+# 그림: 경제성장률과 기업이익의 추이
+real_gdp_growth = BOK_111Y002_01.copy()
+net_income_to_sales = pd.concat([BOK_027Y131_03, BOK_027Y331_03, BOK_027Y431_03])
 
-# GDP 대비 경상수지 계산
-# 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
-BOK_022Y013 = pd.read_pickle('./Market_Watch_Data/BOK_022Y013.pkl')
-
-BOK_022Y013_00 = BOK_022Y013[BOK_022Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (백만달러)
-BOK_022Y013_00["Current_Account"] = BOK_022Y013_00["DATA_VALUE"].copy() * 1000000  # 경상수지(current account) (달러)
-BOK_022Y013_00["Current_Account"] = BOK_022Y013_00["Current_Account"].rolling(window=12).sum()  # 경상수지 12개월 누적
-
-df_CA_to_GDP = pd.merge(BOK_022Y013_00, BOK_111Y002_01[["DATETIME", "GDP"]], left_on='DATETIME', right_on='DATETIME', how='left')
-df_CA_to_GDP["GDP"] = df_CA_to_GDP["GDP"].fillna(method='ffill')
-df_CA_to_GDP["CA_to_GDP"] = df_CA_to_GDP["Current_Account"] / df_CA_to_GDP["GDP"] * 100  # GDP 대비 경상수지 (%)
-
-# 그림 4.1 GDP 대비 경상수지와 GDP 갭 (%)
-# 시각화: 월별 시계열 자료 1개를 표시
-fig = plt.figure()
-fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
-
-plt.plot(df_CA_to_GDP["DATETIME"], df_CA_to_GDP["CA_to_GDP"], color='r', label="Current Account to GDP")
-plt.plot(BOK_111Y002_00["DATETIME"], BOK_111Y002_00["GDP_Gap"], color='g', label="GDP Gap")
-
-xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
-plt.xlim(xlim_start, )
-plt.ylim(-10, 15)
-plt.axhline(y=0, color='green', linestyle='dotted')
-plt.xlabel('Dates', fontsize=10)
-plt.ylabel('Percentage (%)', fontsize=10)
-plt.legend(loc='upper left')
-plt.show()
-
-plt.savefig("./Lecture_Figures_output/fig4.1_current_account_to_gdp_and_gdp_gap.png")
-
-
-########################################################################################################################
-# 그림 4.2 GDP 대비 경상수지와 저축률 (%)
-
-# GDP 대비 경상수지 계산
-
-# 10.1.1 국민계정(2015년 기준년) - 주요지표 - 연간지표 [111Y002][YY] (1953 부터)
-BOK_111Y002 = pd.read_pickle('./Market_Watch_Data/BOK_111Y002.pkl')
-BOK_111Y002_01 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "1010101"].copy()  # 국내총생산(GDP)(명목, 억달러)
-BOK_111Y002_01["YYYYMMDD"] = BOK_111Y002_01["TIME"] * 10000 + 101
-BOK_111Y002_01["DATETIME"] = pd.to_datetime(BOK_111Y002_01['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
-BOK_111Y002_01["GDP"] = BOK_111Y002_01["DATA_VALUE"].copy() * 100000000  # 국내총생산(GDP)(명목, 달러)
-BOK_111Y002_01["Actual_GDP"] = BOK_111Y002_01["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 억달러)
-
-# 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
-BOK_022Y013 = pd.read_pickle('./Market_Watch_Data/BOK_022Y013.pkl')
-BOK_022Y013_00 = BOK_022Y013[BOK_022Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (백만달러)
-BOK_022Y013_00["Current_Account"] = BOK_022Y013_00["DATA_VALUE"].copy() * 1000000  # 경상수지(current account) (달러)
-BOK_022Y013_00["Current_Account"] = BOK_022Y013_00["Current_Account"].rolling(window=12).sum()  # 경상수지 12개월 누적
-
-df_CA_to_GDP = pd.merge(BOK_022Y013_00, BOK_111Y002_01[["DATETIME", "GDP"]], left_on='DATETIME', right_on='DATETIME', how='left')
-df_CA_to_GDP["GDP"] = df_CA_to_GDP["GDP"].fillna(method='ffill')
-df_CA_to_GDP["CA_to_GDP"] = df_CA_to_GDP["Current_Account"] / df_CA_to_GDP["GDP"] * 100  # GDP 대비 경상수지 (%)
-
-
-BOK_111Y002_02 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "8010400"].copy()  # 가계순저축률 (%)
-BOK_111Y002_02["YYYYMMDD"] = BOK_111Y002_02["TIME"] * 10000 + 1231
-BOK_111Y002_02["DATETIME"] = pd.to_datetime(BOK_111Y002_02['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
-
-# 그림 4.2 GDP 대비 경상수지와 가계순저축률 (%)
-# 시각화: 월별 시계열 자료 1개를 표시
-fig = plt.figure()
-fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
-
-plt.plot(df_CA_to_GDP["DATETIME"], df_CA_to_GDP["CA_to_GDP"], color='r', label="Current Account to GDP (%)")
-plt.plot(BOK_111Y002_02["DATETIME"], BOK_111Y002_02["DATA_VALUE"], color='g', label="Households Net Saving Ratio (%)")
-
-xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
-plt.xlim(xlim_start, )
-plt.ylim(-10, 30)
-plt.axhline(y=0, color='green', linestyle='dotted')
-plt.xlabel('Dates', fontsize=10)
-plt.ylabel('Percentage (%)', fontsize=10)
-plt.legend(loc='upper left')
-plt.show()
-
-plt.savefig("./Lecture_Figures_output/fig4.2_current_account_to_gdp_and_households_net_saving_ratio.png")
-
-
-########################################################################################################################
-# 그림 4.4 실질실효환율과 경상수지 추이
-
-# BIS 실질실효환율(real effective exchange rate) 데이터 불러오기
-df_bis_data = pd.read_excel(
-    './Market_Watch_Data/BIS_Effective_Exchange_Rates.xlsx', sheet_name="Real", header=None, skiprows=5, skipfooter=0)
-df_bis_header = pd.read_excel(
-    './Market_Watch_Data/BIS_Effective_Exchange_Rates.xlsx', sheet_name="Real", header=None, skiprows=3, nrows=1)
-df_bis_header[0] = "DATETIME"
-df_bis_header = df_bis_header.transpose()
-df_bis_header = df_bis_header[0].tolist()
-df_bis_data.columns = df_bis_header
-df_bis_data["Korea_100"] = df_bis_data["Korea"] - 100
-
-# 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
-BOK_022Y013 = pd.read_pickle('./Market_Watch_Data/BOK_022Y013.pkl')
-BOK_022Y013_00 = BOK_022Y013[BOK_022Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (백만달러)
-BOK_022Y013_00["Current_Account"] = BOK_022Y013_00["DATA_VALUE"].copy() / 1000  # 경상수지(current account) (십억 달러)
-BOK_022Y013_00["Current_Account"] = BOK_022Y013_00["Current_Account"].rolling(window=12).sum()  # 경상수지 12개월 누적
-
-
-# 그림 4.4 실질실효환율과 경상수지 추이
-# 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
 fig, ax1 = plt.subplots()
-xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
 
-# 첫번째 시계열
 color1 = "tab:red"
-ax1.set_xlabel("Dates")
-ax1.set_ylabel("Real Effective Exchange Rates (%)", color=color1)  # 데이터 레이블
-ax1.plot(df_bis_data["DATETIME"], df_bis_data["Korea_100"], color=color1)
+ax1.set_xlabel("year")
+ax1.set_ylabel("Real GDP Growth (annual, %)", color=color1)
+ax1.plot(real_gdp_growth["TIME"], real_gdp_growth["DATA_VALUE"], color=color1)
 ax1.tick_params(axis="y")
 
-# 두번째 시계열
 ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+
 color2 = "tab:blue"
-ax2.set_ylabel("Current Account (billion dollars)", color=color2)  # 데이터 레이블
-ax2.plot(BOK_022Y013_00["DATETIME"], BOK_022Y013_00["Current_Account"], color=color2, linestyle='-')
+ax2.set_ylabel("Net Income to Sales (annual, %)", color=color2)  # we already handled the x-label with ax1
+ax2.plot(net_income_to_sales["TIME"], net_income_to_sales["DATA_VALUE"], color=color2, linestyle='-')
 ax2.tick_params(axis='y')
 
-# 그래프 기타 설정
 fig.tight_layout()  # otherwise the right y-label is slightly clipped
 fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
-ax1.set_ylim([-30, 35])
-ax2.set_ylim([-90, 120])
 align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
 plt.axhline(y=0, color='green', linestyle='dotted')
-plt.xlim(xlim_start, )
+plt.xlim([1981, 2022])
 plt.show()
-plt.savefig("./Lecture_Figures_output/fig4.4_real_effective_exchange_rates_and_current_account.png")  # 그림 저장
 
+# 그림 저장
+plt.savefig("./Lecture_Figures_output/fig2.2_net_income_to_sales_and_real_gdp_growth.png")
 
 
 ########################################################################################################################
-# 그림 4.5 OECD 경기선행지수 (Composite Leading Indicators)
-# 데이터 불러오기
-OECD_MONTHLY = pd.read_pickle('./Market_Watch_Data/oecd_monthly.pkl')
+# 그림 2.3 실질경제성장률과 연간 코스피 성장률
+# 실질GDP (전년동기대비변동률, %)
+# 6.1.2 증권/재정 - 주식거래 및 주가지수 [028Y015][MM, YY] (200002, 1976 부터)
+BOK_028Y015 = pd.read_pickle('./Market_Watch_Data/BOK_028Y015.pkl')
+BOK_028Y015_01 = BOK_028Y015[BOK_028Y015["ITEM_NAME1"] == "KOSPI_종가"].copy()  # 국내총생산(GDP)(실질, 원계열, 전년동기)
 
-# YYYYMM 을 기준으로 그 달의 가장 마지막 날짜 입력
-OECD_MONTHLY["DATETIME"] = pd.to_datetime(
-    get_yyyymm_add_months(OECD_MONTHLY["yyyymm"], 1) * 100 + 1, errors='coerce', format='%Y%m%d') + pd.Timedelta(days=-1)
+# 그림: 경제성장률과 코스피지수의 추이
+kospi_index = BOK_028Y015_01.copy()
+kospi_index["L1_DATA_VALUE"] = kospi_index["DATA_VALUE"].shift(1)
+kospi_index["GROWTH_RATE"] = (kospi_index["DATA_VALUE"]/kospi_index["L1_DATA_VALUE"]-1)*100
 
-# LOLITOTR_GYSA: 12-month rate of change of the trend restored CLI
-# LOLITONO: Normalised (CLI)
-# LOLITOAA: Amplitude adjusted (CLI)
-# 장기 추세를 제거하고 최근 수치에 가중치를 두는 방식으로 진폭조정된(Amplitude adjusted) CLI
-# 100이 넘으면 경기 상승, 100을 밑돌면 경기 하강
-df_oecd_cli = OECD_MONTHLY[(OECD_MONTHLY["location_id"] == "OECD") & (OECD_MONTHLY["subject_id"] == "LOLITOAA")].copy()
-df_korea_cli = OECD_MONTHLY[(OECD_MONTHLY["location_id"] == "KOR") & (OECD_MONTHLY["subject_id"] == "LOLITOAA")].copy()
-
-# 그림 4.5 OECD 경기선행지수 (Composite Leading Indicators)
-# 시각화: 월별 시계열 자료 1개를 표시
-fig = plt.figure()
-fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
-
-plt.plot(df_oecd_cli["DATETIME"], df_oecd_cli["datavalue"], color='r', label="OECD Composite Leading Indicators")
-plt.plot(df_korea_cli["DATETIME"], df_korea_cli["datavalue"], color='g', label="Korea Composite Leading Indicators")
-
-xlim_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
-plt.xlim(xlim_start, )
-# plt.ylim(-1, 7)
-plt.axhline(y=100, color='green', linestyle='dotted')
-plt.xlabel('Dates', fontsize=10)
-plt.ylabel('Composite Leading Indicators', fontsize=10)
-plt.legend(loc='upper right')
-plt.show()
-
-plt.savefig("./Lecture_Figures_output/fig4.5_composite_leading_indicators_oecd_kor.png")  # 그림 저장
-
-########################################################################################################################
-# 그림 4.7 한국은행 기준금리와 소비자물가지수 상승률 (%)
-# 2.6 한국은행 기준금리 및 여수신금리 [098Y001][DD, MM, QQ, YY] (1994.01.03 부터)
-BOK_098Y001_DD = pd.read_pickle('./Market_Watch_Data/BOK_098Y001_DD.pkl')
-BOK_098Y001_DD_01 = BOK_098Y001_DD[BOK_098Y001_DD["ITEM_CODE1"] == "0101000"].copy()  # 한국은행 기준금리
-
-# 7.4.2 소비자물가지수(2020=100)(전국, 특수분류)  [021Y126][MM,QQ,YY] (1975.01 부터)
-BOK_021Y126 = pd.read_pickle('./Market_Watch_Data/BOK_021Y126.pkl')
-BOK_021Y126_00 = BOK_021Y126[BOK_021Y126["ITEM_CODE1"] == "00"].copy()  # 총지수
-BOK_021Y126_00["pct_change_DATA_VALUE"] = (BOK_021Y126_00["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
-
-# 그림 4.7 한국은행 기준금리와 소비자물가지수 상승률 (%)
-# 시각화: 월별 시계열 자료 1개를 표시
-fig = plt.figure()
-fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
-
-plt.plot(BOK_098Y001_DD_01["DATETIME"], BOK_098Y001_DD_01["DATA_VALUE"], color='r', label="BOK_ Base Rate (%)")
-plt.plot(BOK_021Y126_00["DATETIME"], BOK_021Y126_00["pct_change_DATA_VALUE"], color='g', label="CPI Percent Changes (%)")
-
-xlim_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
-plt.xlim(xlim_start, )
-plt.ylim(-1, 7)
-plt.axhline(y=0, color='green', linestyle='dotted')
-plt.xlabel('Dates', fontsize=10)
-plt.ylabel('Percentage (%)', fontsize=10)
-plt.legend(loc='upper left')
-plt.show()
-
-plt.savefig("./Lecture_Figures_output/fig4.7_bok_base_rate_and_cpi_percent_changes.png")  # 그림 저장
-
-
-########################################################################################################################
-# 그림 4.8 경상수지와 코스피 지수
-
-# 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
-BOK_022Y013 = pd.read_pickle('./Market_Watch_Data/BOK_022Y013.pkl')
-BOK_022Y013_00 = BOK_022Y013[BOK_022Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (백만달러)
-BOK_022Y013_00["Current_Account_3M"] = BOK_022Y013_00["DATA_VALUE"].rolling(window=3).sum() / 1000  # 경상수지 3개월 누적 (십억달러)
-BOK_022Y013_00["Current_Account_12M"] = BOK_022Y013_00["DATA_VALUE"].rolling(window=12).sum() / 1000  # 경상수지 12개월 누적 (십억달러)
-BOK_022Y013_00["Current_Account_cum"] = BOK_022Y013_00["DATA_VALUE"].cumsum() / 1000  # 경상수지 누적 (십억달러)
-
-# 코스피지수
-investpy_kospi = pd.read_pickle('./Market_Watch_Data/investpy_kospi.pkl')
-investpy_kospi_monthly = investpy_kospi.shift(-1).resample('M').last()
-
-# 그림 4.8 경상수지와 코스피 지수
-# 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
 fig, ax1 = plt.subplots()
-xlim_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
 
-# 첫번째 시계열
 color1 = "tab:red"
-ax1.set_xlabel("Dates")
-ax1.set_ylabel("Current Account (12 months cumulative)", color=color1)  # 데이터 레이블
-ax1.plot(BOK_022Y013_00["DATETIME"], BOK_022Y013_00["Current_Account_12M"], color=color1)
+ax1.set_xlabel("year")
+ax1.set_ylabel("Real GDP Growth (annual, %)", color=color1)
+ax1.plot(real_gdp_growth["TIME"], real_gdp_growth["DATA_VALUE"], color=color1)
 ax1.tick_params(axis="y")
 
-# 두번째 시계열
 ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+
 color2 = "tab:blue"
-ax2.set_ylabel("KOSPI", color=color2)  # 데이터 레이블
-ax2.plot(investpy_kospi_monthly.index, investpy_kospi_monthly["Close"], color=color2, linestyle='-')
+ax2.set_ylabel("KOSPI Growth (annual, %)", color=color2)  # we already handled the x-label with ax1
+ax2.plot(kospi_index["TIME"], kospi_index["GROWTH_RATE"], color=color2, linestyle='-')
 ax2.tick_params(axis='y')
 
-# 그래프 기타 설정
 fig.tight_layout()  # otherwise the right y-label is slightly clipped
 fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
-ax1.set_ylim([-10, 120])
-ax2.set_ylim([0, 3500])
-# align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
-# plt.axhline(y=0, color='green', linestyle='dotted')
-plt.xlim(xlim_start, )
+align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
+plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlim([1981, 2022])
 plt.show()
 
-plt.savefig("./Lecture_Figures_output/fig4.8_current_account_and_kospi.png")  # 그림 저장
+# 그림 저장
+plt.savefig("./Lecture_Figures_output/fig2.3_kospi_growth_and_real_gdp_growth.png")
 
 
 ########################################################################################################################
-# 그림 4.9 실질실효환율과 달러/원 환율 추이
+# 그림 2.7 코스피지수와 MSCI 신흥시장지수
+# 데이터 불러오기
+investpy_msci = pd.read_pickle('./Market_Watch_Data/investpy_msci.pkl')
+investpy_kospi = pd.read_pickle('./Market_Watch_Data/investpy_kospi.pkl')
 
-# BIS 실질실효환율(real effective exchange rate) 데이터 불러오기
-df_bis_data = pd.read_excel(
-    './Market_Watch_Data/BIS_Effective_Exchange_Rates.xlsx', sheet_name="Real", header=None, skiprows=5, skipfooter=0)
-df_bis_header = pd.read_excel(
-    './Market_Watch_Data/BIS_Effective_Exchange_Rates.xlsx', sheet_name="Real", header=None, skiprows=3, nrows=1)
-df_bis_header[0] = "DATETIME"
-df_bis_header = df_bis_header.transpose()
-df_bis_header = df_bis_header[0].tolist()
-df_bis_data.columns = df_bis_header
-df_bis_data["Korea_100"] = df_bis_data["Korea"] - 100
+investpy_kospi.reset_index(level=0, inplace=True)  # 날짜 인덱스를 칼럼으로
+investpy_kospi.rename(
+    columns={"Open": "KOSPI_Open", "High": "KOSPI_High", "Low": "KOSPI_Low", "Close": "KOSPI_Close"}, inplace=True)
+investpy_kospi = investpy_kospi[["Date", "KOSPI_Open", "KOSPI_High", "KOSPI_Low", "KOSPI_Close"]]
 
-# 8.8.2.1 평균환율, 기말환율 > 주요국통화의 대원화 환율 통계자료 [036Y004][HY,MM,QQ,YY] (1964.05 부터)
-BOK_036Y004 = pd.read_pickle('./Market_Watch_Data/BOK_036Y004.pkl')
-BOK_036Y004_00 = BOK_036Y004[(BOK_036Y004["ITEM_CODE1"] == "0000001") & (BOK_036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
+# MSCI, KOSPI 데이터 합치고 정렬
+df_index_daily0 = pd.merge(investpy_msci, investpy_kospi, left_on="Date", right_on="Date", how="outer")
+df_index_daily0.sort_values(by=["Date"], inplace=True)
 
-# 그림 4.4 실질실효환율과 경상수지 추이
-# 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
+# Daily to Monthly
+# 날짜를 YYYYMM 형태로 변환
+df_index_daily0["YYYYMM"] = df_index_daily0["Date"].dt.year * 100 + df_index_daily0["Date"].dt.month
+
+# YYYYMM 그룹별 OHLC 구하기
+df_index_monthly0 = df_index_daily0.groupby(by='YYYYMM', as_index=False).agg({
+    "MXEF_Close": "last", "MXEF_Open": "first", "MXEF_High": "max", "MXEF_Low": "min",
+    "MXWO_Close": "last", "MXWO_Open": "first", "MXWO_High": "max", "MXWO_Low": "min",
+    "KOSPI_Close": "last", "KOSPI_Open": "first", "KOSPI_High": "max", "KOSPI_Low": "min"})
+
+# YYYYMM 을 기준으로 그 달의 가장 마지막 날짜 입력
+df_index_monthly0["Date"] = pd.to_datetime(
+    get_yyyymm_add_months(df_index_monthly0["YYYYMM"], 1) * 100 + 1, errors='coerce', format='%Y%m%d') + pd.Timedelta(days=-1)
+
+# 그림: MSCI Emerging Markets and KOSPI
 fig, ax1 = plt.subplots()
-xlim_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
 
-# 첫번째 시계열
 color1 = "tab:red"
-ax1.set_ylabel("USD/KRW", color=color1)  # 데이터 레이블
-ax1.plot(BOK_036Y004_00["DATETIME"], BOK_036Y004_00["DATA_VALUE"], color=color1, linestyle='-')
-ax1.tick_params(axis='y')
+ax1.set_xlim([pd.to_datetime("1990-01-01 00:00:00"), pd.to_datetime("2022-12-31 00:00:00")])
+ax1.set_xlabel("Date")
+ax1.set_ylabel("KOSPI(1980.1.4=100)", color=color1)
+ax1.plot(df_index_monthly0["Date"], df_index_monthly0["KOSPI_Close"], color=color1)
+ax1.tick_params(axis="y")
 
-# 두번째 시계열
 ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-color2 = "tab:blue"
-ax2.set_ylabel("Real Effective Exchange Rates (%)", color=color2)  # 데이터 레이블
-ax2.set_xlabel("Dates")
-ax2.plot(df_bis_data["DATETIME"], df_bis_data["Korea_100"], color=color2)
-ax2.tick_params(axis="y")
 
-# 그래프 기타 설정
+color2 = "tab:blue"
+ax2.set_ylabel("MSCI Emerging Markets (1987.12.31=100)", color=color2)  # we already handled the x-label with ax1
+ax2.plot(df_index_monthly0["Date"], df_index_monthly0["MXEF_Close"], color=color2, linestyle='-')
+ax2.tick_params(axis='y')
+
 fig.tight_layout()  # otherwise the right y-label is slightly clipped
 fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
-ax1.set_ylim([800, 1600])
-ax2.set_ylim([-40, 40])
-# align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
-plt.axhline(y=0, color='green', linestyle='dotted')
-plt.xlim(xlim_start, )
+align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
 plt.show()
-plt.savefig("./Lecture_Figures_output/fig4.9_real_effective_exchange_rates_and_usdkrw.png")  # 그림 저장
+
+# 그림 저장
+plt.savefig("./Lecture_Figures_output/fig2.7_kospi_and_msci_emerging_markets.png")
+
+########################################################################################################################
+# 그림 2.8 OECD 경기선행지수와 MSCI 신흥시장지수
+# 데이터 불러오기
+investpy_msci = pd.read_pickle('./Market_Watch_Data/investpy_msci.pkl')
+oecd_monthly = pd.read_pickle('./Market_Watch_Data/oecd_monthly.pkl')
+
+# LOLITOTR_GYSA: 12-month rate of change of the trend restored CLI
+df_oecd_cli = oecd_monthly[(oecd_monthly["location_id"] == "OECD") & (oecd_monthly["subject_id"] == "LOLITOTR_GYSA")].copy()
+
+# YYYYMM 을 기준으로 그 달의 가장 마지막 날짜 입력
+df_oecd_cli["Date"] = pd.to_datetime(
+    get_yyyymm_add_months(df_oecd_cli["yyyymm"], 1) * 100 + 1, errors='coerce', format='%Y%m%d') + pd.Timedelta(days=-1)
+
+# MSCI 데이터 불러오기
+df_msci_daily = investpy_msci.copy()
+
+# Daily to Monthly
+# 날짜를 YYYYMM 형태로 변환
+df_msci_daily["YYYYMM"] = df_msci_daily["Date"].dt.year * 100 + df_msci_daily["Date"].dt.month
+
+# YYYYMM 그룹별 OHLC 구하기
+df_msci_monthly = df_msci_daily.groupby(by='YYYYMM', as_index=False).agg({
+    "MXEF_Close": "last", "MXEF_Open": "first", "MXEF_High": "max", "MXEF_Low": "min",
+    "MXWO_Close": "last", "MXWO_Open": "first", "MXWO_High": "max", "MXWO_Low": "min"})
+
+df_msci_monthly["L12_MXEF_Close"] = df_msci_monthly["MXEF_Close"].shift(12)  # lag
+df_msci_monthly["MXEF_YoY"] = (df_msci_monthly["MXEF_Close"]/df_msci_monthly["L12_MXEF_Close"] - 1)*100
+# df_msci_monthly["L12_KOSPI_Close"] = df_msci_monthly["KOSPI_Close"].shift(12)  # lag
+# df_msci_monthly["KOSPI_YoY"] = (df_msci_monthly["KOSPI_Close"]/df_msci_monthly["L12_KOSPI_Close"] - 1)*100
+
+# YYYYMM 을 기준으로 그 달의 가장 마지막 날짜 입력
+df_msci_monthly["Date"] = pd.to_datetime(
+    get_yyyymm_add_months(df_msci_monthly["YYYYMM"], 1) * 100 + 1, errors='coerce', format='%Y%m%d') + pd.Timedelta(days=-1)
 
 
+# 시각화
+fig, ax1 = plt.subplots()
+
+color1 = "tab:red"
+ax1.set_xlim([pd.to_datetime("1990-01-01 00:00:00"), pd.to_datetime("2022-12-31 00:00:00")])
+ax1.set_xlabel("Date")
+ax1.set_ylabel("OECD Composite Leading Indicator", color=color1)
+ax1.plot(df_oecd_cli["Date"], df_oecd_cli["datavalue"], color=color1)
+ax1.tick_params(axis="y")
+
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+
+color2 = "tab:blue"
+ax2.set_ylabel("MSCI Emerging Markets Monthly YoY", color=color2)  # we already handled the x-label with ax1
+ax2.plot(df_msci_monthly["Date"], df_msci_monthly["MXEF_YoY"], color=color2, linestyle='-')
+ax2.tick_params(axis='y')
+
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
+plt.axhline(y=0, color='green', linestyle='dotted')
+plt.show()
+
+# 그림 저장
+plt.savefig("./Lecture_Figures_output/fig2.8_oecd_cli_and_msci_emerging_markets.png")
