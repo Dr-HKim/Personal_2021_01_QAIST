@@ -66,8 +66,11 @@ fred_XTEXVA01KRM667S = fred.get_series('XTEXVA01KRM667S')
 fred_XTEXVA01KRM667S.to_pickle('./Market_Watch_Data/fred_XTEXVA01KRM667S.pkl')
 
 
-
-
+# 유가 WTI (Monthly)
+# Spot Crude Oil Price: West Texas Intermediate (WTI) (WTISPLC)
+# Units: Dollars per Barrel, Not Seasonally Adjusted
+fred_WTISPLC = fred.get_series('WTISPLC')
+fred_WTISPLC.to_pickle('./Market_Watch_Data/fred_WTISPLC.pkl')
 
 
 

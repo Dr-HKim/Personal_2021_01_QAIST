@@ -274,7 +274,7 @@ BOK_022Y013_00["Current_Account_cum"] = BOK_022Y013_00["DATA_VALUE"].cumsum() / 
 
 # 코스피지수
 investpy_kospi = pd.read_pickle('./Market_Watch_Data/investpy_kospi.pkl')
-investpy_kospi_monthly = investpy_kospi.shift(-1).resample('M').last()
+investpy_kospi_monthly = investpy_kospi.resample('M').last()
 
 # 그림 4.8 경상수지와 코스피 지수
 # 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일

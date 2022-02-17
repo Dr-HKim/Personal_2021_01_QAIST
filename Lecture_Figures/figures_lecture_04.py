@@ -94,7 +94,7 @@ plt.savefig("./Lecture_Figures_output/fig2.2_net_income_to_sales_and_real_gdp_gr
 # 실질GDP (전년동기대비변동률, %)
 # 6.1.2 증권/재정 - 주식거래 및 주가지수 [028Y015][MM, YY] (200002, 1976 부터)
 BOK_028Y015 = pd.read_pickle('./Market_Watch_Data/BOK_028Y015.pkl')
-BOK_028Y015_01 = BOK_028Y015[BOK_028Y015["ITEM_NAME1"] == "KOSPI_종가"].copy()  # 국내총생산(GDP)(실질, 원계열, 전년동기)
+BOK_028Y015_01 = BOK_028Y015[BOK_028Y015["ITEM_NAME1"] == "KOSPI_종가"].copy()
 
 # 그림: 경제성장률과 코스피지수의 추이
 kospi_index = BOK_028Y015_01.copy()

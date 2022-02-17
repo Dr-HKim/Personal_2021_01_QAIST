@@ -210,6 +210,9 @@ BOK_064Y001.to_pickle('./Market_Watch_Data/BOK_064Y001.pkl')
 BOK_028Y015 = get_bok_data(STAT_CODE="028Y015", CYCLE_TYPE="YY", START_DATE="1976", END_DATE="2020")
 BOK_028Y015.to_pickle('./Market_Watch_Data/BOK_028Y015.pkl')
 # BOK_028Y015_01 = BOK_028Y015[BOK_028Y015["ITEM_NAME1"] == "KOSPI_종가"].copy()  # 국내총생산(GDP)(실질, 원계열, 전년동기)
+BOK_028Y015_MM = get_bok_data(STAT_CODE="028Y015", CYCLE_TYPE="MM", START_DATE="200002", END_DATE=MM_END_DATE)
+BOK_028Y015_MM.to_pickle('./Market_Watch_Data/BOK_028Y015_MM.pkl')
+
 
 # 7.1.1 생산자물가지수(2015=100)(기본분류)  [013Y202][MM,QQ,YY] (1965.01 부터)
 BOK_013Y202 = get_bok_data(STAT_CODE="013Y202", CYCLE_TYPE="MM", START_DATE="196501", END_DATE=MM_END_DATE)
@@ -236,6 +239,7 @@ BOK_022Y013.to_pickle('./Market_Watch_Data/BOK_022Y013.pkl')
 # 8.8.2.1 평균환율, 기말환율 > 주요국통화의 대원화 환율 통계자료 [036Y004][HY,MM,QQ,YY] (1964.05 부터)
 BOK_036Y004 = get_bok_data(STAT_CODE="036Y004", CYCLE_TYPE="MM", START_DATE="196405", END_DATE=MM_END_DATE)
 BOK_036Y004.to_pickle('./Market_Watch_Data/BOK_036Y004.pkl')
+# BOK_036Y004_00 = BOK_036Y004[(BOK_036Y004["ITEM_CODE1"] == "0000001") & (BOK_036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
 # BOK_036Y004_01 = BOK_036Y004[(BOK_036Y004["ITEM_CODE1"] == "0000001") & (BOK_036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원/미국달러 말일자료
 
 

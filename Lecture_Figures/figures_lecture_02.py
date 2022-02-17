@@ -38,11 +38,11 @@ def get_yyyymm_add_months(n_yyyymm, n_months):
 
 # 코스피 200 지수
 investpy_kospi_200 = pd.read_pickle('./Market_Watch_Data/investpy_kospi_200.pkl')
-investpy_kospi_200_monthly = investpy_kospi_200.shift(-1).resample('M').last()
+investpy_kospi_200_monthly = investpy_kospi_200.resample('M').last()
 
 # 코덱스 200 (069500) 가격
 investpy_069500 = pd.read_pickle('./Market_Watch_Data/investpy_069500.pkl')
-investpy_069500_monthly = investpy_069500.shift(-1).resample('M').last()
+investpy_069500_monthly = investpy_069500.resample('M').last()
 
 # 시각화: 월별 시계열 자료 3개를 같은 y 축으로 표시
 fig = plt.figure()
