@@ -37,30 +37,30 @@ def align_yaxis(ax1, v1, ax2, v2):
 # 그림 2.2 실질경제성장률과 기업의 매출액순이익률
 
 # 10.1.1 국민계정(2015년 기준년) - 주요지표 - 연간지표 [111Y002] (1953 부터)
-BOK111Y002 = pd.read_pickle('./BOK_raw/BOK111Y002.pkl')
-BOK111Y002_01 = BOK111Y002[BOK111Y002["ITEM_CODE1"] == "20101"].copy()  # 국내총생산(실질성장률)[%]
+BOK_111Y002 = pd.read_pickle('./Market_Watch_Data/BOK_111Y002.pkl')
+BOK_111Y002_01 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "20101"].copy()  # 국내총생산(실질성장률)[%]
 
 # 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(~2007)[027Y131][YY] (1960 부터)
-BOK027Y131 = pd.read_pickle('./BOK_raw/BOK027Y131.pkl')
-BOK027Y131_01 = BOK027Y131[(BOK027Y131["ITEM_NAME1"] == "전산업") & (BOK027Y131["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-BOK027Y131_02 = BOK027Y131[(BOK027Y131["ITEM_NAME1"] == "제조업") & (BOK027Y131["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-BOK027Y131_03 = BOK027Y131[(BOK027Y131["ITEM_NAME1"] == "제조업") & (BOK027Y131["ITEM_NAME2"] == "매출액경상이익률(~2006)")].copy()  # 국내총생산(실질성장률)[%]
+BOK_027Y131 = pd.read_pickle('./Market_Watch_Data/BOK_027Y131.pkl')
+BOK_027Y131_01 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "전산업") & (BOK_027Y131["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_027Y131_02 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "제조업") & (BOK_027Y131["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_027Y131_03 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "제조업") & (BOK_027Y131["ITEM_NAME2"] == "매출액경상이익률(~2006)")].copy()  # 국내총생산(실질성장률)[%]
 
 # 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(2007~2010)[027Y331][YY]
-BOK027Y331 = pd.read_pickle('./BOK_raw/BOK027Y331.pkl')
-BOK027Y331_01 = BOK027Y331[(BOK027Y331["ITEM_NAME1"] == "전산업") & (BOK027Y331["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-BOK027Y331_02 = BOK027Y331[(BOK027Y331["ITEM_NAME1"] == "제조업") & (BOK027Y331["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-BOK027Y331_03 = BOK027Y331[(BOK027Y331["ITEM_NAME1"] == "제조업") & (BOK027Y331["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_027Y331 = pd.read_pickle('./Market_Watch_Data/BOK_027Y331.pkl')
+BOK_027Y331_01 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "전산업") & (BOK_027Y331["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_027Y331_02 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "제조업") & (BOK_027Y331["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_027Y331_03 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "제조업") & (BOK_027Y331["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
 
 # 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(2009~, 전수조사) [027Y431][YY]
-BOK027Y431 = pd.read_pickle('./BOK_raw/BOK027Y431.pkl')
-BOK027Y431_01 = BOK027Y431[(BOK027Y431["ITEM_NAME1"] == "전산업") & (BOK027Y431["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-BOK027Y431_02 = BOK027Y431[(BOK027Y431["ITEM_NAME1"] == "제조업") & (BOK027Y431["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-BOK027Y431_03 = BOK027Y431[(BOK027Y431["ITEM_NAME1"] == "제조업") & (BOK027Y431["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_027Y431 = pd.read_pickle('./Market_Watch_Data/BOK_027Y431.pkl')
+BOK_027Y431_01 = BOK_027Y431[(BOK_027Y431["ITEM_NAME1"] == "전산업") & (BOK_027Y431["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_027Y431_02 = BOK_027Y431[(BOK_027Y431["ITEM_NAME1"] == "제조업") & (BOK_027Y431["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_027Y431_03 = BOK_027Y431[(BOK_027Y431["ITEM_NAME1"] == "제조업") & (BOK_027Y431["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
 
 # 그림: 경제성장률과 기업이익의 추이
-real_gdp_growth = BOK111Y002_01.copy()
-net_income_to_sales = pd.concat([BOK027Y131_03, BOK027Y331_03, BOK027Y431_03])
+real_gdp_growth = BOK_111Y002_01.copy()
+net_income_to_sales = pd.concat([BOK_027Y131_03, BOK_027Y331_03, BOK_027Y431_03])
 
 fig, ax1 = plt.subplots()
 
@@ -85,18 +85,18 @@ plt.xlim([1981, 2022])
 plt.show()
 
 # 그림 저장
-plt.savefig("./BOK_processed/fig2.2_net_income_to_sales_and_real_gdp_growth.png")
+plt.savefig("./Lecture_Figures_output/fig2.2_net_income_to_sales_and_real_gdp_growth.png")
 
 
 ########################################################################################################################
 # 그림 2.3 실질경제성장률과 연간 코스피 성장률
 # 실질GDP (전년동기대비변동률, %)
 # 6.1.2 증권/재정 - 주식거래 및 주가지수 [028Y015][MM, YY] (200002, 1976 부터)
-BOK028Y015 = pd.read_pickle('./BOK_raw/BOK028Y015.pkl')
-BOK028Y015_01 = BOK028Y015[BOK028Y015["ITEM_NAME1"] == "KOSPI_종가"].copy()  # 국내총생산(GDP)(실질, 원계열, 전년동기)
+BOK_028Y015 = pd.read_pickle('./Market_Watch_Data/BOK_028Y015.pkl')
+BOK_028Y015_01 = BOK_028Y015[BOK_028Y015["ITEM_NAME1"] == "KOSPI_종가"].copy()  # 국내총생산(GDP)(실질, 원계열, 전년동기)
 
 # 그림: 경제성장률과 코스피지수의 추이
-kospi_index = BOK028Y015_01.copy()
+kospi_index = BOK_028Y015_01.copy()
 kospi_index["L1_DATA_VALUE"] = kospi_index["DATA_VALUE"].shift(1)
 kospi_index["GROWTH_RATE"] = (kospi_index["DATA_VALUE"]/kospi_index["L1_DATA_VALUE"]-1)*100
 
@@ -123,17 +123,22 @@ plt.xlim([1981, 2022])
 plt.show()
 
 # 그림 저장
-plt.savefig("./BOK_processed/fig2.3_kospi_growth_and_real_gdp_growth.png")
+plt.savefig("./Lecture_Figures_output/fig2.3_kospi_growth_and_real_gdp_growth.png")
 
 
 ########################################################################################################################
 # 그림 2.7 코스피지수와 MSCI 신흥시장지수
 # 데이터 불러오기
-MSCI_DAILY = pd.read_pickle('./BOK_raw/MSCI_DAILY.pkl')
-KOSPI_DAILY = pd.read_pickle('./BOK_raw/KOSPI_DAILY.pkl')
+investpy_msci = pd.read_pickle('./Market_Watch_Data/investpy_msci.pkl')
+investpy_kospi = pd.read_pickle('./Market_Watch_Data/investpy_kospi.pkl')
+
+investpy_kospi.reset_index(level=0, inplace=True)  # 날짜 인덱스를 칼럼으로
+investpy_kospi.rename(
+    columns={"Open": "KOSPI_Open", "High": "KOSPI_High", "Low": "KOSPI_Low", "Close": "KOSPI_Close"}, inplace=True)
+investpy_kospi = investpy_kospi[["Date", "KOSPI_Open", "KOSPI_High", "KOSPI_Low", "KOSPI_Close"]]
 
 # MSCI, KOSPI 데이터 합치고 정렬
-df_index_daily0 = pd.merge(MSCI_DAILY, KOSPI_DAILY, left_on="Date", right_on="Date", how="outer")
+df_index_daily0 = pd.merge(investpy_msci, investpy_kospi, left_on="Date", right_on="Date", how="outer")
 df_index_daily0.sort_values(by=["Date"], inplace=True)
 
 # Daily to Monthly
@@ -173,24 +178,23 @@ align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
 plt.show()
 
 # 그림 저장
-plt.savefig("./BOK_processed/fig2.7_kospi_and_msci_emerging_markets.png")
+plt.savefig("./Lecture_Figures_output/fig2.7_kospi_and_msci_emerging_markets.png")
 
 ########################################################################################################################
 # 그림 2.8 OECD 경기선행지수와 MSCI 신흥시장지수
 # 데이터 불러오기
-MSCI_DAILY = pd.read_pickle('./BOK_raw/MSCI_DAILY.pkl')
-OECD_MONTHLY = pd.read_pickle('./BOK_raw/OECD_MONTHLY.pkl')
+investpy_msci = pd.read_pickle('./Market_Watch_Data/investpy_msci.pkl')
+oecd_monthly = pd.read_pickle('./Market_Watch_Data/oecd_monthly.pkl')
 
 # LOLITOTR_GYSA: 12-month rate of change of the trend restored CLI
-df_oecd_cli = OECD_MONTHLY[(OECD_MONTHLY["location_id"] == "OECD") & (OECD_MONTHLY["subject_id"] == "LOLITOTR_GYSA")].copy()
+df_oecd_cli = oecd_monthly[(oecd_monthly["location_id"] == "OECD") & (oecd_monthly["subject_id"] == "LOLITOTR_GYSA")].copy()
 
 # YYYYMM 을 기준으로 그 달의 가장 마지막 날짜 입력
 df_oecd_cli["Date"] = pd.to_datetime(
     get_yyyymm_add_months(df_oecd_cli["yyyymm"], 1) * 100 + 1, errors='coerce', format='%Y%m%d') + pd.Timedelta(days=-1)
 
-
 # MSCI 데이터 불러오기
-df_msci_daily = MSCI_DAILY.copy()
+df_msci_daily = investpy_msci.copy()
 
 # Daily to Monthly
 # 날짜를 YYYYMM 형태로 변환
@@ -235,4 +239,4 @@ plt.axhline(y=0, color='green', linestyle='dotted')
 plt.show()
 
 # 그림 저장
-plt.savefig("./BOK_processed/fig2.8_oecd_cli_and_msci_emerging_markets.png")
+plt.savefig("./Lecture_Figures_output/fig2.8_oecd_cli_and_msci_emerging_markets.png")

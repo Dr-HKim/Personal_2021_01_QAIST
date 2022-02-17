@@ -35,25 +35,19 @@ def get_yyyymm_add_months(n_yyyymm, n_months):
 
 
 # 코스피 200 지수
-df_kospi_200 = pd.read_pickle('./US_raw/df_kospi_200.pkl')
-df_kospi_200_monthly = df_kospi_200.shift(-1).resample('M').last()
+investpy_kospi_200 = pd.read_pickle('./Market_Watch_Data/investpy_kospi_200.pkl')
+investpy_kospi_200_monthly = investpy_kospi_200.shift(-1).resample('M').last()
 
 # 코덱스 200 (069500) 가격
-df_069500 = pd.read_pickle('./US_raw/df_069500.pkl')
-df_069500_monthly = df_069500.shift(-1).resample('M').last()
-
-# 삼성전자 (005930) 가격
-df_005930 = pd.read_pickle('./US_raw/df_005930.pkl')
-df_005930_monthly = df_005930.shift(-1).resample('M').last()
-
-
+investpy_069500 = pd.read_pickle('./Market_Watch_Data/investpy_069500.pkl')
+investpy_069500_monthly = investpy_069500.shift(-1).resample('M').last()
 
 # 시각화: 월별 시계열 자료 3개를 같은 y 축으로 표시
 fig = plt.figure()
 # fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
 fig.set_size_inches(1800/300, 1200/300)  # 그래프 크기 지정, DPI=300
 
-plt.plot(df_kospi_200_monthly.index, df_kospi_200_monthly.Close, color='g', label="KOSPI 200")
+plt.plot(investpy_kospi_200_monthly.index, investpy_kospi_200_monthly.Close, color='g', label="KOSPI 200")
 
 xlim_start = pd.to_datetime("2013-01-01", errors='coerce', format='%Y-%m-%d')
 plt.xlim(xlim_start, )
@@ -64,7 +58,7 @@ plt.ylabel('point', fontsize=10)
 plt.legend(loc='upper left')
 plt.show()
 
-plt.savefig("./BOK_processed/fig1.1_KOSPI_200_Index.png")
+plt.savefig("./Lecture_Figures_output/fig1.1_KOSPI_200_Index.png")
 
 
 # 시각화: 월별 시계열 자료 3개를 같은 y 축으로 표시
@@ -72,7 +66,7 @@ fig = plt.figure()
 # fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
 fig.set_size_inches(1800/300, 1200/300)  # 그래프 크기 지정, DPI=300
 
-plt.plot(df_069500_monthly.index, df_069500_monthly.Close, color='g', label="KODEX 200 ETF")
+plt.plot(investpy_069500_monthly.index, investpy_069500_monthly.Close, color='g', label="KODEX 200 ETF")
 
 xlim_start = pd.to_datetime("2013-01-01", errors='coerce', format='%Y-%m-%d')
 plt.xlim(xlim_start, )
@@ -83,40 +77,7 @@ plt.ylabel('KRW', fontsize=10)
 plt.legend(loc='upper left')
 plt.show()
 
-plt.savefig("./BOK_processed/fig1.2_KODEX_200_ETF.png")
+plt.savefig("./Lecture_Figures_output/fig1.2_KODEX_200_ETF.png")
 
 
-
-
-
-# 그림 1.1 코스피 200 지수와 코덱스 200 ETF 가격
-# 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
-fig, ax1 = plt.subplots()
-xlim_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
-
-# 첫번째 시계열
-color1 = "tab:red"
-ax1.set_xlabel("Dates")
-ax1.set_ylabel("KODEX 200 ETF", color=color1)  # 데이터 레이블
-ax1.plot(df_069500_monthly.index, df_069500_monthly.Close, color=color1)
-ax1.tick_params(axis="y")
-
-# 두번째 시계열
-ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-color2 = "tab:blue"
-ax2.set_ylabel("SAMSUNG ELECTRONICS", color=color2)  # 데이터 레이블
-ax2.plot(df_005930_monthly.index, df_005930_monthly.Close, color=color2, linestyle='-')
-ax2.tick_params(axis='y')
-
-# 그래프 기타 설정
-fig.tight_layout()  # otherwise the right y-label is slightly clipped
-fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
-ax1.set_ylim([20000, 50000])
-ax2.set_ylim([30000, 100000])
-# align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
-# plt.axhline(y=0, color='green', linestyle='dotted')
-plt.xlim(xlim_start, )
-plt.show()
-
-plt.savefig("./BOK_processed/fig4.8_current_account_and_kospi.png")  # 그림 저장
 

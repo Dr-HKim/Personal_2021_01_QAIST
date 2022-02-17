@@ -6,7 +6,6 @@
 import requests
 import pandas as pd
 import re
-import matplotlib.pyplot as plt
 
 
 def get_yyyymm_add_months(n_yyyymm, n_months):
@@ -112,7 +111,7 @@ def get_oecd_data(response):
         print('Error: %s' % response.status_code)
 
 
-MM_END_DATE = "2021-12"
+MM_END_DATE = "2022-01"
 
 ########################################################################################################################
 # OECD 데이터 -> export -> Developer API -> Generate API queries
@@ -131,6 +130,14 @@ df_oecd = get_oecd_data(oecd_response)
 counts_subjects = df_oecd[["subject_id", "subject_name"]].value_counts()
 counts_location = df_oecd["location_name"].value_counts()
 
+# YYYYMM 을 기준으로 그 달의 가장 마지막 날짜 입력
+df_oecd["datetime"] = pd.to_datetime(
+    get_yyyymm_add_months(df_oecd["yyyymm"], 1) * 100 + 1, errors='coerce', format='%Y%m%d') + pd.Timedelta(days=-1)
+
+# 데이터 저장
+df_oecd.to_pickle('./Market_Watch_Data/oecd_monthly.pkl')
+
+########################################################################################################################
 # OECD 경기선행지수
 # LOLITOTR_GYSA: 12-month rate of change of the trend restored CLI
 # LOLITONO: Normalised (CLI)
@@ -141,5 +148,3 @@ df_oecd_cli = df_oecd[(df_oecd["location_id"] == "OECD") & (df_oecd["subject_id"
 df_oecd_cli2 = df_oecd[(df_oecd["location_id"] == "OECD") & (df_oecd["yyyymm"] > 202107)].copy()
 
 
-# 데이터 저장
-df_oecd.to_pickle('./BOK_raw/OECD_MONTHLY.pkl')
