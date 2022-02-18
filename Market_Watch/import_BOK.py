@@ -8,20 +8,8 @@ import datetime
 import numpy as np
 import pandas as pd
 import requests
-import matplotlib.pyplot as plt
 from bs4 import BeautifulSoup
 from data_raw.def_authentication import *
-import statsmodels.api as sm  # HP Filtering
-
-
-def align_yaxis(ax1, v1, ax2, v2):
-    """adjust ax2 ylimit so that v2 in ax2 is aligned to v1 in ax1"""
-    _, y1 = ax1.transData.transform((0, v1))
-    _, y2 = ax2.transData.transform((0, v2))
-    inv = ax2.transData.inverted()
-    _, dy = inv.transform((0, 0)) - inv.transform((0, y1-y2))
-    miny, maxy = ax2.get_ylim()
-    ax2.set_ylim(miny+dy, maxy+dy)
 
 
 def get_bok_data(STAT_CODE, CYCLE_TYPE, START_DATE, END_DATE, AUTH_KEY=get_bok_auth_key(), REQ_TYPE="xml", LANG="kr",
@@ -194,13 +182,13 @@ BOK_064Y001_UPDATE = get_bok_data(STAT_CODE="064Y001", CYCLE_TYPE="DD", START_DA
 BOK_064Y001 = pd.concat([BOK_064Y001_19950103_20210131, BOK_064Y001_UPDATE])
 BOK_064Y001 = BOK_064Y001.sort_values(by=['ITEM_CODE1', 'TIME'])
 BOK_064Y001.to_pickle('./Market_Watch_Data/BOK_064Y001.pkl')
-# BOK_064Y001_01 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0001000"]  # KOSPI지수
+# BOK_064Y001_01 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0001000"]  # KOSPI지수 / 코스피
 # BOK_064Y001_02 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0002000"]  # 거래량(주식시장, 잠정치)
 # BOK_064Y001_03 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0003000"]  # 거래대금(주식시장 , 잠정치)
 # BOK_064Y001_04 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0030000"]  # 외국인 순매수(주식시장, 잠정치)
 # BOK_064Y001_05 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0087000"]  # 주식시장-거래량(만주, 시간외거래분 포함)
 # BOK_064Y001_06 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0088000"]  # 주식시장-거래대금(억원, 시간외거래분 포함)
-# BOK_064Y001_07 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0089000"]  # KOSDAQ지수
+# BOK_064Y001_07 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0089000"]  # KOSDAQ지수 / 코스닥
 # BOK_064Y001_08 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0090000"]  # 거래량(만주 : 코스닥시장, 잠정치)
 # BOK_064Y001_09 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0091000"]  # 거래대금(억원 : 코스닥시장, 잠정치)
 # BOK_064Y001_10 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0113000"]  # 외국인 순매수(코스닥시장, 잠정치)
@@ -230,6 +218,17 @@ BOK_021Y126_YY.to_pickle('./Market_Watch_Data/BOK_021Y126_YY.pkl')
 # BOK_021Y126_QB = BOK_021Y126[BOK_021Y126["ITEM_CODE1"] == "QB"].copy()  # 농산물및석유류제외지수 (근원 소비자물가지수)
 # BOK_021Y126_00["pct_change_DATA_VALUE"] = (BOK_021Y126_00["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
 # BOK_021Y126_QB["pct_change_DATA_VALUE"] = (BOK_021Y126_QB["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
+
+# 7.5.2 수출물가지수(2015=100)(특수분류)  [019Y302][MM,QQ,YY] (1971.01 부터)
+BOK_019Y302 = get_bok_data(STAT_CODE="019Y302", CYCLE_TYPE="MM", START_DATE="197101", END_DATE=MM_END_DATE)
+BOK_019Y302.to_pickle('./Market_Watch_Data/BOK_019Y302.pkl')
+
+# # 수출물가지수 (IT제외, 달러기준)
+# BOK_019Y302_00 = BOK_019Y302[(BOK_019Y302["ITEM_CODE1"] == "602AA") & (BOK_019Y302["ITEM_CODE2"] == "D")].copy()
+
+# 7.7.1 주택매매가격지수(KB) [085Y021][MM,QQ,YY] (1986.01 부터)
+BOK_085Y021 = get_bok_data(STAT_CODE="085Y021", CYCLE_TYPE="MM", START_DATE="198601", END_DATE=MM_END_DATE)
+BOK_085Y021.to_pickle('./Market_Watch_Data/BOK_085Y021.pkl')
 
 # 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
 BOK_022Y013 = get_bok_data(STAT_CODE="022Y013", CYCLE_TYPE="MM", START_DATE="198001", END_DATE=MM_END_DATE)

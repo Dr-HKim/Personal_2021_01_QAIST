@@ -25,6 +25,18 @@ investpy_kospi_200 = investpy.get_index_historical_data(
     index="KOSPI 200", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_kospi_200.to_pickle('./Market_Watch_Data/investpy_kospi_200.pkl')
 
+
+# KOSPI 200 Energy & Chemicals (KS200ENER)
+investpy_KS200ENER = investpy.get_index_historical_data(
+    index="KOSPI 200 Energy & Chemicals", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
+investpy_KS200ENER.to_pickle('./Market_Watch_Data/investpy_KS200ENER.pkl')
+
+# KRX Energy & Chemical (KRXENER)
+investpy_KRXENER = investpy.get_index_historical_data(
+    index="KRX Energy & Chemical", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
+investpy_KRXENER.to_pickle('./Market_Watch_Data/investpy_KRXENER.pkl')
+
+
 # investpy 패키지를 사용하여 삼성전자 자료 받기
 investpy_005930 = investpy.get_stock_historical_data(
     stock="005930", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
@@ -34,6 +46,25 @@ investpy_005930.to_pickle('./Market_Watch_Data/investpy_005930.pkl')
 investpy_069500 = investpy.get_etf_historical_data(
     etf="Samsung KODEX KOSPI 200 Securities", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_069500.to_pickle('./Market_Watch_Data/investpy_069500.pkl')
+
+# investpy 패키지를 사용하여 미국 국채 ETF 자료 받기 (IEF)
+investpy_IEF = investpy.get_etf_historical_data(
+    etf="iShares 7-10 Year Treasury Bond", country="United States", from_date="30/01/1900", to_date=DD_END_DATE)
+investpy_IEF.to_pickle('./Market_Watch_Data/investpy_IEF.pkl')
+
+# investpy 패키지를 사용하여 한국 국채 ETF 자료 받기 (Kiwoom KOSEF 10Y Treasury Bond)
+investpy_148070 = investpy.get_etf_historical_data(
+    etf="Kiwoom KOSEF 10Y Treasury Bond", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
+investpy_148070.to_pickle('./Market_Watch_Data/investpy_148070.pkl')
+
+# 미국 ETF 리스트 검색
+df_us_etf = investpy.get_etfs(country='United States')
+df_us_etf_search = df_us_etf[df_us_etf['symbol'].str.contains("IEF")]
+
+# 한국 ETF 리스트 검색
+df_kr_etf = investpy.get_etfs(country='south korea')
+df_kr_etf_search = df_kr_etf[df_kr_etf['symbol'].str.contains("148070")]
+df_kr_etf_search["name"]
 
 # Economic Calendar
 # investpy_economic_calendar_us_20000101_20220215 = investpy.economic_calendar(
@@ -247,8 +278,10 @@ stocks = investpy.get_stocks(currentCountry)
 print(stocks)
 print(type(stocks))
 
-# 미국 ETF 리스트
-df = investpy.get_etfs(country='United States')
+# 미국 ETF 리스트 검색
+df_us_etf = investpy.get_etfs(country='United States')
+df_us_etf_search = df_us_etf[df_us_etf['symbol'].str.contains("IEF")]
+
 
 countriesAvailable = investpy.get_index_countries()
 

@@ -13,6 +13,31 @@ from data_raw.def_authentication import *
 fred_api_key = get_fred_auth_key()
 fred = Fred(api_key=fred_api_key)
 
+########################################################################################################################
+# 기준금리
+# Federal Funds Target Range - Upper Limit (DFEDTARU)
+fred_DFEDTARU = fred.get_series('DFEDTARU')
+fred_DFEDTARU.to_pickle('./Market_Watch_Data/fred_DFEDTARU.pkl')
+
+# Federal Funds Target Range - Lower Limit (DFEDTARL)
+fred_DFEDTARL = fred.get_series('DFEDTARL')
+fred_DFEDTARL.to_pickle('./Market_Watch_Data/fred_DFEDTARL.pkl')
+
+# Federal Funds Effective Rate Monthly (FEDFUNDS)
+fred_FEDFUNDS = fred.get_series('FEDFUNDS')
+fred_FEDFUNDS.to_pickle('./Market_Watch_Data/fred_FEDFUNDS.pkl')
+
+# Federal Funds Effective Rate Daily (DFF)
+fred_DFF = fred.get_series('DFF')
+fred_DFF.to_pickle('./Market_Watch_Data/fred_DFF.pkl')
+
+# 달러 인덱스
+# Nominal Broad U.S. Dollar Index (DTWEXBGS)
+# Units: Index Jan 2006=100, Not Seasonally Adjusted
+fred_DTWEXBGS = fred.get_series('DTWEXBGS')
+fred_DTWEXBGS.to_pickle('./Market_Watch_Data/fred_DTWEXBGS.pkl')
+
+########################################################################################################################
 # 10년 만기 국고채
 # Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity (DGS10)
 # https://fred.stlouisfed.org/series/DGS10
@@ -31,6 +56,14 @@ fred_DGS2.to_pickle('./Market_Watch_Data/fred_DGS2.pkl')
 fred_DGS3MO = fred.get_series('DGS3MO')
 fred_DGS3MO.to_pickle('./Market_Watch_Data/fred_DGS3MO.pkl')
 
+# BB 등급 회사채 가산금리
+# ICE BofA BB US High Yield Index Option-Adjusted Spread (BAMLH0A1HYBB)
+# Units: Percent, Not Seasonally Adjusted
+fred_BAMLH0A1HYBB = fred.get_series('BAMLH0A1HYBB')
+fred_BAMLH0A1HYBB.to_pickle('./Market_Watch_Data/fred_BAMLH0A1HYBB.pkl')
+
+
+########################################################################################################################
 # S&P 500 (SP500)
 # https://fred.stlouisfed.org/series/SP500
 fred_SP500 = fred.get_series('SP500')
