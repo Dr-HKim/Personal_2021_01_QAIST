@@ -231,14 +231,22 @@ all_weights[sharpe_arr.argmax(), :]
 max_sr_vol = vol_arr[sharpe_arr.argmax()]
 max_sr_ret = ret_arr[sharpe_arr.argmax()]
 
-plt.figure(figsize=(12, 8))
+all_weights[vol_arr.argmin(), :]
+min_vol_vol = vol_arr[vol_arr.argmin()]
+min_vol_ret = ret_arr[vol_arr.argmin()]
+
+fig = plt.figure()
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
 plt.scatter(vol_arr, ret_arr, c=sharpe_arr, cmap='viridis')
 plt.colorbar(label='Sharpe Ratio')
 plt.xlabel('Volatility')
 plt.ylabel('Return')
-plt.scatter(max_sr_vol, max_sr_ret, c='red', s=50)  # red dot
-plt.scatter(np.sqrt(df_assets.iloc[:, 0].var() * 252), df_assets.iloc[:, 0].mean() * 252, c='red', s=50)  # red dot
-plt.scatter(np.sqrt(df_assets.iloc[:, 1].var() * 252), df_assets.iloc[:, 1].mean() * 252, c='red', s=50)  # red dot
+plt.xlim(0, )
+plt.ylim(0, )
+plt.scatter(max_sr_vol, max_sr_ret, c='tab:red', s=50)  # red dot
+plt.scatter(min_vol_vol, min_vol_ret, c='tab:blue', s=50)  # red dot
 plt.show()
 
+plt.savefig("./Lecture_Figures_output/fig9.3_markowitz_portfolio.png")  # 그림 저장
 
+df_data.to_csv('./Lecture_Figures_output/df_data.csv', index=False, encoding='cp949')
