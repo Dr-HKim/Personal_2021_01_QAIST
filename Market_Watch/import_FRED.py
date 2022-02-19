@@ -37,6 +37,25 @@ fred_DFF.to_pickle('./Market_Watch_Data/fred_DFF.pkl')
 fred_DTWEXBGS = fred.get_series('DTWEXBGS')
 fred_DTWEXBGS.to_pickle('./Market_Watch_Data/fred_DTWEXBGS.pkl')
 
+# 채권 인덱스
+# ICE BofA 7-10 Year US Corporate Index Total Return Index Value (BAMLCC4A0710YTRIV)
+# Units: Index, Not Seasonally Adjusted
+fred_BAMLCC4A0710YTRIV = fred.get_series('BAMLCC4A0710YTRIV')
+fred_BAMLCC4A0710YTRIV.to_pickle('./Market_Watch_Data/fred_BAMLCC4A0710YTRIV.pkl')
+
+# 부동산 인덱스 (배당 재투자)
+# Wilshire US Real Estate Investment Trust Total Market Index (Wilshire US REIT) (WILLREITIND)
+# Units: Index, Not Seasonally Adjusted
+fred_WILLREITIND = fred.get_series('WILLREITIND')
+fred_WILLREITIND.to_pickle('./Market_Watch_Data/fred_WILLREITIND.pkl')
+
+# 부동산 인덱스 (배당 재투자 안함)
+# Wilshire US Real Estate Investment Trust Price Index (Wilshire US REIT) (WILLREITPR)
+# Units: Index, Not Seasonally Adjusted
+fred_WILLREITPR = fred.get_series('WILLREITPR')
+fred_WILLREITPR.to_pickle('./Market_Watch_Data/fred_WILLREITPR.pkl')
+
+
 ########################################################################################################################
 # 10년 만기 국고채
 # Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity (DGS10)

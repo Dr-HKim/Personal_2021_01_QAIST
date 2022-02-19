@@ -10,12 +10,23 @@ import datetime as dt
 
 DD_END_DATE = "15/02/2022"
 
+########################################################################################################################
+investpy.get_indices(country=None)
+list_index_us = investpy.get_indices(country="United States")
+list_index_us_search = list_index_us[list_index_us['full_name'].str.contains("MSCI")]
+
 # 미국 S&P 500 지수 (1979.12.26 부터)
 investpy_snp500 = investpy.get_index_historical_data(
     index="S&P 500", country="United States", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_snp500.to_pickle('./Market_Watch_Data/investpy_snp500.pkl')
 
-# investpy 패키지를 사용하여 KOSPI 자료 받기
+# 미국 MSCI US REIT 지수 (2015.01.12 부터)
+investpy_msci_us_reit = investpy.get_index_historical_data(
+    index="MSCI US REIT", country="United States", from_date="30/01/1900", to_date=DD_END_DATE)
+investpy_msci_us_reit.to_pickle('./Market_Watch_Data/investpy_msci_us_reit.pkl')
+
+
+# KOSPI (1981.05.01 부터)
 investpy_kospi = investpy.get_index_historical_data(
     index="KOSPI", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_kospi.to_pickle('./Market_Watch_Data/investpy_kospi.pkl')
@@ -24,7 +35,6 @@ investpy_kospi.to_pickle('./Market_Watch_Data/investpy_kospi.pkl')
 investpy_kospi_200 = investpy.get_index_historical_data(
     index="KOSPI 200", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_kospi_200.to_pickle('./Market_Watch_Data/investpy_kospi_200.pkl')
-
 
 # KOSPI 200 Energy & Chemicals (KS200ENER)
 investpy_KS200ENER = investpy.get_index_historical_data(
@@ -36,12 +46,23 @@ investpy_KRXENER = investpy.get_index_historical_data(
     index="KRX Energy & Chemical", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_KRXENER.to_pickle('./Market_Watch_Data/investpy_KRXENER.pkl')
 
+########################################################################################################################
+investpy.get_commodities_list()
 
+# Gold Futures (ZGJ2)
+investpy_Gold = investpy.get_commodity_historical_data(
+    commodity="Gold", from_date="30/01/1900", to_date=DD_END_DATE, country=None, as_json=False,
+    order='ascending', interval='Daily')
+investpy_Gold.to_pickle('./Market_Watch_Data/investpy_Gold.pkl')
+
+
+########################################################################################################################
 # investpy 패키지를 사용하여 삼성전자 자료 받기
 investpy_005930 = investpy.get_stock_historical_data(
     stock="005930", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_005930.to_pickle('./Market_Watch_Data/investpy_005930.pkl')
 
+########################################################################################################################
 # investpy 패키지를 사용하여 ETF 자료 받기 (069500)
 investpy_069500 = investpy.get_etf_historical_data(
     etf="Samsung KODEX KOSPI 200 Securities", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
@@ -66,6 +87,7 @@ df_kr_etf = investpy.get_etfs(country='south korea')
 df_kr_etf_search = df_kr_etf[df_kr_etf['symbol'].str.contains("148070")]
 df_kr_etf_search["name"]
 
+########################################################################################################################
 # Economic Calendar
 # investpy_economic_calendar_us_20000101_20220215 = investpy.economic_calendar(
 #     countries=["united states"], from_date="01/01/2000", to_date="15/02/2022")
