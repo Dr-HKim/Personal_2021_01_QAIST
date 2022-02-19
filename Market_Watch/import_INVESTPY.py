@@ -15,6 +15,12 @@ investpy.get_indices(country=None)
 list_index_us = investpy.get_indices(country="United States")
 list_index_us_search = list_index_us[list_index_us['full_name'].str.contains("MSCI")]
 
+list_index_kr = investpy.get_indices(country="south korea")
+list_index_kr_search = list_index_kr[list_index_kr['full_name'].str.contains("MSCI")]
+
+list_index_kr2 = list_index_kr.sort_values(by=['name'])
+
+
 # 미국 S&P 500 지수 (1979.12.26 부터)
 investpy_snp500 = investpy.get_index_historical_data(
     index="S&P 500", country="United States", from_date="30/01/1900", to_date=DD_END_DATE)
@@ -45,6 +51,12 @@ investpy_KS200ENER.to_pickle('./Market_Watch_Data/investpy_KS200ENER.pkl')
 investpy_KRXENER = investpy.get_index_historical_data(
     index="KRX Energy & Chemical", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_KRXENER.to_pickle('./Market_Watch_Data/investpy_KRXENER.pkl')
+
+# KTB (2014.05.19 부터)
+investpy_KTB = investpy.get_index_historical_data(
+    index="KTB", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
+investpy_KTB.to_pickle('./Market_Watch_Data/investpy_KTB.pkl')
+
 
 ########################################################################################################################
 investpy.get_commodities_list()
