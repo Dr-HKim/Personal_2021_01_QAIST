@@ -235,6 +235,15 @@ sns.heatmap(
 
 plt.savefig("./Lecture_Figures_output/fig9.1_assets_correlation_heatmap_2000.png")  # 그림 저장
 
+
+# KTB10Y 는 2012.10 부터 사용 가능하므로 여기서 다시 반영
+obs_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
+obs_end = pd.to_datetime("2021-12-01", errors='coerce', format='%Y-%m-%d')
+df_assets_return_obs = df_assets_return[obs_start:obs_end]
+
+list_assets = ["KOSPI", "KTB10Y", "HPI_APT", "S&P500", "TB10Y", "REIT", "GOLD"]
+df_assets_return_obs = df_assets_return_obs[list_assets]
+
 # 최근 10년
 obs_start1 = pd.to_datetime("2011-01-01", errors='coerce', format='%Y-%m-%d')
 
