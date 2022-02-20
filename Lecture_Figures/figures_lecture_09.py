@@ -165,7 +165,7 @@ df_assets_return['KTB10Y_yield'] = df_assets['KTB10Y_yield'] / 100
 df_assets_return['HPI_APT'] = df_assets['HPI_APT'].pct_change(12, fill_method=None)
 # df_assets_return['CPI'] = df_assets['CPI'].pct_change(1, fill_method=None)
 # df_assets_return['USDKRW'] = df_assets['USDKRW'].pct_change(1, fill_method=None)
-df_assets_return['SNP500'] = df_assets['SNP500_KRW'].pct_change(12, fill_method=None)
+df_assets_return['S&P500'] = df_assets['SNP500_KRW'].pct_change(12, fill_method=None)
 df_assets_return['TB10Y'] = df_assets['TB10Y_KRW'].pct_change(12, fill_method=None)
 df_assets_return['IEF'] = df_assets['IEF_KRW'].pct_change(12, fill_method=None)
 df_assets_return['TB10Y_yield'] = df_assets['TB10Y_yield'] / 100
@@ -180,7 +180,7 @@ obs_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
 obs_end = pd.to_datetime("2021-12-01", errors='coerce', format='%Y-%m-%d')
 df_assets_return_obs = df_assets_return[obs_start:obs_end]
 
-list_assets = ["KOSPI", "KTB10Y", "HPI_APT", "SNP500", "TB10Y", "REIT", "GOLD"]
+list_assets = ["KOSPI", "KTB10Y", "HPI_APT", "S&P500", "TB10Y", "REIT", "GOLD"]
 df_assets_return_obs = df_assets_return_obs[list_assets]
 
 len(df_assets_return_obs) - 120
@@ -207,10 +207,14 @@ n_years = 10
 
 ########################################################################################################################
 # Asset Correlation Heatmap (1990년 이후 전체 기간)
-# KOSPI 1981.06 부터, HPI_APT 1986.01 부터, KTB10Y_yield 는 2000.11 부터
+# KOSPI 1981.06 부터, HPI_APT 1986.01 부터, KTB10Y_yield 는 2000.11 부터, KTB10Y 는 2012.10 부터
 obs_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
 obs_end = pd.to_datetime("2021-12-01", errors='coerce', format='%Y-%m-%d')
 df_assets_return_obs = df_assets_return[obs_start:obs_end]
+
+list_assets = ["KOSPI", "KTB10Y", "HPI_APT", "S&P500", "TB10Y", "REIT", "GOLD"]
+df_assets_return_obs = df_assets_return_obs[list_assets]
+df_assets_return_obs["KTB10Y"] = np.nan
 
 fig = plt.figure()
 fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
@@ -386,6 +390,25 @@ sns.distplot(df_portfolio['portfolio46'], hist=True, kde=True,
              kde_kws={'linewidth': 2})
 
 plt.savefig("./Lecture_Figures_output/fig9.6_portfolio46_return_histogram.png")  # 그림 저장
+
+
+
+fig = plt.figure()
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+sns.histplot(data=df_portfolio, x="portfolio46", stat="probability",
+             # bins=20,
+             binwidth=1,
+             discrete=False)
+
+plt.savefig("./Lecture_Figures_output/fig9.6_portfolio46_return_histogram.png")  # 그림 저장
+
+
+tips = sns.load_dataset("tips")
+fig, axes = plt.subplots(nrows=2, ncols=1,figsize=(12,6))
+axes = axes.flatten()
+sns.histplot(data=tips, x="size", stat="probability", discrete=False,ax=axes[0])
+sns.histplot(data=tips, x="size", stat="probability", discrete=True,ax=axes[1])
+
 
 ########################################################################################################################
 
