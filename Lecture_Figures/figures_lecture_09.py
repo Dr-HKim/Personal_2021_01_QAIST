@@ -111,6 +111,16 @@ fred_DGS10 = pd.read_pickle('./Market_Watch_Data/fred_DGS10.pkl')
 sr_TB10Y_yield = fred_DGS10.resample('M').last()  # 월말 자료만
 sr_TB10Y_yield.index = sr_TB10Y_yield.index.map(lambda t: t.replace(day=1))  # 인덱스 날짜를 1일로
 
+# IEF ETF
+yahoo_IEF = pd.read_csv('./Market_Watch_Data/yahoo_IEF.csv', header=0, encoding='utf-8', low_memory=False)
+yahoo_IEF["datetime"] = pd.to_datetime(yahoo_IEF["Date"], errors='coerce', format='%Y-%m-%d')
+yahoo_IEF.index = yahoo_IEF["datetime"]
+yahoo_IEF["IEF"] = yahoo_IEF["Close"]
+yahoo_IEF_monthly = yahoo_IEF.resample('M').last()
+yahoo_IEF_monthly.index = yahoo_IEF_monthly.index.map(lambda t: t.replace(day=1))  # 인덱스 날짜를 1일로
+sr_IEF = yahoo_IEF_monthly["IEF"]
+
+
 # 미국 부동산 (배당 재투자)
 # Wilshire US Real Estate Investment Trust Total Market Index (Wilshire US REIT) (WILLREITIND)
 fred_WILLREITIND = pd.read_pickle('./Market_Watch_Data/fred_WILLREITIND.pkl')
@@ -136,12 +146,14 @@ df_assets = df_assets.merge(sr_USDKRW.rename('USDKRW'), left_index=True, right_i
 df_assets = df_assets.merge(sr_SNP500.rename('SNP500'), left_index=True, right_index=True, how='outer')
 df_assets = df_assets.merge(sr_TB10Y.rename('TB10Y'), left_index=True, right_index=True, how='outer')
 df_assets = df_assets.merge(sr_TB10Y_yield.rename('TB10Y_yield'), left_index=True, right_index=True, how='outer')
+df_assets = df_assets.merge(sr_IEF.rename('IEF'), left_index=True, right_index=True, how='outer')
 df_assets = df_assets.merge(sr_REIT.rename('REIT'), left_index=True, right_index=True, how='outer')
 df_assets = df_assets.merge(sr_GOLD.rename('GOLD'), left_index=True, right_index=True, how='outer')
 
 # 달러 자산 환율 보정
 df_assets["SNP500_KRW"] = df_assets["SNP500"] * df_assets["USDKRW"]  # 환율 보정
 df_assets["TB10Y_KRW"] = df_assets["TB10Y"] * df_assets["USDKRW"]  # 환율 보정
+df_assets["IEF_KRW"] = df_assets["IEF"] * df_assets["USDKRW"]  # 환율 보정
 df_assets["REIT_KRW"] = df_assets["REIT"] * df_assets["USDKRW"]  # 환율 보정
 df_assets["GOLD_KRW"] = df_assets["GOLD"] * df_assets["USDKRW"]  # 환율 보정
 
@@ -155,6 +167,7 @@ df_assets_return['HPI_APT'] = df_assets['HPI_APT'].pct_change(12, fill_method=No
 # df_assets_return['USDKRW'] = df_assets['USDKRW'].pct_change(1, fill_method=None)
 df_assets_return['SNP500'] = df_assets['SNP500_KRW'].pct_change(12, fill_method=None)
 df_assets_return['TB10Y'] = df_assets['TB10Y_KRW'].pct_change(12, fill_method=None)
+df_assets_return['IEF'] = df_assets['IEF_KRW'].pct_change(12, fill_method=None)
 df_assets_return['TB10Y_yield'] = df_assets['TB10Y_yield'] / 100
 df_assets_return['REIT'] = df_assets['REIT_KRW'].pct_change(12, fill_method=None)
 df_assets_return['GOLD'] = df_assets['GOLD_KRW'].pct_change(12, fill_method=None)
@@ -194,6 +207,11 @@ for i in range(0, len(df_assets_return_obs) - 12*n_years + 1):
 
 ########################################################################################################################
 # Asset Correlation Heatmap (1990년 이후 전체 기간)
+# KOSPI 1981.06 부터, HPI_APT 1986.01 부터, KTB10Y_yield 는 2000.11 부터
+obs_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
+obs_end = pd.to_datetime("2021-12-01", errors='coerce', format='%Y-%m-%d')
+df_assets_return_obs = df_assets_return[obs_start:obs_end]
+
 fig = plt.figure()
 fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
 sns.heatmap(
@@ -280,9 +298,11 @@ plt.savefig("./Lecture_Figures_output/fig9.2_asset_allocation_returns_2015.png")
 ########################################################################################################################
 # Markowiz 포트폴리오
 
-selected_assets = ["KOSPI", "TB10Y"]
+# selected_assets = ["KOSPI", "TB10Y"]
+selected_assets = ["KOSPI", "IEF"]
+
 df_portfolio = df_assets_return[selected_assets].copy()
-dt_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
+dt_start = pd.to_datetime("2004-12-01", errors='coerce', format='%Y-%m-%d')
 dt_end = pd.to_datetime("2021-12-01", errors='coerce', format='%Y-%m-%d')
 df_portfolio = df_portfolio[dt_start:dt_end]
 
@@ -301,11 +321,11 @@ for x in range(num_ports):
     # Save weights
     all_weights[x, :] = weights
 
-    # Expected return
-    ret_arr[x] = np.sum((df_portfolio.mean() * weights * 252))
+    # Expected return (YoY 수익률 사용했으므로 252일 보정 필요없음)
+    ret_arr[x] = np.sum((df_portfolio.mean() * weights * 252 / 252))
 
-    # Expected volatility
-    vol_arr[x] = np.sqrt(np.dot(weights.T, np.dot(df_portfolio.cov() * 252, weights)))
+    # Expected volatility (YoY 수익률 사용했으므로 252일 보정 필요없음)
+    vol_arr[x] = np.sqrt(np.dot(weights.T, np.dot(df_portfolio.cov() * 252 / 252, weights)))
 
     # Sharpe Ratio
     sharpe_arr[x] = ret_arr[x] / vol_arr[x]
@@ -318,6 +338,8 @@ max_sr_ret = ret_arr[sharpe_arr.argmax()]
 all_weights[vol_arr.argmin(), :]
 min_vol_vol = vol_arr[vol_arr.argmin()]
 min_vol_ret = ret_arr[vol_arr.argmin()]
+min_vol_vol
+min_vol_ret
 
 fig = plt.figure()
 fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
@@ -325,15 +347,14 @@ plt.scatter(vol_arr, ret_arr, c=sharpe_arr, cmap='viridis')
 plt.colorbar(label='Sharpe Ratio')
 plt.xlabel('Volatility')
 plt.ylabel('Return')
-# plt.xlim(0, )
-# plt.ylim(0, )
+plt.xlim(0, )
+plt.ylim(0, )
 plt.scatter(max_sr_vol, max_sr_ret, c='tab:red', s=50)  # red dot
 plt.scatter(min_vol_vol, min_vol_ret, c='tab:blue', s=50)  # red dot
 plt.show()
 
-plt.savefig("./Lecture_Figures_output/fig9.3_markowitz_portfolio.png")  # 그림 저장
+plt.savefig("./Lecture_Figures_output/fig9.5_markowitz_portfolio.png")  # 그림 저장
 
-df_data.to_csv('./Lecture_Figures_output/df_data.csv', index=False, encoding='cp949')
 
 ########################################################################################################################
 # 미국 ETF 데이터 불러오기
