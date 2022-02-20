@@ -187,22 +187,22 @@ len(df_assets_return_obs) - 120
 
 n_years = 10
 
-for i in range(0, len(df_assets_return_obs) - 12*n_years + 1):
-    df_tmp = df_assets_return_obs.iloc[i:n_years*12 + i]
-
-    fig = plt.figure()
-    fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
-    sns.heatmap(
-        data=df_tmp.corr(), annot=True, fmt='.2f', linewidths=.5, center=0,
-        cmap=sns.diverging_palette(220, 20, as_cmap=True), vmin=-1, vmax=1)
-
-    yyyymm0 = df_tmp.first_valid_index().year*100 + df_tmp.first_valid_index().month
-    yyyymm1 = df_tmp.last_valid_index().year*100 + df_tmp.last_valid_index().month
-
-    filename = "heatmap_" + str(n_years) + "Y_" + str(yyyymm0) + "_" + str(yyyymm1) + ".png"
-    plt.title('Correlation Heatmap ' + str(yyyymm0) + " - " + str(yyyymm1))
-    plt.savefig("./Lecture_Figures_output/heatmap_" + str(n_years) + "Y/" + filename)  # 그림 저장
-    plt.close()
+# for i in range(0, len(df_assets_return_obs) - 12*n_years + 1):
+#     df_tmp = df_assets_return_obs.iloc[i:n_years*12 + i]
+#
+#     fig = plt.figure()
+#     fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+#     sns.heatmap(
+#         data=df_tmp.corr(), annot=True, fmt='.2f', linewidths=.5, center=0,
+#         cmap=sns.diverging_palette(220, 20, as_cmap=True), vmin=-1, vmax=1)
+#
+#     yyyymm0 = df_tmp.first_valid_index().year*100 + df_tmp.first_valid_index().month
+#     yyyymm1 = df_tmp.last_valid_index().year*100 + df_tmp.last_valid_index().month
+#
+#     filename = "heatmap_" + str(n_years) + "Y_" + str(yyyymm0) + "_" + str(yyyymm1) + ".png"
+#     plt.title('Correlation Heatmap ' + str(yyyymm0) + " - " + str(yyyymm1))
+#     plt.savefig("./Lecture_Figures_output/heatmap_" + str(n_years) + "Y/" + filename)  # 그림 저장
+#     plt.close()
 
 
 ########################################################################################################################
@@ -267,6 +267,7 @@ df_portfolio["index_KOSPI"] = df_portfolio["KOSPI"] / (df_portfolio.loc[dt_base]
 df_portfolio["index_TB10Y"] = df_portfolio["TB10Y_KRW"] / (df_portfolio.loc[dt_base]["TB10Y_KRW"]) * 100
 df_portfolio["portfolio73"] = df_portfolio["index_KOSPI"] * 0.7 + df_portfolio["index_TB10Y"] * 0.3
 df_portfolio["portfolio55"] = df_portfolio["index_KOSPI"] * 0.5 + df_portfolio["index_TB10Y"] * 0.5
+df_portfolio["portfolio46"] = df_portfolio["index_KOSPI"] * 0.4 + df_portfolio["index_TB10Y"] * 0.6
 df_portfolio["portfolio37"] = df_portfolio["index_KOSPI"] * 0.3 + df_portfolio["index_TB10Y"] * 0.7
 df_portfolio["index_SNP500"] = df_portfolio["SNP500_KRW"] / (df_portfolio.loc[dt_base]["SNP500_KRW"]) * 100
 
@@ -279,6 +280,7 @@ colors = sns.color_palette('hls', 6)  # observation 개수만큼 색상 사용
 plt.plot(df_portfolio.index, df_portfolio["index_KOSPI"], color=colors[0], label="KOSPI")
 plt.plot(df_portfolio.index, df_portfolio["portfolio73"], color=colors[1], label="Portfolio 73")
 plt.plot(df_portfolio.index, df_portfolio["portfolio55"], color=colors[2], label="Portfolio 55")
+# plt.plot(df_portfolio.index, df_portfolio["portfolio46"], color=colors[5], label="Portfolio 46")
 plt.plot(df_portfolio.index, df_portfolio["portfolio37"], color=colors[3], label="Portfolio 37")
 plt.plot(df_portfolio.index, df_portfolio["index_TB10Y"], color=colors[4], label="TB10Y")
 # plt.plot(df_portfolio.index, df_portfolio["index_SNP500"], color=colors[5], label="SNP500")
@@ -355,6 +357,35 @@ plt.show()
 
 plt.savefig("./Lecture_Figures_output/fig9.5_markowitz_portfolio.png")  # 그림 저장
 
+########################################################################################################################
+# df_portfolio = df_assets_return.copy()
+# dt_start = pd.to_datetime("2010-01-01", errors='coerce', format='%Y-%m-%d')
+# dt_end = pd.to_datetime("2021-12-01", errors='coerce', format='%Y-%m-%d')
+# df_portfolio = df_portfolio[dt_start:dt_end]
+#
+# df_portfolio["portfolio46"] = (df_portfolio["KOSPI"] * 0.4 + df_portfolio["TB10Y"] * 0.6) * 100
+
+
+selected_assets = ["KOSPI", "IEF"]
+
+df_portfolio = df_assets_return[selected_assets].copy()
+dt_start = pd.to_datetime("2004-12-01", errors='coerce', format='%Y-%m-%d')
+dt_end = pd.to_datetime("2021-12-01", errors='coerce', format='%Y-%m-%d')
+df_portfolio = df_portfolio[dt_start:dt_end]
+df_portfolio["portfolio46"] = (df_portfolio["KOSPI"] * 0.4 + df_portfolio["IEF"] * 0.6) * 100
+
+
+# plt.hist(df_portfolio['portfolio46'], color='tab:blue', edgecolor='black', normed=True, bins=20)
+
+# Density Plot and Histogram of all arrival delays
+fig = plt.figure()
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+sns.distplot(df_portfolio['portfolio46'], hist=True, kde=True,
+             bins=20, color='darkblue',
+             hist_kws={'edgecolor': 'black'},
+             kde_kws={'linewidth': 2})
+
+plt.savefig("./Lecture_Figures_output/fig9.6_portfolio46_return_histogram.png")  # 그림 저장
 
 ########################################################################################################################
 # 미국 ETF 데이터 불러오기
