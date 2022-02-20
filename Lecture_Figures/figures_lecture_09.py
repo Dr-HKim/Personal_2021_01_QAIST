@@ -388,6 +388,22 @@ sns.distplot(df_portfolio['portfolio46'], hist=True, kde=True,
 plt.savefig("./Lecture_Figures_output/fig9.6_portfolio46_return_histogram.png")  # 그림 저장
 
 ########################################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+########################################################################################################################
 # 미국 ETF 데이터 불러오기
 yahoo_SPY = pd.read_csv('./Market_Watch_Data/yahoo_SPY.csv', header=0, encoding='utf-8', low_memory=False)
 yahoo_IEF = pd.read_csv('./Market_Watch_Data/yahoo_IEF.csv', header=0, encoding='utf-8', low_memory=False)
