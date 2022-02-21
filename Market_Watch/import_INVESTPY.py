@@ -67,6 +67,20 @@ investpy_Gold = investpy.get_commodity_historical_data(
     order='ascending', interval='Daily')
 investpy_Gold.to_pickle('./Market_Watch_Data/investpy_Gold.pkl')
 
+########################################################################################################################
+# Bitcoin
+investpy_bitcoin = investpy.get_crypto_historical_data(crypto='bitcoin', from_date="30/01/1900", to_date=DD_END_DATE,
+                                                       interval='Daily')
+investpy_bitcoin.to_pickle('./Market_Watch_Data/investpy_bitcoin.pkl')
+
+investpy_Ethereum = investpy.get_crypto_historical_data(crypto='Ethereum', from_date="30/01/1900", to_date=DD_END_DATE, interval='Daily')
+investpy_Ethereum.to_pickle('./Market_Watch_Data/investpy_Ethereum.pkl')
+
+investpy_Ripple = investpy.get_crypto_historical_data(crypto='XRP', from_date="30/01/1900", to_date=DD_END_DATE, interval='Daily')
+investpy_Ripple.to_pickle('./Market_Watch_Data/investpy_Ripple.pkl')
+
+
+df_cryptos = investpy.get_cryptos()
 
 ########################################################################################################################
 # investpy 패키지를 사용하여 삼성전자 자료 받기

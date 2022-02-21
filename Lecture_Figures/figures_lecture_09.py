@@ -134,6 +134,12 @@ investpy_Gold_monthly = investpy_Gold.resample('M').last()  # 월말 자료만
 investpy_Gold_monthly.index = investpy_Gold_monthly.index.map(lambda t: t.replace(day=1))  # 인덱스 날짜를 1일로
 sr_GOLD = investpy_Gold_monthly["Close"]
 
+# 비트코인
+investpy_bitcoin = pd.read_pickle('./Market_Watch_Data/investpy_bitcoin.pkl')
+investpy_bitcoin_monthly = investpy_bitcoin.resample('M').last()  # 월말 자료만
+investpy_bitcoin_monthly.index = investpy_bitcoin_monthly.index.map(lambda t: t.replace(day=1))  # 인덱스 날짜를 1일로
+sr_bitcoin = investpy_bitcoin_monthly["Close"]
+
 ########################################################################################################################
 # 자산 데이터 합치기
 df_assets = pd.DataFrame({'KOSPI': sr_KOSPI.values})
@@ -149,6 +155,7 @@ df_assets = df_assets.merge(sr_TB10Y_yield.rename('TB10Y_yield'), left_index=Tru
 df_assets = df_assets.merge(sr_IEF.rename('IEF'), left_index=True, right_index=True, how='outer')
 df_assets = df_assets.merge(sr_REIT.rename('REIT'), left_index=True, right_index=True, how='outer')
 df_assets = df_assets.merge(sr_GOLD.rename('GOLD'), left_index=True, right_index=True, how='outer')
+df_assets = df_assets.merge(sr_bitcoin.rename('Bitcoin'), left_index=True, right_index=True, how='outer')
 
 # 달러 자산 환율 보정
 df_assets["SNP500_KRW"] = df_assets["SNP500"] * df_assets["USDKRW"]  # 환율 보정
@@ -268,13 +275,18 @@ plt.savefig("./Lecture_Figures_output/fig9.1_assets_correlation_heatmap_2016.png
 
 ########################################################################################################################
 df_portfolio = df_assets[["KOSPI", "TB10Y_KRW", "SNP500_KRW"]]
+df_portfolio = df_assets[["KOSPI", "TB10Y_KRW", "SNP500_KRW", "Bitcoin", "GOLD"]]
+
 dt_end = pd.to_datetime("2021-12-01", errors='coerce', format='%Y-%m-%d')
 
 dt_base1 = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
 dt_base2 = pd.to_datetime("2010-01-01", errors='coerce', format='%Y-%m-%d')
 dt_base3 = pd.to_datetime("2015-01-01", errors='coerce', format='%Y-%m-%d')
 
-dt_base = dt_base1
+dt_end = pd.to_datetime("2021-12-01", errors='coerce', format='%Y-%m-%d')
+dt_base4 = pd.to_datetime("2010-07-01", errors='coerce', format='%Y-%m-%d')
+
+dt_base = dt_base4
 df_portfolio = df_portfolio[dt_base:dt_end]
 df_portfolio["index_KOSPI"] = df_portfolio["KOSPI"] / (df_portfolio.loc[dt_base]["KOSPI"]) * 100
 df_portfolio["index_TB10Y"] = df_portfolio["TB10Y_KRW"] / (df_portfolio.loc[dt_base]["TB10Y_KRW"]) * 100
@@ -283,6 +295,9 @@ df_portfolio["portfolio55"] = df_portfolio["index_KOSPI"] * 0.5 + df_portfolio["
 df_portfolio["portfolio46"] = df_portfolio["index_KOSPI"] * 0.4 + df_portfolio["index_TB10Y"] * 0.6
 df_portfolio["portfolio37"] = df_portfolio["index_KOSPI"] * 0.3 + df_portfolio["index_TB10Y"] * 0.7
 df_portfolio["index_SNP500"] = df_portfolio["SNP500_KRW"] / (df_portfolio.loc[dt_base]["SNP500_KRW"]) * 100
+
+df_portfolio["index_Bitcoin"] = df_portfolio["Bitcoin"] / (df_portfolio.loc[dt_base]["Bitcoin"]) * 100
+df_portfolio["index_GOLD"] = df_portfolio["GOLD"] / (df_portfolio.loc[dt_base]["GOLD"]) * 100
 
 # 그림 9.2 자산배분 포트폴리오 수익률 비교
 # 시각화: 월별 시계열 자료 1개를 표시
@@ -297,6 +312,10 @@ plt.plot(df_portfolio.index, df_portfolio["portfolio55"], color=colors[2], label
 plt.plot(df_portfolio.index, df_portfolio["portfolio37"], color=colors[3], label="Portfolio 37")
 plt.plot(df_portfolio.index, df_portfolio["index_TB10Y"], color=colors[4], label="TB10Y")
 # plt.plot(df_portfolio.index, df_portfolio["index_SNP500"], color=colors[5], label="SNP500")
+
+plt.plot(df_portfolio.index, df_portfolio["index_Bitcoin"], color=colors[0], label="GOLD")
+plt.plot(df_portfolio.index, df_portfolio["index_GOLD"], color=colors[0], label="KOSPI")
+
 
 xlim_start = dt_base
 plt.xlim(xlim_start, )
