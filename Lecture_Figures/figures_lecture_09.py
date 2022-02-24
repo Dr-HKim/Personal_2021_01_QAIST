@@ -106,6 +106,10 @@ sr_TB10Y = wrds_index_treasury_monthly["b10ind"]
 # sr_TB10Y = fred_BAMLCC4A0710YTRIV.resample('M').last()  # 월말 자료만
 # sr_TB10Y.index = sr_TB10Y.index.map(lambda t: t.replace(day=1))  # 인덱스 날짜를 1일로
 
+# Yahoo Finance
+# Treasury Yield 10 Years (^TNX) : 국채 인덱스로 이걸 쓰는게 더 나을지도
+# ICE Futures - ICE Futures Real Time Price. Currency in USD
+
 # 미국 국채 수익률
 # Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity (DGS10)
 fred_DGS10 = pd.read_pickle('./Market_Watch_Data/fred_DGS10.pkl')
