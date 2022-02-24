@@ -91,7 +91,7 @@ investpy_snp500_monthly = investpy_snp500.resample('M').last()  # 월말 자료�
 investpy_snp500_monthly.index = investpy_snp500_monthly.index.map(lambda t: t.replace(day=1))  # 인덱스 날짜를 1일로
 sr_SNP500 = investpy_snp500_monthly["Close"]
 
-# 미국 국채 (10년 만기)
+# 미국 국채 인덱스 (10년 만기)
 # 자료는 대략 1942.01 부터
 wrds_index_treasury = pd.read_csv('./WRDS_raw/wrds_index_treasury.csv', header=0, encoding='utf-8', low_memory=False)
 wrds_index_treasury["datetime"] = pd.to_datetime(wrds_index_treasury["caldt"], errors='coerce', format='%Y%m%d')
@@ -106,6 +106,7 @@ sr_TB10Y = wrds_index_treasury_monthly["b10ind"]
 # sr_TB10Y = fred_BAMLCC4A0710YTRIV.resample('M').last()  # 월말 자료만
 # sr_TB10Y.index = sr_TB10Y.index.map(lambda t: t.replace(day=1))  # 인덱스 날짜를 1일로
 
+# 미국 국채 수익률
 # Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity (DGS10)
 fred_DGS10 = pd.read_pickle('./Market_Watch_Data/fred_DGS10.pkl')
 sr_TB10Y_yield = fred_DGS10.resample('M').last()  # 월말 자료만
