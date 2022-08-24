@@ -162,61 +162,61 @@ KOSIS_DT_1F31502.to_pickle('./Market_Watch_Data/KOSIS_DT_1F31502.pkl')
 
 ########################################################################################################################
 # 1.3.1. 한국은행 기준금리 및 여수신금리 [722Y001][A,D,M,Q] (1994.01.03 부터)
-BOK_098Y001_DD = get_bok_data(STAT_CODE="722Y001", CYCLE_TYPE="D", START_DATE="19940103", END_DATE=DD_END_DATE)
-BOK_098Y001_DD.to_pickle('./Market_Watch_Data/BOK_098Y001_DD.pkl')
+BOK_722Y001_DD = get_bok_data(STAT_CODE="722Y001", CYCLE_TYPE="D", START_DATE="19940103", END_DATE=DD_END_DATE)
+BOK_722Y001_DD.to_pickle('./Market_Watch_Data/BOK_722Y001_DD.pkl')
 
 # 1.3.2.1. 시장금리(일별) [817Y002][D] (1995.01.03 부터)
-BOK_060Y001 = get_bok_data(STAT_CODE="817Y002", CYCLE_TYPE="D", START_DATE="19950103", END_DATE=DD_END_DATE)
-BOK_060Y001.to_pickle('./Market_Watch_Data/BOK_060Y001.pkl')
+BOK_817Y002 = get_bok_data(STAT_CODE="817Y002", CYCLE_TYPE="D", START_DATE="19950103", END_DATE=DD_END_DATE)
+BOK_817Y002.to_pickle('./Market_Watch_Data/BOK_817Y002.pkl')
 
 # 1.3.2.2. 시장금리(월,분기,년) [721Y001][A,M,Q] (1987.01, 1987Q1, 1987 부터)
-BOK_028Y001 = get_bok_data(STAT_CODE="721Y001", CYCLE_TYPE="M", START_DATE="198701", END_DATE=MM_END_DATE)
-BOK_028Y001.to_pickle('./Market_Watch_Data/BOK_028Y001.pkl')
+BOK_721Y001 = get_bok_data(STAT_CODE="721Y001", CYCLE_TYPE="M", START_DATE="198701", END_DATE=MM_END_DATE)
+BOK_721Y001.to_pickle('./Market_Watch_Data/BOK_721Y001.pkl')
 
 # 1.3.3.1.1. 예금은행 가중평균금리 - 수신금리 - 신규취급액 기준 [121Y002][A,M,Q] (1996.01 부터)
-BOK_005Y001 = get_bok_data(STAT_CODE="121Y002", CYCLE_TYPE="M", START_DATE="199601", END_DATE=MM_END_DATE)
-BOK_005Y001.to_pickle('./Market_Watch_Data/BOK_005Y001.pkl')
+BOK_121Y002 = get_bok_data(STAT_CODE="121Y002", CYCLE_TYPE="M", START_DATE="199601", END_DATE=MM_END_DATE)
+BOK_121Y002.to_pickle('./Market_Watch_Data/BOK_121Y002.pkl')
 
 # 1.3.3.2.1. 예금은행 가중평균금리 - 대출금리 - 신규취급액 기준 [121Y006][A,M,Q] (1996.01 부터)
-BOK_005Y003 = get_bok_data(STAT_CODE="121Y006", CYCLE_TYPE="M", START_DATE="199601", END_DATE=MM_END_DATE)
-BOK_005Y003.to_pickle('./Market_Watch_Data/BOK_005Y003.pkl')
+BOK_121Y006 = get_bok_data(STAT_CODE="121Y006", CYCLE_TYPE="M", START_DATE="199601", END_DATE=MM_END_DATE)
+BOK_121Y006.to_pickle('./Market_Watch_Data/BOK_121Y006.pkl')
 
-BOK_060Y001_01 = BOK_060Y001[BOK_060Y001["ITEM_NAME1"] == "CD(91일)"]
-BOK_028Y001_01 = BOK_028Y001[BOK_028Y001["ITEM_NAME1"] == "국고채(5년)"]
-BOK_005Y003_01 = BOK_005Y003[BOK_005Y003["ITEM_NAME1"] == "주택담보대출"]
+BOK_817Y002_01 = BOK_817Y002[BOK_817Y002["ITEM_NAME1"] == "CD(91일)"]
+BOK_721Y001_01 = BOK_721Y001[BOK_721Y001["ITEM_NAME1"] == "국고채(5년)"]
+BOK_121Y006_01 = BOK_121Y006[BOK_121Y006["ITEM_NAME1"] == "주택담보대출"]
 
 ########################################################################################################################
 # 1.5.1.1. 주식/채권/재정 - 주식거래/주가지수 - 주식시장(일) [802Y001][D] (1995.01.03 부터)
 
-# BOK_064Y001_19950103_20220731 저장하기
-BOK_064Y001_19950103_20220731 = get_bok_data(STAT_CODE="802Y001", CYCLE_TYPE="D", START_DATE="19950103", END_DATE="20220731")
-BOK_064Y001_19950103_20220731.to_pickle('./Market_Watch_Data/BOK_064Y001_19950103_20220731.pkl')
+# BOK_802Y001_19950103_20220731 저장하기
+BOK_802Y001_19950103_20220731 = get_bok_data(STAT_CODE="802Y001", CYCLE_TYPE="D", START_DATE="19950103", END_DATE="20220731")
+BOK_802Y001_19950103_20220731.to_pickle('./Market_Watch_Data/BOK_802Y001_19950103_20220731.pkl')
 
-# BOK_064Y001_19950103_20220731 불러오기
-BOK_064Y001_19950103_20220731 = pd.read_pickle('./Market_Watch_Data/BOK_064Y001_19950103_20220731.pkl')
+# BOK_802Y001_19950103_20220731 불러오기
+BOK_802Y001_19950103_20220731 = pd.read_pickle('./Market_Watch_Data/BOK_802Y001_19950103_20220731.pkl')
 
 # 업데이트 해서 이어붙이기
-BOK_064Y001_UPDATE = get_bok_data(STAT_CODE="802Y001", CYCLE_TYPE="D", START_DATE="20220801", END_DATE=DD_END_DATE)
-BOK_064Y001 = pd.concat([BOK_064Y001_19950103_20220731, BOK_064Y001_UPDATE])
-BOK_064Y001 = BOK_064Y001.sort_values(by=['ITEM_CODE1', 'TIME'])
-BOK_064Y001.to_pickle('./Market_Watch_Data/BOK_064Y001.pkl')
-# BOK_064Y001_01 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0001000"]  # KOSPI지수 / 코스피
-# BOK_064Y001_02 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0002000"]  # 거래량(주식시장, 잠정치)
-# BOK_064Y001_03 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0003000"]  # 거래대금(주식시장 , 잠정치)
-# BOK_064Y001_04 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0030000"]  # 외국인 순매수(주식시장, 잠정치)
-# BOK_064Y001_05 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0087000"]  # 주식시장-거래량(만주, 시간외거래분 포함)
-# BOK_064Y001_06 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0088000"]  # 주식시장-거래대금(억원, 시간외거래분 포함)
-# BOK_064Y001_07 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0089000"]  # KOSDAQ지수 / 코스닥
-# BOK_064Y001_08 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0090000"]  # 거래량(만주 : 코스닥시장, 잠정치)
-# BOK_064Y001_09 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0091000"]  # 거래대금(억원 : 코스닥시장, 잠정치)
-# BOK_064Y001_10 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0113000"]  # 외국인 순매수(코스닥시장, 잠정치)
-# BOK_064Y001_11 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0183000"]  # 시가총액(주식시장, 잠정치)
+BOK_802Y001_UPDATE = get_bok_data(STAT_CODE="802Y001", CYCLE_TYPE="D", START_DATE="20220801", END_DATE=DD_END_DATE)
+BOK_802Y001 = pd.concat([BOK_802Y001_19950103_20220731, BOK_802Y001_UPDATE])
+BOK_802Y001 = BOK_802Y001.sort_values(by=['ITEM_CODE1', 'TIME'])
+BOK_802Y001.to_pickle('./Market_Watch_Data/BOK_802Y001.pkl')
+# BOK_802Y001_01 = BOK_802Y001[BOK_802Y001["ITEM_CODE1"] == "0001000"]  # KOSPI지수 / 코스피
+# BOK_802Y001_02 = BOK_802Y001[BOK_802Y001["ITEM_CODE1"] == "0002000"]  # 거래량(주식시장, 잠정치)
+# BOK_802Y001_03 = BOK_802Y001[BOK_802Y001["ITEM_CODE1"] == "0003000"]  # 거래대금(주식시장 , 잠정치)
+# BOK_802Y001_04 = BOK_802Y001[BOK_802Y001["ITEM_CODE1"] == "0030000"]  # 외국인 순매수(주식시장, 잠정치)
+# BOK_802Y001_05 = BOK_802Y001[BOK_802Y001["ITEM_CODE1"] == "0087000"]  # 주식시장-거래량(만주, 시간외거래분 포함)
+# BOK_802Y001_06 = BOK_802Y001[BOK_802Y001["ITEM_CODE1"] == "0088000"]  # 주식시장-거래대금(억원, 시간외거래분 포함)
+# BOK_802Y001_07 = BOK_802Y001[BOK_802Y001["ITEM_CODE1"] == "0089000"]  # KOSDAQ지수 / 코스닥
+# BOK_802Y001_08 = BOK_802Y001[BOK_802Y001["ITEM_CODE1"] == "0090000"]  # 거래량(만주 : 코스닥시장, 잠정치)
+# BOK_802Y001_09 = BOK_802Y001[BOK_802Y001["ITEM_CODE1"] == "0091000"]  # 거래대금(억원 : 코스닥시장, 잠정치)
+# BOK_802Y001_10 = BOK_802Y001[BOK_802Y001["ITEM_CODE1"] == "0113000"]  # 외국인 순매수(코스닥시장, 잠정치)
+# BOK_802Y001_11 = BOK_802Y001[BOK_802Y001["ITEM_CODE1"] == "0183000"]  # 시가총액(주식시장, 잠정치)
 
 # 1.5.1.2. 주식/채권/재정 - 주식거래/주가지수 - 주식시장(월,년) [901Y014][A,M] (200002, 1976 부터)
-BOK_028Y015 = get_bok_data(STAT_CODE="901Y014", CYCLE_TYPE="A", START_DATE="1976", END_DATE=YY_END_DATE)
-BOK_028Y015.to_pickle('./Market_Watch_Data/BOK_028Y015.pkl')
-BOK_028Y015_MM = get_bok_data(STAT_CODE="901Y014", CYCLE_TYPE="M", START_DATE="200002", END_DATE=MM_END_DATE)
-BOK_028Y015_MM.to_pickle('./Market_Watch_Data/BOK_028Y015_MM.pkl')
+BOK_901Y014 = get_bok_data(STAT_CODE="901Y014", CYCLE_TYPE="A", START_DATE="1976", END_DATE=YY_END_DATE)
+BOK_901Y014.to_pickle('./Market_Watch_Data/BOK_901Y014.pkl')
+BOK_901Y014_MM = get_bok_data(STAT_CODE="901Y014", CYCLE_TYPE="M", START_DATE="200002", END_DATE=MM_END_DATE)
+BOK_901Y014_MM.to_pickle('./Market_Watch_Data/BOK_901Y014_MM.pkl')
 
 ########################################################################################################################
 # 2.1.1.1. 국민소득통계(2015년 기준년) > 주요지표 > 주요지표(연간지표) [200Y001][A] (1953 부터)
