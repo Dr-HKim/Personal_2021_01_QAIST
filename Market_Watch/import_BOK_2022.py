@@ -220,28 +220,28 @@ BOK_901Y014_MM.to_pickle('./Market_Watch_Data/BOK_901Y014_MM.pkl')
 
 ########################################################################################################################
 # 2.1.1.1. 국민소득통계(2015년 기준년) > 주요지표 > 주요지표(연간지표) [200Y001][A] (1953 부터)
-BOK_111Y002 = get_bok_data(STAT_CODE="200Y001", CYCLE_TYPE="A", START_DATE="1970", END_DATE=YY_END_DATE)
-BOK_111Y002.to_pickle('./Market_Watch_Data/BOK_111Y002.pkl')
-# BOK_111Y002_00 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "10101"].copy()  # 국내총생산(GDP)(명목, 십억원)
-# BOK_111Y002_01 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "1010101"].copy()  # 국내총생산(GDP)(명목, 억달러)
-# BOK_111Y002_02 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "20101"].copy()  # 국내총생산(실질성장률)[%]
-# BOK_111Y002_03 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "90103"].copy()  # GDP 디플레이터 (2015=100)
-# BOK_111Y002_04 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "9010301"].copy()  # GDP 디플레이터 등락률 (%)
+BOK_200Y001 = get_bok_data(STAT_CODE="200Y001", CYCLE_TYPE="A", START_DATE="1970", END_DATE=YY_END_DATE)
+BOK_200Y001.to_pickle('./Market_Watch_Data/BOK_200Y001.pkl')
+# BOK_200Y001_00 = BOK_200Y001[BOK_200Y001["ITEM_CODE1"] == "10101"].copy()  # 국내총생산(GDP)(명목, 십억원)
+# BOK_200Y001_01 = BOK_200Y001[BOK_200Y001["ITEM_CODE1"] == "1010101"].copy()  # 국내총생산(GDP)(명목, 억달러)
+# BOK_200Y001_02 = BOK_200Y001[BOK_200Y001["ITEM_CODE1"] == "20101"].copy()  # 국내총생산(실질성장률)[%]
+# BOK_200Y001_03 = BOK_200Y001[BOK_200Y001["ITEM_CODE1"] == "90103"].copy()  # GDP 디플레이터 (2015=100)
+# BOK_200Y001_04 = BOK_200Y001[BOK_200Y001["ITEM_CODE1"] == "9010301"].copy()  # GDP 디플레이터 등락률 (%)
 
 # 2.1.1.2. 국민소득통계(2015년 기준년) > 주요지표 > 주요지표(분기지표) [200Y002][Q] (1960Q1 부터)
-BOK_111Y055 = get_bok_data(STAT_CODE="200Y002", CYCLE_TYPE="Q", START_DATE="1960Q1", END_DATE=QQ_END_DATE)
-BOK_111Y055.to_pickle('./Market_Watch_Data/BOK_111Y055.pkl')
-# BOK_111Y055_01 = BOK_111Y055[BOK_111Y055["ITEM_CODE1"] == "10111"].copy()  # 국내총생산(GDP)(실질, 계절조정, 전기비)
+BOK_200Y002 = get_bok_data(STAT_CODE="200Y002", CYCLE_TYPE="Q", START_DATE="1960Q1", END_DATE=QQ_END_DATE)
+BOK_200Y002.to_pickle('./Market_Watch_Data/BOK_200Y002.pkl')
+# BOK_200Y002_01 = BOK_200Y002[BOK_200Y002["ITEM_CODE1"] == "10111"].copy()  # 국내총생산(GDP)(실질, 계절조정, 전기비)
 
 # 2.1.7.1.2. 가계의 목적별 최종소비지출(계절조정, 실질, 분기) [200Y041][Q] (1970Q1 부터)
-BOK_111Y027 = get_bok_data(STAT_CODE="200Y041", CYCLE_TYPE="Q", START_DATE="1970Q1", END_DATE=QQ_END_DATE)
-BOK_111Y027.to_pickle('./Market_Watch_Data/BOK_111Y027.pkl')
-# BOK_111Y027_01 = BOK_111Y027[BOK_111Y027["ITEM_CODE1"] == "10116"].copy()  # 가계 최종소비지출
+BOK_200Y041 = get_bok_data(STAT_CODE="200Y041", CYCLE_TYPE="Q", START_DATE="1970Q1", END_DATE=QQ_END_DATE)
+BOK_200Y041.to_pickle('./Market_Watch_Data/BOK_200Y041.pkl')
+# BOK_200Y041_01 = BOK_111Y027[BOK_111Y027["ITEM_CODE1"] == "10116"].copy()  # 가계 최종소비지출
 
 # 2.5.1.1. 국제수지 [301Y013][A,M,Q] (1980.01, 1980Q1 부터)
-BOK_022Y013 = get_bok_data(STAT_CODE="301Y013", CYCLE_TYPE="M", START_DATE="198001", END_DATE=MM_END_DATE)
-BOK_022Y013.to_pickle('./Market_Watch_Data/BOK_022Y013.pkl')
-# BOK_022Y013_00 = BOK_022Y013[BOK_022Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (current account) (백만달러)
+BOK_301Y013 = get_bok_data(STAT_CODE="301Y013", CYCLE_TYPE="M", START_DATE="198001", END_DATE=MM_END_DATE)
+BOK_301Y013.to_pickle('./Market_Watch_Data/BOK_301Y013.pkl')
+# BOK_301Y013_00 = BOK_301Y013[BOK_301Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (current account) (백만달러)
 
 # 2.5.1.2. 경상수지(계절조정) [301Y017][M] (1980.01, 1980Q1 부터)
 BOK_301Y017 = get_bok_data(STAT_CODE="301Y017", CYCLE_TYPE="M", START_DATE="198001", END_DATE=MM_END_DATE)
@@ -249,61 +249,61 @@ BOK_301Y017.to_pickle('./Market_Watch_Data/BOK_301Y017.pkl')
 # BOK_022Y013_00 = BOK_022Y013[BOK_022Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (current account) (백만달러)
 
 ########################################################################################################################
-# 4.1.1.1. 생산자물가지수(2015=100)(기본분류) [404Y014][A,M,Q] (1965.01 부터) (1910~1964 자료는 따로 있음)
-BOK_013Y202 = get_bok_data(STAT_CODE="404Y014", CYCLE_TYPE="M", START_DATE="196501", END_DATE=MM_END_DATE)
-BOK_013Y202.to_pickle('./Market_Watch_Data/BOK_013Y202.pkl')
-# BOK_013Y202_AA = BOK_013Y202[BOK_013Y202["ITEM_CODE1"] == "*AA"].copy()  # 총지수
-# BOK_013Y202_AA["pct_change_DATA_VALUE"] = (BOK_013Y202_AA["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
-
-# 4.2.1 소비자물가지수(2020=100)(전국, 특수분류) [901Y010][A,M,Q] (1975.01 부터)
-BOK_021Y126 = get_bok_data(STAT_CODE="901Y010", CYCLE_TYPE="M", START_DATE="197501", END_DATE=MM_END_DATE)
-BOK_021Y126.to_pickle('./Market_Watch_Data/BOK_021Y126.pkl')
-
-BOK_021Y126_YY = get_bok_data(STAT_CODE="901Y010", CYCLE_TYPE="A", START_DATE="1975", END_DATE=YY_END_DATE)
-BOK_021Y126_YY.to_pickle('./Market_Watch_Data/BOK_021Y126_YY.pkl')
-# BOK_021Y126_00 = BOK_021Y126[BOK_021Y126["ITEM_CODE1"] == "00"].copy()  # 총지수
-# BOK_021Y126_QB = BOK_021Y126[BOK_021Y126["ITEM_CODE1"] == "QB"].copy()  # 농산물및석유류제외지수 (근원 소비자물가지수)
-# BOK_021Y126_00["pct_change_DATA_VALUE"] = (BOK_021Y126_00["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
-# BOK_021Y126_QB["pct_change_DATA_VALUE"] = (BOK_021Y126_QB["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
-
-# 4.3.1.2. 수출물가지수(2015=100)(특수분류) [402Y015][A,M,Q] (1971.01 부터)
-BOK_019Y302 = get_bok_data(STAT_CODE="402Y015", CYCLE_TYPE="M", START_DATE="197101", END_DATE=MM_END_DATE)
-BOK_019Y302.to_pickle('./Market_Watch_Data/BOK_019Y302.pkl')
-# BOK_019Y302_00 = BOK_019Y302[(BOK_019Y302["ITEM_CODE1"] == "602AA") &
-#                              (BOK_019Y302["ITEM_CODE2"] == "D")].copy()  # 수출물가지수 (IT제외, 달러기준)
-
-# 4.4.1.1. 주택매매가격지수(KB) [901Y062][M] (1986.01 부터)
-BOK_085Y021 = get_bok_data(STAT_CODE="901Y062", CYCLE_TYPE="M", START_DATE="198601", END_DATE=MM_END_DATE)
-BOK_085Y021.to_pickle('./Market_Watch_Data/BOK_085Y021.pkl')
+# 3.1.2.1. 평균환율/기말환율 > 주요국통화의 대원화 환율 [731Y004][A,M,Q,S] (1964.05 부터)
+BOK_731Y004 = get_bok_data(STAT_CODE="731Y004", CYCLE_TYPE="M", START_DATE="196405", END_DATE=MM_END_DATE)
+BOK_731Y004.to_pickle('./Market_Watch_Data/BOK_731Y004.pkl')
+# BOK_731Y004_00 = BOK_731Y004[(BOK_731Y004["ITEM_CODE1"] == "0000001") & (BOK_731Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
+# BOK_731Y004_01 = BOK_731Y004[(BOK_731Y004["ITEM_CODE1"] == "0000001") & (BOK_731Y004["ITEM_CODE2"] == "0000200")].copy()  # 원/미국달러 말일자료
 
 ########################################################################################################################
-# 3.1.2.1. 평균환율/기말환율 > 주요국통화의 대원화 환율 [731Y004][A,M,Q,S] (1964.05 부터)
-BOK_036Y004 = get_bok_data(STAT_CODE="731Y004", CYCLE_TYPE="M", START_DATE="196405", END_DATE=MM_END_DATE)
-BOK_036Y004.to_pickle('./Market_Watch_Data/BOK_036Y004.pkl')
-# BOK_036Y004_00 = BOK_036Y004[(BOK_036Y004["ITEM_CODE1"] == "0000001") & (BOK_036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
-# BOK_036Y004_01 = BOK_036Y004[(BOK_036Y004["ITEM_CODE1"] == "0000001") & (BOK_036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원/미국달러 말일자료
+# 4.1.1.1. 생산자물가지수(2015=100)(기본분류) [404Y014][A,M,Q] (1965.01 부터) (1910~1964 자료는 따로 있음)
+BOK_404Y014 = get_bok_data(STAT_CODE="404Y014", CYCLE_TYPE="M", START_DATE="196501", END_DATE=MM_END_DATE)
+BOK_404Y014.to_pickle('./Market_Watch_Data/BOK_404Y014.pkl')
+# BOK_404Y014_AA = BOK_404Y014[BOK_404Y014["ITEM_CODE1"] == "*AA"].copy()  # 총지수
+# BOK_404Y014_AA["pct_change_DATA_VALUE"] = (BOK_404Y014_AA["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
+
+# 4.2.1 소비자물가지수(2020=100)(전국, 특수분류) [901Y010][A,M,Q] (1975.01 부터)
+BOK_901Y010 = get_bok_data(STAT_CODE="901Y010", CYCLE_TYPE="M", START_DATE="197501", END_DATE=MM_END_DATE)
+BOK_901Y010.to_pickle('./Market_Watch_Data/BOK_901Y010.pkl')
+
+BOK_901Y010_YY = get_bok_data(STAT_CODE="901Y010", CYCLE_TYPE="A", START_DATE="1975", END_DATE=YY_END_DATE)
+BOK_901Y010_YY.to_pickle('./Market_Watch_Data/BOK_901Y010_YY.pkl')
+# BOK_901Y010_00 = BOK_901Y010[BOK_901Y010["ITEM_CODE1"] == "00"].copy()  # 총지수
+# BOK_901Y010_QB = BOK_901Y010[BOK_901Y010["ITEM_CODE1"] == "QB"].copy()  # 농산물및석유류제외지수 (근원 소비자물가지수)
+# BOK_901Y010_00["pct_change_DATA_VALUE"] = (BOK_901Y010_00["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
+# BOK_901Y010_QB["pct_change_DATA_VALUE"] = (BOK_901Y010_QB["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
+
+# 4.3.1.2. 수출물가지수(2015=100)(특수분류) [402Y015][A,M,Q] (1971.01 부터)
+BOK_402Y015 = get_bok_data(STAT_CODE="402Y015", CYCLE_TYPE="M", START_DATE="197101", END_DATE=MM_END_DATE)
+BOK_402Y015.to_pickle('./Market_Watch_Data/BOK_402Y015.pkl')
+# BOK_402Y015_00 = BOK_402Y015[(BOK_402Y015["ITEM_CODE1"] == "602AA") &
+#                              (BOK_402Y015["ITEM_CODE2"] == "D")].copy()  # 수출물가지수 (IT제외, 달러기준)
+
+# 4.4.1.1. 주택매매가격지수(KB) [901Y062][M] (1986.01 부터)
+BOK_901Y062 = get_bok_data(STAT_CODE="901Y062", CYCLE_TYPE="M", START_DATE="198601", END_DATE=MM_END_DATE)
+BOK_901Y062.to_pickle('./Market_Watch_Data/BOK_901Y062.pkl')
 
 ########################################################################################################################
 # 5.1.1.1. 기업경영분석 > 기업경영분석지표(연) > 기업경영분석지표 > 기업경영분석지표(2009~, 전수조사) [501Y011][A]
-BOK_027Y431 = get_bok_data(STAT_CODE="501Y011", CYCLE_TYPE="A", START_DATE="2009", END_DATE=YY_END_DATE)
-BOK_027Y431.to_pickle('./Market_Watch_Data/BOK_027Y431.pkl')
-# BOK_027Y431_01 = BOK_027Y431[(BOK_027Y431["ITEM_NAME1"] == "전산업") & (BOK_027Y431["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-# BOK_027Y431_02 = BOK_027Y431[(BOK_027Y431["ITEM_NAME1"] == "제조업") & (BOK_027Y431["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-# BOK_027Y431_03 = BOK_027Y431[(BOK_027Y431["ITEM_NAME1"] == "제조업") & (BOK_027Y431["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_501Y011 = get_bok_data(STAT_CODE="501Y011", CYCLE_TYPE="A", START_DATE="2009", END_DATE=YY_END_DATE)
+BOK_501Y011.to_pickle('./Market_Watch_Data/BOK_501Y011.pkl')
+# BOK_501Y011_01 = BOK_501Y011[(BOK_501Y011["ITEM_NAME1"] == "전산업") & (BOK_501Y011["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+# BOK_501Y011_02 = BOK_501Y011[(BOK_501Y011["ITEM_NAME1"] == "제조업") & (BOK_501Y011["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+# BOK_501Y011_03 = BOK_501Y011[(BOK_501Y011["ITEM_NAME1"] == "제조업") & (BOK_501Y011["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
 
 # 5.1.1.2. 기업경영분석 > 기업경영분석지표(연) > 기업경영분석지표 > 기업경영분석지표(2007~2010) [501Y017][A]
-BOK_027Y331 = get_bok_data(STAT_CODE="501Y017", CYCLE_TYPE="A", START_DATE="2007", END_DATE="2010")
-BOK_027Y331.to_pickle('./Market_Watch_Data/BOK_027Y331.pkl')
-# BOK_027Y331_01 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "전산업") & (BOK_027Y331["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-# BOK_027Y331_02 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "제조업") & (BOK_027Y331["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-# BOK_027Y331_03 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "제조업") & (BOK_027Y331["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_501Y017 = get_bok_data(STAT_CODE="501Y017", CYCLE_TYPE="A", START_DATE="2007", END_DATE="2010")
+BOK_501Y017.to_pickle('./Market_Watch_Data/BOK_501Y017.pkl')
+# BOK_501Y017_01 = BOK_501Y017[(BOK_501Y017["ITEM_NAME1"] == "전산업") & (BOK_501Y017["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+# BOK_501Y017_02 = BOK_501Y017[(BOK_501Y017["ITEM_NAME1"] == "제조업") & (BOK_501Y017["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+# BOK_501Y017_03 = BOK_501Y017[(BOK_501Y017["ITEM_NAME1"] == "제조업") & (BOK_501Y017["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
 
 # 5.1.1.3. 기업경영분석 > 기업경영분석지표(연) > 기업경영분석지표 > 기업경영분석지표(~2007) [501Y018][A]
-BOK_027Y131 = get_bok_data(STAT_CODE="501Y018", CYCLE_TYPE="A", START_DATE="1960", END_DATE="2007")
-BOK_027Y131.to_pickle('./Market_Watch_Data/BOK_027Y131.pkl')
-# BOK_027Y131_01 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "전산업") & (BOK_027Y131["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-# BOK_027Y131_02 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "제조업") & (BOK_027Y131["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-# BOK_027Y131_03 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "제조업") & (BOK_027Y131["ITEM_NAME2"] == "매출액경상이익률(~2006)")].copy()  # 국내총생산(실질성장률)[%]
+BOK_501Y018 = get_bok_data(STAT_CODE="501Y018", CYCLE_TYPE="A", START_DATE="1960", END_DATE="2007")
+BOK_501Y018.to_pickle('./Market_Watch_Data/BOK_501Y018.pkl')
+# BOK_501Y018_01 = BOK_501Y018[(BOK_501Y018["ITEM_NAME1"] == "전산업") & (BOK_501Y018["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+# BOK_501Y018_02 = BOK_501Y018[(BOK_501Y018["ITEM_NAME1"] == "제조업") & (BOK_501Y018["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+# BOK_501Y018_03 = BOK_501Y018[(BOK_501Y018["ITEM_NAME1"] == "제조업") & (BOK_501Y018["ITEM_NAME2"] == "매출액경상이익률(~2006)")].copy()  # 국내총생산(실질성장률)[%]
 
 ########################################################################################################################
 # # 분기별 GDP 갭을 추정해보려 하였으나 실패
