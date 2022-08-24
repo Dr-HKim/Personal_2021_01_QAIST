@@ -1,6 +1,6 @@
 # Created by Kim Hyeongjun on 08/23/2022.
 # Copyright © 2022 dr-hkim.github.io. All rights reserved.
-# https://ecos.bok.or.kr/jsp/openapi/OpenApiController.jsp
+# https://ecos.bok.or.kr/api/#/
 # ecos.bok.or.kr 접속 (E-mail: yuii7890@naver.com)
 # 개발 가이드 > 통계코드검색
 # 2022년 ECOS 개편과 함께 Open API 도 크게 개편되면서 STAT_CODE 가 많이 변경됨
@@ -78,6 +78,7 @@ def get_bok_data(STAT_CODE, CYCLE_TYPE, START_DATE, END_DATE, AUTH_KEY=get_bok_a
                 list_DATA_VALUE.append(item_DATA_VALUE)
 
             df_BOK = pd.DataFrame(list_STAT_CODE, columns=["STAT_CODE"])
+
             df_BOK["STAT_NAME"] = list_STAT_NAME
             df_BOK["ITEM_CODE1"] = list_ITEM_CODE1
             df_BOK["ITEM_NAME1"] = list_ITEM_NAME1
@@ -88,6 +89,7 @@ def get_bok_data(STAT_CODE, CYCLE_TYPE, START_DATE, END_DATE, AUTH_KEY=get_bok_a
             df_BOK["ITEM_CODE4"] = list_ITEM_CODE4
             df_BOK["ITEM_NAME4"] = list_ITEM_NAME4
             df_BOK["UNIT_NAME"] = list_UNIT_NAME
+
             df_BOK["TIME"] = list_TIME
             if CYCLE_TYPE == "M":
                 df_BOK["TIME"] = df_BOK["TIME"].apply(pd.to_numeric)
@@ -95,6 +97,7 @@ def get_bok_data(STAT_CODE, CYCLE_TYPE, START_DATE, END_DATE, AUTH_KEY=get_bok_a
             elif CYCLE_TYPE == "D":
                 df_BOK["TIME"] = df_BOK["TIME"].apply(pd.to_numeric)
                 df_BOK["DATETIME"] = pd.to_datetime(df_BOK['TIME'].astype(str), errors='coerce', format='%Y%m%d')
+
             df_BOK["DATA_VALUE"] = list_DATA_VALUE
 
         except Exception as e:
@@ -185,9 +188,9 @@ BOK_005Y003_01 = BOK_005Y003[BOK_005Y003["ITEM_NAME1"] == "주택담보대출"]
 ########################################################################################################################
 # 1.5.1.1. 주식/채권/재정 - 주식거래/주가지수 - 주식시장(일) [802Y001][D] (1995.01.03 부터)
 
-# # BOK_064Y001_19950103_20220731 저장하기
-# BOK_064Y001_19950103_20220731 = get_bok_data(STAT_CODE="802Y001", CYCLE_TYPE="D", START_DATE="19950103", END_DATE="20220731")
-# BOK_064Y001_19950103_20220731.to_pickle('./Market_Watch_Data/BOK_064Y001_19950103_20220731.pkl')
+# BOK_064Y001_19950103_20220731 저장하기
+BOK_064Y001_19950103_20220731 = get_bok_data(STAT_CODE="802Y001", CYCLE_TYPE="D", START_DATE="19950103", END_DATE="20220731")
+BOK_064Y001_19950103_20220731.to_pickle('./Market_Watch_Data/BOK_064Y001_19950103_20220731.pkl')
 
 # BOK_064Y001_19950103_20220731 불러오기
 BOK_064Y001_19950103_20220731 = pd.read_pickle('./Market_Watch_Data/BOK_064Y001_19950103_20220731.pkl')
@@ -230,6 +233,11 @@ BOK_111Y055 = get_bok_data(STAT_CODE="200Y002", CYCLE_TYPE="Q", START_DATE="1960
 BOK_111Y055.to_pickle('./Market_Watch_Data/BOK_111Y055.pkl')
 # BOK_111Y055_01 = BOK_111Y055[BOK_111Y055["ITEM_CODE1"] == "10111"].copy()  # 국내총생산(GDP)(실질, 계절조정, 전기비)
 
+# 2.1.7.1.2. 가계의 목적별 최종소비지출(계절조정, 실질, 분기) [200Y041][Q] (1970Q1 부터)
+BOK_111Y027 = get_bok_data(STAT_CODE="200Y041", CYCLE_TYPE="Q", START_DATE="1970Q1", END_DATE=QQ_END_DATE)
+BOK_111Y027.to_pickle('./Market_Watch_Data/BOK_111Y027.pkl')
+# BOK_111Y027_01 = BOK_111Y027[BOK_111Y027["ITEM_CODE1"] == "10116"].copy()  # 가계 최종소비지출
+
 # 2.5.1.1. 국제수지 [301Y013][A,M,Q] (1980.01, 1980Q1 부터)
 BOK_022Y013 = get_bok_data(STAT_CODE="301Y013", CYCLE_TYPE="M", START_DATE="198001", END_DATE=MM_END_DATE)
 BOK_022Y013.to_pickle('./Market_Watch_Data/BOK_022Y013.pkl')
@@ -239,7 +247,6 @@ BOK_022Y013.to_pickle('./Market_Watch_Data/BOK_022Y013.pkl')
 BOK_301Y017 = get_bok_data(STAT_CODE="301Y017", CYCLE_TYPE="M", START_DATE="198001", END_DATE=MM_END_DATE)
 BOK_301Y017.to_pickle('./Market_Watch_Data/BOK_301Y017.pkl')
 # BOK_022Y013_00 = BOK_022Y013[BOK_022Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (current account) (백만달러)
-
 
 ########################################################################################################################
 # 4.1.1.1. 생산자물가지수(2015=100)(기본분류) [404Y014][A,M,Q] (1965.01 부터) (1910~1964 자료는 따로 있음)
@@ -276,37 +283,27 @@ BOK_036Y004.to_pickle('./Market_Watch_Data/BOK_036Y004.pkl')
 # BOK_036Y004_00 = BOK_036Y004[(BOK_036Y004["ITEM_CODE1"] == "0000001") & (BOK_036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
 # BOK_036Y004_01 = BOK_036Y004[(BOK_036Y004["ITEM_CODE1"] == "0000001") & (BOK_036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원/미국달러 말일자료
 
-
-
 ########################################################################################################################
-
-# 10.7.1.1.2. 가계의 목적별 최종소비지출(계절조정, 실질, 분기) [111Y027] (1970Q1 부터)
-BOK_111Y027 = get_bok_data(STAT_CODE="111Y027", CYCLE_TYPE="QQ", START_DATE="19701", END_DATE=QQ_END_DATE)
-BOK_111Y027.to_pickle('./Market_Watch_Data/BOK_111Y027.pkl')
-# BOK_111Y027_01 = BOK_111Y027[BOK_111Y027["ITEM_CODE1"] == "10116"].copy()  # 가계 최종소비지출
-
-# 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(~2007)[027Y131][YY] (1960 부터)
-BOK_027Y131 = get_bok_data(STAT_CODE="027Y131", CYCLE_TYPE="YY", START_DATE="1960", END_DATE="2006")
-BOK_027Y131.to_pickle('./Market_Watch_Data/BOK_027Y131.pkl')
-# BOK_027Y131_01 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "전산업") & (BOK_027Y131["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-# BOK_027Y131_02 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "제조업") & (BOK_027Y131["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-# BOK_027Y131_03 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "제조업") & (BOK_027Y131["ITEM_NAME2"] == "매출액경상이익률(~2006)")].copy()  # 국내총생산(실질성장률)[%]
-
-# 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(2007~2010)[027Y331][YY]
-BOK_027Y331 = get_bok_data(STAT_CODE="027Y331", CYCLE_TYPE="YY", START_DATE="2007", END_DATE="2008")
-BOK_027Y331.to_pickle('./Market_Watch_Data/BOK_027Y331.pkl')
-# BOK_027Y331_01 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "전산업") & (BOK_027Y331["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-# BOK_027Y331_02 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "제조업") & (BOK_027Y331["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-# BOK_027Y331_03 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "제조업") & (BOK_027Y331["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
-
-# 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(2009~, 전수조사) [027Y431][YY]
-BOK_027Y431 = get_bok_data(STAT_CODE="027Y431", CYCLE_TYPE="YY", START_DATE="2009", END_DATE="2020")
+# 5.1.1.1. 기업경영분석 > 기업경영분석지표(연) > 기업경영분석지표 > 기업경영분석지표(2009~, 전수조사) [501Y011][A]
+BOK_027Y431 = get_bok_data(STAT_CODE="501Y011", CYCLE_TYPE="A", START_DATE="2009", END_DATE=YY_END_DATE)
 BOK_027Y431.to_pickle('./Market_Watch_Data/BOK_027Y431.pkl')
 # BOK_027Y431_01 = BOK_027Y431[(BOK_027Y431["ITEM_NAME1"] == "전산업") & (BOK_027Y431["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
 # BOK_027Y431_02 = BOK_027Y431[(BOK_027Y431["ITEM_NAME1"] == "제조업") & (BOK_027Y431["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
 # BOK_027Y431_03 = BOK_027Y431[(BOK_027Y431["ITEM_NAME1"] == "제조업") & (BOK_027Y431["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
 
-# BOK_028Y015.groupby(["ITEM_CODE1", "ITEM_NAME1"]).size()
+# 5.1.1.2. 기업경영분석 > 기업경영분석지표(연) > 기업경영분석지표 > 기업경영분석지표(2007~2010) [501Y017][A]
+BOK_027Y331 = get_bok_data(STAT_CODE="501Y017", CYCLE_TYPE="A", START_DATE="2007", END_DATE="2010")
+BOK_027Y331.to_pickle('./Market_Watch_Data/BOK_027Y331.pkl')
+# BOK_027Y331_01 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "전산업") & (BOK_027Y331["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+# BOK_027Y331_02 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "제조업") & (BOK_027Y331["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+# BOK_027Y331_03 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "제조업") & (BOK_027Y331["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
+
+# 5.1.1.3. 기업경영분석 > 기업경영분석지표(연) > 기업경영분석지표 > 기업경영분석지표(~2007) [501Y018][A]
+BOK_027Y131 = get_bok_data(STAT_CODE="501Y018", CYCLE_TYPE="A", START_DATE="1960", END_DATE="2007")
+BOK_027Y131.to_pickle('./Market_Watch_Data/BOK_027Y131.pkl')
+# BOK_027Y131_01 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "전산업") & (BOK_027Y131["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+# BOK_027Y131_02 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "제조업") & (BOK_027Y131["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+# BOK_027Y131_03 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "제조업") & (BOK_027Y131["ITEM_NAME2"] == "매출액경상이익률(~2006)")].copy()  # 국내총생산(실질성장률)[%]
 
 ########################################################################################################################
 # # 분기별 GDP 갭을 추정해보려 하였으나 실패
