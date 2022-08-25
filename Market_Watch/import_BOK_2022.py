@@ -173,7 +173,7 @@ BOK_817Y002.to_pickle('./Market_Watch_Data/BOK_817Y002.pkl')
 BOK_721Y001 = get_bok_data(STAT_CODE="721Y001", CYCLE_TYPE="M", START_DATE="198701", END_DATE=MM_END_DATE)
 BOK_721Y001.to_pickle('./Market_Watch_Data/BOK_721Y001.pkl')
 
-# 1.3.3.1.1. 예금은행 가중평균금리 - 수신금리 - 신규취급액 기준 [121Y002][A,M,Q] (1996.01 부터)
+# 1.3.3.1.1. 예금은행 가중평균금리 > 수신금리 - 신규취급액 기준 [121Y002][A,M,Q] (1996.01 부터)
 BOK_121Y002 = get_bok_data(STAT_CODE="121Y002", CYCLE_TYPE="M", START_DATE="199601", END_DATE=MM_END_DATE)
 BOK_121Y002.to_pickle('./Market_Watch_Data/BOK_121Y002.pkl')
 
@@ -185,12 +185,10 @@ BOK_817Y002_01 = BOK_817Y002[BOK_817Y002["ITEM_NAME1"] == "CD(91일)"]
 BOK_721Y001_01 = BOK_721Y001[BOK_721Y001["ITEM_NAME1"] == "국고채(5년)"]
 BOK_121Y006_01 = BOK_121Y006[BOK_121Y006["ITEM_NAME1"] == "주택담보대출"]
 
-########################################################################################################################
 # 1.5.1.1. 주식/채권/재정 - 주식거래/주가지수 - 주식시장(일) [802Y001][D] (1995.01.03 부터)
-
-# BOK_802Y001_19950103_20220731 저장하기
-BOK_802Y001_19950103_20220731 = get_bok_data(STAT_CODE="802Y001", CYCLE_TYPE="D", START_DATE="19950103", END_DATE="20220731")
-BOK_802Y001_19950103_20220731.to_pickle('./Market_Watch_Data/BOK_802Y001_19950103_20220731.pkl')
+# # BOK_802Y001_19950103_20220731 저장하기
+# BOK_802Y001_19950103_20220731 = get_bok_data(STAT_CODE="802Y001", CYCLE_TYPE="D", START_DATE="19950103", END_DATE="20220731")
+# BOK_802Y001_19950103_20220731.to_pickle('./Market_Watch_Data/BOK_802Y001_19950103_20220731.pkl')
 
 # BOK_802Y001_19950103_20220731 불러오기
 BOK_802Y001_19950103_20220731 = pd.read_pickle('./Market_Watch_Data/BOK_802Y001_19950103_20220731.pkl')

@@ -26,48 +26,21 @@ def align_yaxis(ax1, v1, ax2, v2):
 
 
 ########################################################################################################################
-# 그림 1.1 소비자물가지수 (연간)
-
-# 7.4.2 소비자물가지수(2020=100)(전국, 특수분류)  [021Y126][MM,QQ,YY] (1975.01 부터)
-# 4.2.1 소비자물가지수(2020=100)(전국, 특수분류) [901Y010][A,M,Q] (1975.01 부터)
-BOK_021Y126_YY = pd.read_pickle('./Market_Watch_Data/BOK_901Y010_YY.pkl')
-BOK_021Y126_YY_00 = BOK_021Y126_YY[BOK_021Y126_YY["ITEM_CODE1"] == "00"].copy()  # 총지수
-BOK_021Y126_YY_00["만원"] = 1000000 / BOK_021Y126_YY_00["DATA_VALUE"]
-BOK_021Y126_YY_00["VAR1"] = (10000 / 38.48) * BOK_021Y126_YY_00["DATA_VALUE"]
-BOK_021Y126_YY_00["VAR2"] = (10000 / 63.15) * BOK_021Y126_YY_00["DATA_VALUE"]
-
-# 시각화
-fig = plt.figure()
-fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
-fig.set_size_inches(1800/300, 1200/300)  # 그래프 크기 지정, DPI=300
-
-plt.plot(BOK_021Y126_YY_00["TIME"], BOK_021Y126_YY_00["DATA_VALUE"], color='r', label="CPI")
-plt.xlim(1990, )
-plt.ylim(20, 110)
-plt.axhline(y=0, color='green', linestyle='dotted')
-plt.xlabel('Dates', fontsize=10)
-plt.ylabel('Consumer Price Index (2020=100)', fontsize=10)
-plt.legend(loc='upper left')
-plt.show()
-
-plt.savefig("./Lecture_Figures_output/fig1.1_cpi.png")
-
 # 그림 1.1 소비자물가지수 (월간)
-
-# 7.4.2 소비자물가지수(2020=100)(전국, 특수분류)  [021Y126][MM,QQ,YY] (1975.01 부터)
-BOK_021Y126 = pd.read_pickle('./Market_Watch_Data/BOK_021Y126.pkl')
-BOK_021Y126_00 = BOK_021Y126[BOK_021Y126["ITEM_CODE1"] == "00"].copy()  # 총지수
-BOK_021Y126_00["pct_change_DATA_VALUE"] = (BOK_021Y126_00["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
+# 4.2.1 소비자물가지수(2020=100)(전국, 특수분류) [901Y010][A,M,Q] (1975.01 부터)
+BOK_901Y010 = pd.read_pickle('./Market_Watch_Data/BOK_901Y010.pkl')
+BOK_901Y010_00 = BOK_901Y010[BOK_901Y010["ITEM_CODE1"] == "00"].copy()  # 총지수
+BOK_901Y010_00["pct_change_DATA_VALUE"] = (BOK_901Y010_00["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
 
 # 시각화
 fig = plt.figure()
 fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
 fig.set_size_inches(1800/300, 1200/300)  # 그래프 크기 지정, DPI=300
 
-plt.plot(BOK_021Y126_00["DATETIME"], BOK_021Y126_00["DATA_VALUE"], color='r', label="CPI")
+plt.plot(BOK_901Y010_00["DATETIME"], BOK_901Y010_00["DATA_VALUE"], color='r', label="CPI")
 xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
 plt.xlim(xlim_start, )
-plt.ylim(20, 110)
+plt.ylim(30, 120)
 plt.axhline(y=0, color='green', linestyle='dotted')
 plt.xlabel('Dates', fontsize=10)
 plt.ylabel('Consumer Price Index (2020=100)', fontsize=10)
