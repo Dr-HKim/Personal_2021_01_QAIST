@@ -1,15 +1,20 @@
 # Created by Kim Hyeongjun on 05/01/2021.
 # Copyright © 2021 dr-hkim.github.io. All rights reserved.
 # investpy 패키지의 종목명은 investing.com 에서 검색 가능
+# 빠르게 많이 받으면 ConnectionError: ERR#0015: error 429, try again later. 에러가 뜨므로
+# sleep 함수와 VPN 서비스를 활용
 import pandas as pd
 import numpy as np
 import investpy
 import datetime as dt
+from time import sleep
+
 # import matplotlib.pyplot as plt
 # import mplfinance as mpf  # 캔들차트
 
-DD_END_DATE = "15/02/2022"
+DD_END_DATE = "23/08/2022"
 
+sleep_secs = 5
 ########################################################################################################################
 investpy.get_indices(country=None)
 list_index_us = investpy.get_indices(country="United States")
@@ -25,93 +30,112 @@ list_index_kr2 = list_index_kr.sort_values(by=['name'])
 investpy_snp500 = investpy.get_index_historical_data(
     index="S&P 500", country="United States", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_snp500.to_pickle('./Market_Watch_Data/investpy_snp500.pkl')
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 # 미국 MSCI US REIT 지수 (2015.01.12 부터)
 investpy_msci_us_reit = investpy.get_index_historical_data(
     index="MSCI US REIT", country="United States", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_msci_us_reit.to_pickle('./Market_Watch_Data/investpy_msci_us_reit.pkl')
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 
 # KOSPI (1981.05.01 부터)
 investpy_kospi = investpy.get_index_historical_data(
     index="KOSPI", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_kospi.to_pickle('./Market_Watch_Data/investpy_kospi.pkl')
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 # investpy 패키지를 사용하여 KOSPI 200 자료 받기
 investpy_kospi_200 = investpy.get_index_historical_data(
     index="KOSPI 200", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_kospi_200.to_pickle('./Market_Watch_Data/investpy_kospi_200.pkl')
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 # KOSPI 200 Energy & Chemicals (KS200ENER)
 investpy_KS200ENER = investpy.get_index_historical_data(
     index="KOSPI 200 Energy & Chemicals", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_KS200ENER.to_pickle('./Market_Watch_Data/investpy_KS200ENER.pkl')
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 # KRX Energy & Chemical (KRXENER)
 investpy_KRXENER = investpy.get_index_historical_data(
     index="KRX Energy & Chemical", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_KRXENER.to_pickle('./Market_Watch_Data/investpy_KRXENER.pkl')
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 # KTB (2014.05.19 부터)
 investpy_KTB = investpy.get_index_historical_data(
     index="KTB", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_KTB.to_pickle('./Market_Watch_Data/investpy_KTB.pkl')
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 
 ########################################################################################################################
-investpy.get_commodities_list()
+# Commodities
+# investpy.get_commodities_list()
 
 # Gold Futures (ZGJ2)
 investpy_Gold = investpy.get_commodity_historical_data(
     commodity="Gold", from_date="30/01/1900", to_date=DD_END_DATE, country=None, as_json=False,
     order='ascending', interval='Daily')
 investpy_Gold.to_pickle('./Market_Watch_Data/investpy_Gold.pkl')
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 ########################################################################################################################
-# Bitcoin
+# Crypto Currencies
+# df_cryptos = investpy.get_cryptos()
+
 investpy_bitcoin = investpy.get_crypto_historical_data(crypto='bitcoin', from_date="30/01/1900", to_date=DD_END_DATE,
                                                        interval='Daily')
 investpy_bitcoin.to_pickle('./Market_Watch_Data/investpy_bitcoin.pkl')
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 investpy_Ethereum = investpy.get_crypto_historical_data(crypto='Ethereum', from_date="30/01/1900", to_date=DD_END_DATE, interval='Daily')
 investpy_Ethereum.to_pickle('./Market_Watch_Data/investpy_Ethereum.pkl')
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 investpy_Ripple = investpy.get_crypto_historical_data(crypto='XRP', from_date="30/01/1900", to_date=DD_END_DATE, interval='Daily')
 investpy_Ripple.to_pickle('./Market_Watch_Data/investpy_Ripple.pkl')
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 
-df_cryptos = investpy.get_cryptos()
 
 ########################################################################################################################
 # investpy 패키지를 사용하여 삼성전자 자료 받기
 investpy_005930 = investpy.get_stock_historical_data(
     stock="005930", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_005930.to_pickle('./Market_Watch_Data/investpy_005930.pkl')
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 ########################################################################################################################
 # investpy 패키지를 사용하여 ETF 자료 받기 (069500)
 investpy_069500 = investpy.get_etf_historical_data(
     etf="Samsung KODEX KOSPI 200 Securities", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_069500.to_pickle('./Market_Watch_Data/investpy_069500.pkl')
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 # investpy 패키지를 사용하여 미국 국채 ETF 자료 받기 (IEF)
 investpy_IEF = investpy.get_etf_historical_data(
     etf="iShares 7-10 Year Treasury Bond", country="United States", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_IEF.to_pickle('./Market_Watch_Data/investpy_IEF.pkl')
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 # investpy 패키지를 사용하여 한국 국채 ETF 자료 받기 (Kiwoom KOSEF 10Y Treasury Bond)
 investpy_148070 = investpy.get_etf_historical_data(
     etf="Kiwoom KOSEF 10Y Treasury Bond", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_148070.to_pickle('./Market_Watch_Data/investpy_148070.pkl')
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 # 미국 ETF 리스트 검색
 df_us_etf = investpy.get_etfs(country='United States')
 df_us_etf_search = df_us_etf[df_us_etf['symbol'].str.contains("IEF")]
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 # 한국 ETF 리스트 검색
 df_kr_etf = investpy.get_etfs(country='south korea')
 df_kr_etf_search = df_kr_etf[df_kr_etf['symbol'].str.contains("148070")]
 df_kr_etf_search["name"]
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 ########################################################################################################################
 # Economic Calendar
@@ -133,6 +157,7 @@ investpy_economic_calendar_us_20220201_current = investpy.economic_calendar(
     countries=["united states"], from_date="01/02/2022", to_date=DD_END_DATE)
 investpy_economic_calendar_us_20220201_current.to_pickle(
     './Market_Watch_Data/investpy_economic_calendar_us_20220201_current.pkl')
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 # Economic Calendar US 합치기
 investpy_economic_calendar_us = pd.concat(
@@ -168,8 +193,11 @@ df_msci_world0 = df_msci1[["Date", "MXWO_Open", "MXWO_High", "MXWO_Low", "MXWO_C
 # investpy 로 업데이트
 df_msci_em_update = investpy.get_index_historical_data(
     index="MSCI Emerging Markets", country="world", from_date="01/04/2021", to_date=DD_END_DATE)
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
+
 df_msci_world_update = investpy.get_index_historical_data(
     index="MSCI World", country="world", from_date="01/04/2021", to_date=DD_END_DATE)
+sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 df_msci_em_update.reset_index(level=0, inplace=True)
 df_msci_world_update.reset_index(level=0, inplace=True)

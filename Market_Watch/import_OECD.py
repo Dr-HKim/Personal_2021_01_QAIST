@@ -111,7 +111,7 @@ def get_oecd_data(response):
         print('Error: %s' % response.status_code)
 
 
-MM_END_DATE = "2022-01"
+MM_END_DATE = "2022-08"
 
 ########################################################################################################################
 # OECD 데이터 -> export -> Developer API -> Generate API queries

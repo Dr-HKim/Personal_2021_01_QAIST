@@ -29,7 +29,8 @@ def align_yaxis(ax1, v1, ax2, v2):
 # 그림 1.1 소비자물가지수 (연간)
 
 # 7.4.2 소비자물가지수(2020=100)(전국, 특수분류)  [021Y126][MM,QQ,YY] (1975.01 부터)
-BOK_021Y126_YY = pd.read_pickle('./Market_Watch_Data/BOK_021Y126_YY.pkl')
+# 4.2.1 소비자물가지수(2020=100)(전국, 특수분류) [901Y010][A,M,Q] (1975.01 부터)
+BOK_021Y126_YY = pd.read_pickle('./Market_Watch_Data/BOK_901Y010_YY.pkl')
 BOK_021Y126_YY_00 = BOK_021Y126_YY[BOK_021Y126_YY["ITEM_CODE1"] == "00"].copy()  # 총지수
 BOK_021Y126_YY_00["만원"] = 1000000 / BOK_021Y126_YY_00["DATA_VALUE"]
 BOK_021Y126_YY_00["VAR1"] = (10000 / 38.48) * BOK_021Y126_YY_00["DATA_VALUE"]
