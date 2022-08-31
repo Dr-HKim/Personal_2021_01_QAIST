@@ -108,7 +108,7 @@ investpy_005930.to_pickle('./Market_Watch_Data/investpy_005930.pkl')
 sleep(sleep_secs)  # 에러 막기 위해 잠시 멈춤
 
 ########################################################################################################################
-# investpy 패키지를 사용하여 ETF 자료 받기 (069500)
+# investpy 패키지를 사용하여 ETF 자료 받기 (069500 = 코덱스200)
 investpy_069500 = investpy.get_etf_historical_data(
     etf="Samsung KODEX KOSPI 200 Securities", country="south korea", from_date="30/01/1900", to_date=DD_END_DATE)
 investpy_069500.to_pickle('./Market_Watch_Data/investpy_069500.pkl')
