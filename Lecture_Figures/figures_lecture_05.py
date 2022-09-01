@@ -28,18 +28,17 @@ def align_yaxis(ax1, v1, ax2, v2):
 ########################################################################################################################
 # 그림 3.2 소비자물가지수와 근원소비자물가지수 상승률 추이 비교
 
-# 7.4.2 소비자물가지수(2015=100)(전국, 특수분류)  [021Y126][MM,QQ,YY] (1975.01 부터)
-BOK_021Y126 = pd.read_pickle('./Market_Watch_Data/BOK_021Y126.pkl')
-
-BOK_021Y126_00 = BOK_021Y126[BOK_021Y126["ITEM_CODE1"] == "00"].copy()  # 총지수
-BOK_021Y126_QB = BOK_021Y126[BOK_021Y126["ITEM_CODE1"] == "QB"].copy()  # 농산물및석유류제외지수 (근원 소비자물가지수)
-BOK_021Y126_00["pct_change_DATA_VALUE"] = (BOK_021Y126_00["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
-BOK_021Y126_QB["pct_change_DATA_VALUE"] = (BOK_021Y126_QB["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
+# 4.2.1 소비자물가지수(2020=100)(전국, 특수분류) [901Y010][A,M,Q] (1975.01 부터)
+BOK_901Y010 = pd.read_pickle('./Market_Watch_Data/BOK_901Y010.pkl')
+BOK_901Y010_00 = BOK_901Y010[BOK_901Y010["ITEM_CODE1"] == "00"].copy()  # 총지수
+BOK_901Y010_QB = BOK_901Y010[BOK_901Y010["ITEM_CODE1"] == "QB"].copy()  # 농산물및석유류제외지수 (근원 소비자물가지수)
+BOK_901Y010_00["pct_change_DATA_VALUE"] = (BOK_901Y010_00["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
+BOK_901Y010_QB["pct_change_DATA_VALUE"] = (BOK_901Y010_QB["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
 
 # 시각화: 월별 시계열 자료 2개를 같은 y 축으로 표시
 fig = plt.figure()
-plt.plot(BOK_021Y126_00["DATETIME"], BOK_021Y126_00["pct_change_DATA_VALUE"], color='r', label="CPI")
-plt.plot(BOK_021Y126_QB["DATETIME"], BOK_021Y126_QB["pct_change_DATA_VALUE"], color='g', label="Core CPI")
+plt.plot(BOK_901Y010_00["DATETIME"], BOK_901Y010_00["pct_change_DATA_VALUE"], color='r', label="CPI")
+plt.plot(BOK_901Y010_QB["DATETIME"], BOK_901Y010_QB["pct_change_DATA_VALUE"], color='g', label="Core CPI")
 
 xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
 plt.xlim(xlim_start, )
@@ -56,17 +55,17 @@ plt.savefig("./Lecture_Figures_output/fig3.2_cpi_and_core_cpi_growth_rates.png")
 ########################################################################################################################
 # 그림 3.3 소비자물가와 생산자물가 상승률 추이 (전년동기대비)
 
-# 7.1.1 생산자물가지수(2015=100)(기본분류)  [013Y202][MM,QQ,YY] (1965.01 부터)
-BOK_013Y202 = pd.read_pickle('./Market_Watch_Data/BOK_013Y202.pkl')
-
-BOK_013Y202_AA = BOK_013Y202[BOK_013Y202["ITEM_CODE1"] == "*AA"].copy()  # 총지수
-BOK_013Y202_AA["pct_change_DATA_VALUE"] = (BOK_013Y202_AA["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
+# 4.1.1.1. 생산자물가지수(2015=100)(기본분류) [404Y014][A,M,Q] (1965.01 부터) (1910~1964 자료는 따로 있음)
+# 총지수의 경우 1993.08 이전 몇년간 자료 없음
+BOK_404Y014 = pd.read_pickle('./Market_Watch_Data/BOK_404Y014.pkl')
+BOK_404Y014_AA = BOK_404Y014[(BOK_404Y014["ITEM_CODE1"] == "*AA") & (BOK_404Y014["TIME"] > 199300)].copy()  # 총지수
+BOK_404Y014_AA["pct_change_DATA_VALUE"] = (BOK_404Y014_AA["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
 
 # 시각화: 월별 시계열 자료 2개를 같은 y 축으로 표시
 fig = plt.figure()
 fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
-plt.plot(BOK_021Y126_00["DATETIME"], BOK_021Y126_00["pct_change_DATA_VALUE"], color='r', label="CPI")
-plt.plot(BOK_013Y202_AA["DATETIME"], BOK_013Y202_AA["pct_change_DATA_VALUE"], color='g', label="PPI")
+plt.plot(BOK_901Y010_00["DATETIME"], BOK_901Y010_00["pct_change_DATA_VALUE"], color='r', label="CPI")  # 소비자물가지수
+plt.plot(BOK_404Y014_AA["DATETIME"], BOK_404Y014_AA["pct_change_DATA_VALUE"], color='g', label="PPI")  # 생산자물가지수
 
 xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
 plt.xlim(xlim_start, )
@@ -82,45 +81,45 @@ plt.savefig("./Lecture_Figures_output/fig3.3_cpi_and_ppi_growth_rates.png")
 ########################################################################################################################
 # 그림 3.4 GDP 갭과 물가상승률 추이
 
-# 10.1.1 국민계정(2015년 기준년) - 주요지표 - 연간지표 [111Y002][YY] (1953 부터)
-BOK_111Y002 = pd.read_pickle('./Market_Watch_Data/BOK_111Y002.pkl')
+# 2.1.1.1. 국민소득통계(2015년 기준년) > 주요지표 > 주요지표(연간지표) [200Y001][A] (1953 부터)
+BOK_200Y001 = pd.read_pickle('./Market_Watch_Data/BOK_200Y001.pkl')
 
 # GDP 갭 계산
-BOK_111Y002_00 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "10101"].copy()  # 국내총생산(GDP)(명목, 십억원)
-BOK_111Y002_00["YYYYMMDD"] = BOK_111Y002_00["TIME"] * 10000 + 101
-BOK_111Y002_00["DATETIME"] = pd.to_datetime(BOK_111Y002_00['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
-BOK_111Y002_00["GDP"] = BOK_111Y002_00["DATA_VALUE"].copy() * 1000000000  # 국내총생산(GDP)(명목, 원)
-BOK_111Y002_00["Actual_GDP"] = BOK_111Y002_00["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 십억원)
+BOK_200Y001_00 = BOK_200Y001[BOK_200Y001["ITEM_CODE1"] == "10101"].copy()  # 국내총생산(GDP)(명목, 십억원)
+BOK_200Y001_00["YYYYMMDD"] = BOK_200Y001_00["TIME"] * 10000 + 101
+BOK_200Y001_00["DATETIME"] = pd.to_datetime(BOK_200Y001_00['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+BOK_200Y001_00["GDP"] = BOK_200Y001_00["DATA_VALUE"].copy() * 1000000000  # 국내총생산(GDP)(명목, 원)
+BOK_200Y001_00["Actual_GDP"] = BOK_200Y001_00["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 십억원)
 
-BOK_111Y002_03 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "90103"].copy()  # GDP 디플레이터 (2015=100)
-BOK_111Y002_03["YYYYMMDD"] = BOK_111Y002_03["TIME"] * 10000 + 101
-BOK_111Y002_03["DATETIME"] = pd.to_datetime(BOK_111Y002_03['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
-BOK_111Y002_03["GDP_Deflator"] = BOK_111Y002_03["DATA_VALUE"].copy()  # GDP 디플레이터 (2015=100)
+BOK_200Y001_03 = BOK_200Y001[BOK_200Y001["ITEM_CODE1"] == "90103"].copy()  # GDP 디플레이터 (2015=100)
+BOK_200Y001_03["YYYYMMDD"] = BOK_200Y001_03["TIME"] * 10000 + 101
+BOK_200Y001_03["DATETIME"] = pd.to_datetime(BOK_200Y001_03['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+BOK_200Y001_03["GDP_Deflator"] = BOK_200Y001_03["DATA_VALUE"].copy()  # GDP 디플레이터 (2015=100)
 
-BOK_111Y002_00 = pd.merge(BOK_111Y002_00, BOK_111Y002_03[["DATETIME", "GDP_Deflator"]], left_on='DATETIME', right_on='DATETIME', how='left')
-BOK_111Y002_00["Real_GDP"] = BOK_111Y002_00["Actual_GDP"] / BOK_111Y002_00["GDP_Deflator"]
-cycle, trend = sm.tsa.filters.hpfilter(BOK_111Y002_00["Real_GDP"], 100)  # 람다=100 으로 놓는게 중요 (경험치...)
-BOK_111Y002_00["Potential_GDP"] = trend
-BOK_111Y002_00["GDP_Gap"] = ((BOK_111Y002_00["Real_GDP"] - BOK_111Y002_00["Potential_GDP"]) / BOK_111Y002_00["Potential_GDP"]) * 100  # GDP 갭 (%)
+BOK_200Y001_00 = pd.merge(BOK_200Y001_00, BOK_200Y001_03[["DATETIME", "GDP_Deflator"]], left_on='DATETIME', right_on='DATETIME', how='left')
+BOK_200Y001_00["Real_GDP"] = BOK_200Y001_00["Actual_GDP"] / BOK_200Y001_00["GDP_Deflator"]
+cycle, trend = sm.tsa.filters.hpfilter(BOK_200Y001_00["Real_GDP"], 100)  # 람다=100 으로 놓는게 중요 (경험치...)
+BOK_200Y001_00["Potential_GDP"] = trend
+BOK_200Y001_00["GDP_Gap"] = ((BOK_200Y001_00["Real_GDP"] - BOK_200Y001_00["Potential_GDP"]) / BOK_200Y001_00["Potential_GDP"]) * 100  # GDP 갭 (%)
 
-BOK_111Y002_01 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "1010101"].copy()  # 국내총생산(GDP)(명목, 억달러)
-BOK_111Y002_01["YYYYMMDD"] = BOK_111Y002_01["TIME"] * 10000 + 101
-BOK_111Y002_01["DATETIME"] = pd.to_datetime(BOK_111Y002_01['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
-BOK_111Y002_01["GDP"] = BOK_111Y002_01["DATA_VALUE"].copy() * 100000000  # 국내총생산(GDP)(명목, 달러)
-BOK_111Y002_01["Actual_GDP"] = BOK_111Y002_01["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 억달러)
+BOK_200Y001_01 = BOK_200Y001[BOK_200Y001["ITEM_CODE1"] == "1010101"].copy()  # 국내총생산(GDP)(명목, 억달러)
+BOK_200Y001_01["YYYYMMDD"] = BOK_200Y001_01["TIME"] * 10000 + 101
+BOK_200Y001_01["DATETIME"] = pd.to_datetime(BOK_200Y001_01['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+BOK_200Y001_01["GDP"] = BOK_200Y001_01["DATA_VALUE"].copy() * 100000000  # 국내총생산(GDP)(명목, 달러)
+BOK_200Y001_01["Actual_GDP"] = BOK_200Y001_01["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 억달러)
 
-BOK_111Y002_04 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "9010301"].copy()  # GDP 디플레이터 등락률 (%)
-BOK_111Y002_04["YYYYMMDD"] = BOK_111Y002_04["TIME"] * 10000 + 101
-BOK_111Y002_04["DATETIME"] = pd.to_datetime(BOK_111Y002_04['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
-BOK_111Y002_04["GDP_Deflator_Changes"] = BOK_111Y002_04["DATA_VALUE"].copy()  # GDP 디플레이터 등락률 (%)
+BOK_200Y001_04 = BOK_200Y001[BOK_200Y001["ITEM_CODE1"] == "9010301"].copy()  # GDP 디플레이터 등락률 (%)
+BOK_200Y001_04["YYYYMMDD"] = BOK_200Y001_04["TIME"] * 10000 + 101
+BOK_200Y001_04["DATETIME"] = pd.to_datetime(BOK_200Y001_04['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+BOK_200Y001_04["GDP_Deflator_Changes"] = BOK_200Y001_04["DATA_VALUE"].copy()  # GDP 디플레이터 등락률 (%)
 
 
 # 시각화: 연도별 시계열 자료 2개를 같은 y 축으로 표시
 fig = plt.figure()
 fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
 
-plt.plot(BOK_111Y002_00["DATETIME"], BOK_111Y002_00["GDP_Gap"], color='r', label="GDP Gap")
-plt.plot(BOK_111Y002_04["DATETIME"], BOK_111Y002_04["GDP_Deflator_Changes"], color='g', label="Changes in GDP Deflator")
+plt.plot(BOK_200Y001_00["DATETIME"], BOK_200Y001_00["GDP_Gap"], color='r', label="GDP Gap")
+plt.plot(BOK_200Y001_04["DATETIME"], BOK_200Y001_04["GDP_Deflator_Changes"], color='g', label="Changes in GDP Deflator")
 
 xlim_start = pd.to_datetime("1970-01-01", errors='coerce', format='%Y-%m-%d')
 plt.xlim(xlim_start, )
@@ -153,7 +152,7 @@ xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
 color1 = "tab:red"
 ax1.set_xlabel("Dates")
 ax1.set_ylabel("GDP Gap (%p)", color=color1)  # 데이터 레이블
-ax1.plot(BOK_111Y002_00["DATETIME"], BOK_111Y002_00["GDP_Gap"], color=color1)
+ax1.plot(BOK_200Y001_00["DATETIME"], BOK_200Y001_00["GDP_Gap"], color=color1)
 ax1.tick_params(axis="y")
 
 # 두번째 시계열
@@ -184,7 +183,7 @@ xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
 color1 = "tab:red"
 ax1.set_xlabel("Dates")
 ax1.set_ylabel("CPI Growth (%)", color=color1)  # 데이터 레이블
-ax1.plot(BOK_021Y126_00["DATETIME"], BOK_021Y126_00["pct_change_DATA_VALUE"], color=color1)
+ax1.plot(BOK_901Y010_00["DATETIME"], BOK_901Y010_00["pct_change_DATA_VALUE"], color=color1)  # 소비자물가지수
 ax1.tick_params(axis="y")
 
 # 두번째 시계열
@@ -207,10 +206,10 @@ plt.savefig("./Lecture_Figures_output/fig3.6_cpi_growth_to_capicity_utilization_
 
 ########################################################################################################################
 # 그림 3.7 소비자물가 상승률과 환율변동
-# 8.8.2.1 평균환율, 기말환율 > 주요국통화의 대원화 환율 통계자료 [036Y004][HY,MM,QQ,YY] (1964.05 부터)
-BOK_036Y004 = pd.read_pickle('./Market_Watch_Data/BOK_036Y004.pkl')
-BOK_036Y004_01 = BOK_036Y004[(BOK_036Y004["ITEM_CODE1"] == "0000001") & (BOK_036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원/미국달러 말일자료
-BOK_036Y004_01["pct_change_DATA_VALUE"] = (BOK_036Y004_01["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
+# 3.1.2.1. 평균환율/기말환율 > 주요국통화의 대원화 환율 [731Y004][A,M,Q,S] (1964.05 부터)
+BOK_731Y004 = pd.read_pickle('./Market_Watch_Data/BOK_731Y004.pkl')
+BOK_731Y004_01 = BOK_731Y004[(BOK_731Y004["ITEM_CODE1"] == "0000001") & (BOK_731Y004["ITEM_CODE2"] == "0000200")].copy()  # 원/미국달러 말일자료
+BOK_731Y004_01["pct_change_DATA_VALUE"] = (BOK_731Y004_01["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
 
 # 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
 fig, ax1 = plt.subplots()
@@ -220,14 +219,14 @@ xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
 color1 = "tab:red"
 ax1.set_xlabel("Dates")
 ax1.set_ylabel("CPI Growth (%)", color=color1)  # 데이터 레이블
-ax1.plot(BOK_021Y126_00["DATETIME"], BOK_021Y126_00["pct_change_DATA_VALUE"], color=color1)
+ax1.plot(BOK_901Y010_00["DATETIME"], BOK_901Y010_00["pct_change_DATA_VALUE"], color=color1)  # 소비자물가지수
 ax1.tick_params(axis="y")
 
 # 두번째 시계열
 ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
 color2 = "tab:blue"
 ax2.set_ylabel("Percentage Change in Exchange Rate (%)", color=color2)  # 데이터 레이블
-ax2.plot(BOK_036Y004_01["DATETIME"], BOK_036Y004_01["pct_change_DATA_VALUE"], color=color2, linestyle='-')
+ax2.plot(BOK_731Y004_01["DATETIME"], BOK_731Y004_01["pct_change_DATA_VALUE"], color=color2, linestyle='-')
 ax2.tick_params(axis='y')
 
 # 그래프 기타 설정
@@ -240,6 +239,3 @@ plt.axhline(y=0, color='green', linestyle='dotted')
 plt.xlim(xlim_start, )
 plt.show()
 plt.savefig("./Lecture_Figures_output/fig3.7_cpi_growth_to_exchange_rate_change.png")  # 그림 저장
-
-
-

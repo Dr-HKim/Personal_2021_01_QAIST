@@ -33,44 +33,50 @@ def get_yyyymm_add_months(n_yyyymm, n_months):
     output_yyyymm = output_yyyy * 100 + output_mm
     return output_yyyymm
 
+
 ########################################################################################################################
 # 그림 4.1 GDP 대비 경상수지와 GDP 갭 (%)
-# 10.1.1 국민계정(2015년 기준년) - 주요지표 - 연간지표 [111Y002][YY] (1953 부터)
-BOK_111Y002 = pd.read_pickle('./Market_Watch_Data/BOK_111Y002.pkl')
+# 2.1.1.1. 국민소득통계(2015년 기준년) > 주요지표 > 주요지표(연간지표) [200Y001][A] (1953 부터)
+BOK_200Y001 = pd.read_pickle('./Market_Watch_Data/BOK_200Y001.pkl')
 
 # GDP 갭 계산
-BOK_111Y002_00 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "10101"].copy()  # 국내총생산(GDP)(명목, 십억원)
-BOK_111Y002_00["YYYYMMDD"] = BOK_111Y002_00["TIME"] * 10000 + 101
-BOK_111Y002_00["DATETIME"] = pd.to_datetime(BOK_111Y002_00['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
-BOK_111Y002_00["GDP"] = BOK_111Y002_00["DATA_VALUE"].copy() * 1000000000  # 국내총생산(GDP)(명목, 원)
-BOK_111Y002_00["Actual_GDP"] = BOK_111Y002_00["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 십억원)
+BOK_200Y001_00 = BOK_200Y001[BOK_200Y001["ITEM_CODE1"] == "10101"].copy()  # 국내총생산(GDP)(명목, 십억원)
+BOK_200Y001_00["YYYYMMDD"] = BOK_200Y001_00["TIME"] * 10000 + 101
+BOK_200Y001_00["DATETIME"] = pd.to_datetime(BOK_200Y001_00['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+BOK_200Y001_00["GDP"] = BOK_200Y001_00["DATA_VALUE"].copy() * 1000000000  # 국내총생산(GDP)(명목, 원)
+BOK_200Y001_00["Actual_GDP"] = BOK_200Y001_00["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 십억원)
 
-BOK_111Y002_03 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "90103"].copy()  # GDP 디플레이터 (2015=100)
-BOK_111Y002_03["YYYYMMDD"] = BOK_111Y002_03["TIME"] * 10000 + 101
-BOK_111Y002_03["DATETIME"] = pd.to_datetime(BOK_111Y002_03['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
-BOK_111Y002_03["GDP_Deflator"] = BOK_111Y002_03["DATA_VALUE"].copy()  # GDP 디플레이터 (2015=100)
+BOK_200Y001_03 = BOK_200Y001[BOK_200Y001["ITEM_CODE1"] == "90103"].copy()  # GDP 디플레이터 (2015=100)
+BOK_200Y001_03["YYYYMMDD"] = BOK_200Y001_03["TIME"] * 10000 + 101
+BOK_200Y001_03["DATETIME"] = pd.to_datetime(BOK_200Y001_03['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+BOK_200Y001_03["GDP_Deflator"] = BOK_200Y001_03["DATA_VALUE"].copy()  # GDP 디플레이터 (2015=100)
 
-BOK_111Y002_00 = pd.merge(BOK_111Y002_00, BOK_111Y002_03[["DATETIME", "GDP_Deflator"]], left_on='DATETIME', right_on='DATETIME', how='left')
-BOK_111Y002_00["Real_GDP"] = BOK_111Y002_00["Actual_GDP"] / BOK_111Y002_00["GDP_Deflator"]
-cycle, trend = sm.tsa.filters.hpfilter(BOK_111Y002_00["Real_GDP"], 100)  # 람다=100 으로 놓는게 중요 (경험치...)
-BOK_111Y002_00["Potential_GDP"] = trend
-BOK_111Y002_00["GDP_Gap"] = ((BOK_111Y002_00["Real_GDP"] - BOK_111Y002_00["Potential_GDP"]) / BOK_111Y002_00["Potential_GDP"]) * 100  # GDP 갭 (%)
+BOK_200Y001_00 = pd.merge(BOK_200Y001_00, BOK_200Y001_03[["DATETIME", "GDP_Deflator"]], left_on='DATETIME', right_on='DATETIME', how='left')
+BOK_200Y001_00["Real_GDP"] = BOK_200Y001_00["Actual_GDP"] / BOK_200Y001_00["GDP_Deflator"]
+cycle, trend = sm.tsa.filters.hpfilter(BOK_200Y001_00["Real_GDP"], 100)  # 람다=100 으로 놓는게 중요 (경험치...)
+BOK_200Y001_00["Potential_GDP"] = trend
+BOK_200Y001_00["GDP_Gap"] = ((BOK_200Y001_00["Real_GDP"] - BOK_200Y001_00["Potential_GDP"]) / BOK_200Y001_00["Potential_GDP"]) * 100  # GDP 갭 (%)
 
-BOK_111Y002_01 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "1010101"].copy()  # 국내총생산(GDP)(명목, 억달러)
-BOK_111Y002_01["YYYYMMDD"] = BOK_111Y002_01["TIME"] * 10000 + 101
-BOK_111Y002_01["DATETIME"] = pd.to_datetime(BOK_111Y002_01['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
-BOK_111Y002_01["GDP"] = BOK_111Y002_01["DATA_VALUE"].copy() * 100000000  # 국내총생산(GDP)(명목, 달러)
-BOK_111Y002_01["Actual_GDP"] = BOK_111Y002_01["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 억달러)
+BOK_200Y001_01 = BOK_200Y001[BOK_200Y001["ITEM_CODE1"] == "1010101"].copy()  # 국내총생산(GDP)(명목, 억달러)
+BOK_200Y001_01["YYYYMMDD"] = BOK_200Y001_01["TIME"] * 10000 + 101
+BOK_200Y001_01["DATETIME"] = pd.to_datetime(BOK_200Y001_01['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+BOK_200Y001_01["GDP"] = BOK_200Y001_01["DATA_VALUE"].copy() * 100000000  # 국내총생산(GDP)(명목, 달러)
+BOK_200Y001_01["Actual_GDP"] = BOK_200Y001_01["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 억달러)
+
+BOK_200Y001_04 = BOK_200Y001[BOK_200Y001["ITEM_CODE1"] == "9010301"].copy()  # GDP 디플레이터 등락률 (%)
+BOK_200Y001_04["YYYYMMDD"] = BOK_200Y001_04["TIME"] * 10000 + 101
+BOK_200Y001_04["DATETIME"] = pd.to_datetime(BOK_200Y001_04['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+BOK_200Y001_04["GDP_Deflator_Changes"] = BOK_200Y001_04["DATA_VALUE"].copy()  # GDP 디플레이터 등락률 (%)
 
 # GDP 대비 경상수지 계산
-# 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
-BOK_022Y013 = pd.read_pickle('./Market_Watch_Data/BOK_022Y013.pkl')
+# 2.5.1.1. 국제수지 [301Y013][A,M,Q] (1980.01, 1980Q1 부터)
+BOK_301Y013 = pd.read_pickle('./Market_Watch_Data/BOK_301Y013.pkl')
 
-BOK_022Y013_00 = BOK_022Y013[BOK_022Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (백만달러)
-BOK_022Y013_00["Current_Account"] = BOK_022Y013_00["DATA_VALUE"].copy() * 1000000  # 경상수지(current account) (달러)
-BOK_022Y013_00["Current_Account"] = BOK_022Y013_00["Current_Account"].rolling(window=12).sum()  # 경상수지 12개월 누적
+BOK_301Y013_00 = BOK_301Y013[BOK_301Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (백만달러)
+BOK_301Y013_00["Current_Account"] = BOK_301Y013_00["DATA_VALUE"].copy() * 1000000  # 경상수지(current account) (달러)
+BOK_301Y013_00["Current_Account"] = BOK_301Y013_00["Current_Account"].rolling(window=12).sum()  # 경상수지 12개월 누적
 
-df_CA_to_GDP = pd.merge(BOK_022Y013_00, BOK_111Y002_01[["DATETIME", "GDP"]], left_on='DATETIME', right_on='DATETIME', how='left')
+df_CA_to_GDP = pd.merge(BOK_301Y013_00, BOK_200Y001_01[["DATETIME", "GDP"]], left_on='DATETIME', right_on='DATETIME', how='left')
 df_CA_to_GDP["GDP"] = df_CA_to_GDP["GDP"].fillna(method='ffill')
 df_CA_to_GDP["CA_to_GDP"] = df_CA_to_GDP["Current_Account"] / df_CA_to_GDP["GDP"] * 100  # GDP 대비 경상수지 (%)
 
@@ -80,7 +86,7 @@ fig = plt.figure()
 fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
 
 plt.plot(df_CA_to_GDP["DATETIME"], df_CA_to_GDP["CA_to_GDP"], color='r', label="Current Account to GDP")
-plt.plot(BOK_111Y002_00["DATETIME"], BOK_111Y002_00["GDP_Gap"], color='g', label="GDP Gap")
+plt.plot(BOK_200Y001_00["DATETIME"], BOK_200Y001_00["GDP_Gap"], color='g', label="GDP Gap")
 
 xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
 plt.xlim(xlim_start, )
@@ -99,28 +105,27 @@ plt.savefig("./Lecture_Figures_output/fig4.1_current_account_to_gdp_and_gdp_gap.
 
 # GDP 대비 경상수지 계산
 
-# 10.1.1 국민계정(2015년 기준년) - 주요지표 - 연간지표 [111Y002][YY] (1953 부터)
-BOK_111Y002 = pd.read_pickle('./Market_Watch_Data/BOK_111Y002.pkl')
-BOK_111Y002_01 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "1010101"].copy()  # 국내총생산(GDP)(명목, 억달러)
-BOK_111Y002_01["YYYYMMDD"] = BOK_111Y002_01["TIME"] * 10000 + 101
-BOK_111Y002_01["DATETIME"] = pd.to_datetime(BOK_111Y002_01['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
-BOK_111Y002_01["GDP"] = BOK_111Y002_01["DATA_VALUE"].copy() * 100000000  # 국내총생산(GDP)(명목, 달러)
-BOK_111Y002_01["Actual_GDP"] = BOK_111Y002_01["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 억달러)
+# 2.1.1.1. 국민소득통계(2015년 기준년) > 주요지표 > 주요지표(연간지표) [200Y001][A] (1953 부터)
+BOK_200Y001 = pd.read_pickle('./Market_Watch_Data/BOK_200Y001.pkl')
+BOK_200Y001_01 = BOK_200Y001[BOK_200Y001["ITEM_CODE1"] == "1010101"].copy()  # 국내총생산(GDP)(명목, 억달러)
+BOK_200Y001_01["YYYYMMDD"] = BOK_200Y001_01["TIME"] * 10000 + 101
+BOK_200Y001_01["DATETIME"] = pd.to_datetime(BOK_200Y001_01['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+BOK_200Y001_01["GDP"] = BOK_200Y001_01["DATA_VALUE"].copy() * 100000000  # 국내총생산(GDP)(명목, 달러)
+BOK_200Y001_01["Actual_GDP"] = BOK_200Y001_01["DATA_VALUE"].copy()  # 국내총생산(GDP)(명목, 억달러)
 
-# 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
-BOK_022Y013 = pd.read_pickle('./Market_Watch_Data/BOK_022Y013.pkl')
-BOK_022Y013_00 = BOK_022Y013[BOK_022Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (백만달러)
-BOK_022Y013_00["Current_Account"] = BOK_022Y013_00["DATA_VALUE"].copy() * 1000000  # 경상수지(current account) (달러)
-BOK_022Y013_00["Current_Account"] = BOK_022Y013_00["Current_Account"].rolling(window=12).sum()  # 경상수지 12개월 누적
+# 2.5.1.1. 국제수지 [301Y013][A,M,Q] (1980.01, 1980Q1 부터)
+BOK_301Y013 = pd.read_pickle('./Market_Watch_Data/BOK_301Y013.pkl')
+BOK_301Y013_00 = BOK_301Y013[BOK_301Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (백만달러)
+BOK_301Y013_00["Current_Account"] = BOK_301Y013_00["DATA_VALUE"].copy() * 1000000  # 경상수지(current account) (달러)
+BOK_301Y013_00["Current_Account"] = BOK_301Y013_00["Current_Account"].rolling(window=12).sum()  # 경상수지 12개월 누적
 
-df_CA_to_GDP = pd.merge(BOK_022Y013_00, BOK_111Y002_01[["DATETIME", "GDP"]], left_on='DATETIME', right_on='DATETIME', how='left')
+df_CA_to_GDP = pd.merge(BOK_301Y013_00, BOK_200Y001_01[["DATETIME", "GDP"]], left_on='DATETIME', right_on='DATETIME', how='left')
 df_CA_to_GDP["GDP"] = df_CA_to_GDP["GDP"].fillna(method='ffill')
 df_CA_to_GDP["CA_to_GDP"] = df_CA_to_GDP["Current_Account"] / df_CA_to_GDP["GDP"] * 100  # GDP 대비 경상수지 (%)
 
-
-BOK_111Y002_02 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "8010400"].copy()  # 가계순저축률 (%)
-BOK_111Y002_02["YYYYMMDD"] = BOK_111Y002_02["TIME"] * 10000 + 1231
-BOK_111Y002_02["DATETIME"] = pd.to_datetime(BOK_111Y002_02['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
+BOK_200Y001_02 = BOK_200Y001[BOK_200Y001["ITEM_CODE1"] == "8010400"].copy()  # 가계순저축률 (%)
+BOK_200Y001_02["YYYYMMDD"] = BOK_200Y001_02["TIME"] * 10000 + 1231
+BOK_200Y001_02["DATETIME"] = pd.to_datetime(BOK_200Y001_02['YYYYMMDD'].astype(str), errors='coerce', format='%Y%m%d')
 
 # 그림 4.2 GDP 대비 경상수지와 가계순저축률 (%)
 # 시각화: 월별 시계열 자료 1개를 표시
@@ -128,7 +133,7 @@ fig = plt.figure()
 fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
 
 plt.plot(df_CA_to_GDP["DATETIME"], df_CA_to_GDP["CA_to_GDP"], color='r', label="Current Account to GDP (%)")
-plt.plot(BOK_111Y002_02["DATETIME"], BOK_111Y002_02["DATA_VALUE"], color='g', label="Households Net Saving Ratio (%)")
+plt.plot(BOK_200Y001_02["DATETIME"], BOK_200Y001_02["DATA_VALUE"], color='g', label="Households Net Saving Ratio (%)")
 
 xlim_start = pd.to_datetime("1990-01-01", errors='coerce', format='%Y-%m-%d')
 plt.xlim(xlim_start, )
@@ -140,7 +145,6 @@ plt.legend(loc='upper left')
 plt.show()
 
 plt.savefig("./Lecture_Figures_output/fig4.2_current_account_to_gdp_and_households_net_saving_ratio.png")
-
 
 ########################################################################################################################
 # 그림 4.4 실질실효환율과 경상수지 추이
@@ -156,12 +160,11 @@ df_bis_header = df_bis_header[0].tolist()
 df_bis_data.columns = df_bis_header
 df_bis_data["Korea_100"] = df_bis_data["Korea"] - 100
 
-# 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
-BOK_022Y013 = pd.read_pickle('./Market_Watch_Data/BOK_022Y013.pkl')
-BOK_022Y013_00 = BOK_022Y013[BOK_022Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (백만달러)
-BOK_022Y013_00["Current_Account"] = BOK_022Y013_00["DATA_VALUE"].copy() / 1000  # 경상수지(current account) (십억 달러)
-BOK_022Y013_00["Current_Account"] = BOK_022Y013_00["Current_Account"].rolling(window=12).sum()  # 경상수지 12개월 누적
-
+# 2.5.1.1. 국제수지 [301Y013][A,M,Q] (1980.01, 1980Q1 부터)
+BOK_301Y013 = pd.read_pickle('./Market_Watch_Data/BOK_301Y013.pkl')
+BOK_301Y013_00 = BOK_301Y013[BOK_301Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (백만달러)
+BOK_301Y013_00["Current_Account"] = BOK_301Y013_00["DATA_VALUE"].copy() / 1000  # 경상수지(current account) (십억 달러)
+BOK_301Y013_00["Current_Account"] = BOK_301Y013_00["Current_Account"].rolling(window=12).sum()  # 경상수지 12개월 누적
 
 # 그림 4.4 실질실효환율과 경상수지 추이
 # 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
@@ -179,7 +182,7 @@ ax1.tick_params(axis="y")
 ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
 color2 = "tab:blue"
 ax2.set_ylabel("Current Account (billion dollars)", color=color2)  # 데이터 레이블
-ax2.plot(BOK_022Y013_00["DATETIME"], BOK_022Y013_00["Current_Account"], color=color2, linestyle='-')
+ax2.plot(BOK_301Y013_00["DATETIME"], BOK_301Y013_00["Current_Account"], color=color2, linestyle='-')
 ax2.tick_params(axis='y')
 
 # 그래프 기타 설정
@@ -192,8 +195,6 @@ plt.axhline(y=0, color='green', linestyle='dotted')
 plt.xlim(xlim_start, )
 plt.show()
 plt.savefig("./Lecture_Figures_output/fig4.4_real_effective_exchange_rates_and_current_account.png")  # 그림 저장
-
-
 
 ########################################################################################################################
 # 그림 4.5 OECD 경기선행지수 (Composite Leading Indicators)
@@ -233,22 +234,22 @@ plt.savefig("./Lecture_Figures_output/fig4.5_composite_leading_indicators_oecd_k
 
 ########################################################################################################################
 # 그림 4.7 한국은행 기준금리와 소비자물가지수 상승률 (%)
-# 2.6 한국은행 기준금리 및 여수신금리 [098Y001][DD, MM, QQ, YY] (1994.01.03 부터)
-BOK_098Y001_DD = pd.read_pickle('./Market_Watch_Data/BOK_098Y001_DD.pkl')
-BOK_098Y001_DD_01 = BOK_098Y001_DD[BOK_098Y001_DD["ITEM_CODE1"] == "0101000"].copy()  # 한국은행 기준금리
+# 1.3.1. 한국은행 기준금리 및 여수신금리 [722Y001][A,D,M,Q] (1994.01.03 부터)
+BOK_722Y001_DD = pd.read_pickle('./Market_Watch_Data/BOK_722Y001_DD.pkl')
+BOK_722Y001_DD_01 = BOK_722Y001_DD[BOK_722Y001_DD["ITEM_CODE1"] == "0101000"].copy()  # 한국은행 기준금리
 
-# 7.4.2 소비자물가지수(2020=100)(전국, 특수분류)  [021Y126][MM,QQ,YY] (1975.01 부터)
-BOK_021Y126 = pd.read_pickle('./Market_Watch_Data/BOK_021Y126.pkl')
-BOK_021Y126_00 = BOK_021Y126[BOK_021Y126["ITEM_CODE1"] == "00"].copy()  # 총지수
-BOK_021Y126_00["pct_change_DATA_VALUE"] = (BOK_021Y126_00["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
+# 4.2.1 소비자물가지수(2020=100)(전국, 특수분류) [901Y010][A,M,Q] (1975.01 부터)
+BOK_901Y010 = pd.read_pickle('./Market_Watch_Data/BOK_901Y010.pkl')
+BOK_901Y010_00 = BOK_901Y010[BOK_901Y010["ITEM_CODE1"] == "00"].copy()  # 총지수
+BOK_901Y010_00["pct_change_DATA_VALUE"] = (BOK_901Y010_00["DATA_VALUE"].pct_change(12)) * 100  # 퍼센트 변화량 (전년비)
 
 # 그림 4.7 한국은행 기준금리와 소비자물가지수 상승률 (%)
 # 시각화: 월별 시계열 자료 1개를 표시
 fig = plt.figure()
 fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
 
-plt.plot(BOK_098Y001_DD_01["DATETIME"], BOK_098Y001_DD_01["DATA_VALUE"], color='r', label="BOK_ Base Rate (%)")
-plt.plot(BOK_021Y126_00["DATETIME"], BOK_021Y126_00["pct_change_DATA_VALUE"], color='g', label="CPI Percent Changes (%)")
+plt.plot(BOK_722Y001_DD_01["DATETIME"], BOK_722Y001_DD_01["DATA_VALUE"], color='r', label="BOK_ Base Rate (%)")
+plt.plot(BOK_901Y010_00["DATETIME"], BOK_901Y010_00["pct_change_DATA_VALUE"], color='g', label="CPI Percent Changes (%)")
 
 xlim_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
 plt.xlim(xlim_start, )
@@ -261,16 +262,15 @@ plt.show()
 
 plt.savefig("./Lecture_Figures_output/fig4.7_bok_base_rate_and_cpi_percent_changes.png")  # 그림 저장
 
-
 ########################################################################################################################
 # 그림 4.8 경상수지와 코스피 지수
 
-# 8.1.1 국제수지 [022Y013][MM,QQ,YY] (1980.01, 1980Q1 부터)
-BOK_022Y013 = pd.read_pickle('./Market_Watch_Data/BOK_022Y013.pkl')
-BOK_022Y013_00 = BOK_022Y013[BOK_022Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (백만달러)
-BOK_022Y013_00["Current_Account_3M"] = BOK_022Y013_00["DATA_VALUE"].rolling(window=3).sum() / 1000  # 경상수지 3개월 누적 (십억달러)
-BOK_022Y013_00["Current_Account_12M"] = BOK_022Y013_00["DATA_VALUE"].rolling(window=12).sum() / 1000  # 경상수지 12개월 누적 (십억달러)
-BOK_022Y013_00["Current_Account_cum"] = BOK_022Y013_00["DATA_VALUE"].cumsum() / 1000  # 경상수지 누적 (십억달러)
+# 2.5.1.1. 국제수지 [301Y013][A,M,Q] (1980.01, 1980Q1 부터)
+BOK_301Y013 = pd.read_pickle('./Market_Watch_Data/BOK_301Y013.pkl')
+BOK_301Y013_00 = BOK_301Y013[BOK_301Y013["ITEM_CODE1"] == "000000"].copy()  # 경상수지 (백만달러)
+BOK_301Y013_00["Current_Account_3M"] = BOK_301Y013_00["DATA_VALUE"].rolling(window=3).sum() / 1000  # 경상수지 3개월 누적 (십억달러)
+BOK_301Y013_00["Current_Account_12M"] = BOK_301Y013_00["DATA_VALUE"].rolling(window=12).sum() / 1000  # 경상수지 12개월 누적 (십억달러)
+BOK_301Y013_00["Current_Account_cum"] = BOK_301Y013_00["DATA_VALUE"].cumsum() / 1000  # 경상수지 누적 (십억달러)
 
 # 코스피지수
 investpy_kospi = pd.read_pickle('./Market_Watch_Data/investpy_kospi.pkl')
@@ -285,7 +285,7 @@ xlim_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
 color1 = "tab:red"
 ax1.set_xlabel("Dates")
 ax1.set_ylabel("Current Account (12 months cumulative)", color=color1)  # 데이터 레이블
-ax1.plot(BOK_022Y013_00["DATETIME"], BOK_022Y013_00["Current_Account_12M"], color=color1)
+ax1.plot(BOK_301Y013_00["DATETIME"], BOK_301Y013_00["Current_Account_12M"], color=color1)
 ax1.tick_params(axis="y")
 
 # 두번째 시계열
@@ -307,7 +307,6 @@ plt.show()
 
 plt.savefig("./Lecture_Figures_output/fig4.8_current_account_and_kospi.png")  # 그림 저장
 
-
 ########################################################################################################################
 # 그림 4.9 실질실효환율과 달러/원 환율 추이
 
@@ -322,9 +321,10 @@ df_bis_header = df_bis_header[0].tolist()
 df_bis_data.columns = df_bis_header
 df_bis_data["Korea_100"] = df_bis_data["Korea"] - 100
 
-# 8.8.2.1 평균환율, 기말환율 > 주요국통화의 대원화 환율 통계자료 [036Y004][HY,MM,QQ,YY] (1964.05 부터)
-BOK_036Y004 = pd.read_pickle('./Market_Watch_Data/BOK_036Y004.pkl')
-BOK_036Y004_00 = BOK_036Y004[(BOK_036Y004["ITEM_CODE1"] == "0000001") & (BOK_036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
+# 3.1.2.1. 평균환율/기말환율 > 주요국통화의 대원화 환율 [731Y004][A,M,Q,S] (1964.05 부터)
+BOK_731Y004 = pd.read_pickle('./Market_Watch_Data/BOK_731Y004.pkl')
+BOK_731Y004_00 = BOK_731Y004[(BOK_731Y004["ITEM_CODE1"] == "0000001") & (BOK_731Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
+
 
 # 그림 4.4 실질실효환율과 경상수지 추이
 # 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
@@ -334,7 +334,7 @@ xlim_start = pd.to_datetime("2000-01-01", errors='coerce', format='%Y-%m-%d')
 # 첫번째 시계열
 color1 = "tab:red"
 ax1.set_ylabel("USD/KRW", color=color1)  # 데이터 레이블
-ax1.plot(BOK_036Y004_00["DATETIME"], BOK_036Y004_00["DATA_VALUE"], color=color1, linestyle='-')
+ax1.plot(BOK_731Y004_00["DATETIME"], BOK_731Y004_00["DATA_VALUE"], color=color1, linestyle='-')
 ax1.tick_params(axis='y')
 
 # 두번째 시계열

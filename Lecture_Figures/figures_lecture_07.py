@@ -223,7 +223,8 @@ plt.savefig("./Lecture_Figures_output/fig7.5_oecd_cli_and_personal_consumption_e
 # 그림 7.6 ISM 신규주문지수와 미국 실질가계소비
 
 # ISM 신규주문지수
-investpy_economic_calendar = pd.read_pickle('./Market_Watch_Data/investpy_economic_calendar_us_20000101_20220215.pkl')
+# investpy_economic_calendar = pd.read_pickle('./Market_Watch_Data/investpy_economic_calendar_us_20000101_20220215.pkl')
+investpy_economic_calendar = pd.read_pickle('./Market_Watch_Data/investpy_economic_calendar_us.pkl')
 
 investpy_new_orders = investpy_economic_calendar[investpy_economic_calendar['event'].str.contains("ISM Manufacturing New Orders")].copy()
 investpy_new_orders["datetime_announced"] = pd.to_datetime(investpy_new_orders["date"], errors='coerce', format="%d/%m/%Y")
@@ -263,7 +264,7 @@ ax2.tick_params(axis='y')
 # 그래프 기타 설정
 fig.tight_layout()  # otherwise the right y-label is slightly clipped
 fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
-ax1.set_ylim([-5, 10])
+ax1.set_ylim([-5, 10])  # COVID19 이후 특이값 부분 clipping
 #ax2.set_ylim([0, 80])
 # align_yaxis(ax1, 0, ax2, 0)  # 두 축이 동일한 0 값을 가지도록 조정
 # plt.axhline(y=0, color='green', linestyle='dotted')
@@ -278,7 +279,8 @@ plt.savefig("./Lecture_Figures_output/fig7.6_ism_new_orders_and_personal_consump
 # 그림 7.7 ISM 신규주문지수와 한국 수출
 
 # ISM 신규주문지수
-investpy_economic_calendar = pd.read_pickle('./Market_Watch_Data/investpy_economic_calendar_us_20000101_20220215.pkl')
+# investpy_economic_calendar = pd.read_pickle('./Market_Watch_Data/investpy_economic_calendar_us_20000101_20220215.pkl')
+investpy_economic_calendar = pd.read_pickle('./Market_Watch_Data/investpy_economic_calendar_us.pkl')
 
 investpy_new_orders = investpy_economic_calendar[investpy_economic_calendar['event'].str.contains("ISM Manufacturing New Orders")].copy()
 investpy_new_orders["datetime_announced"] = pd.to_datetime(investpy_new_orders["date"], errors='coerce', format="%d/%m/%Y")
