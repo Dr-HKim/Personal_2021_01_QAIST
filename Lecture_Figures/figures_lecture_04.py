@@ -37,31 +37,31 @@ def align_yaxis(ax1, v1, ax2, v2):
 ########################################################################################################################
 # 그림 2.2 실질경제성장률과 기업의 매출액순이익률
 
-# 10.1.1 국민계정(2015년 기준년) - 주요지표 - 연간지표 [111Y002] (1953 부터)
-BOK_111Y002 = pd.read_pickle('./Market_Watch_Data/BOK_111Y002.pkl')
-BOK_111Y002_01 = BOK_111Y002[BOK_111Y002["ITEM_CODE1"] == "20101"].copy()  # 국내총생산(실질성장률)[%]
+# 2.1.1.1. 국민소득통계(2015년 기준년) > 주요지표 > 주요지표(연간지표) [200Y001][A] (1953 부터)
+BOK_200Y001 = pd.read_pickle('./Market_Watch_Data/BOK_200Y001.pkl')
+BOK_200Y001_01 = BOK_200Y001[BOK_200Y001["ITEM_CODE1"] == "20101"].copy()  # 국내총생산(실질성장률)[%]
 
-# 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(~2007)[027Y131][YY] (1960 부터)
-BOK_027Y131 = pd.read_pickle('./Market_Watch_Data/BOK_027Y131.pkl')
-BOK_027Y131_01 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "전산업") & (BOK_027Y131["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-BOK_027Y131_02 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "제조업") & (BOK_027Y131["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-BOK_027Y131_03 = BOK_027Y131[(BOK_027Y131["ITEM_NAME1"] == "제조업") & (BOK_027Y131["ITEM_NAME2"] == "매출액경상이익률(~2006)")].copy()  # 국내총생산(실질성장률)[%]
+# 5.1.1.1. 기업경영분석 > 기업경영분석지표(연) > 기업경영분석지표 > 기업경영분석지표(2009~, 전수조사) [501Y011][A]
+BOK_501Y011 = pd.read_pickle('./Market_Watch_Data/BOK_501Y011.pkl')
+BOK_501Y011_01 = BOK_501Y011[(BOK_501Y011["ITEM_NAME1"] == "전산업") & (BOK_501Y011["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_501Y011_02 = BOK_501Y011[(BOK_501Y011["ITEM_NAME1"] == "제조업") & (BOK_501Y011["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_501Y011_03 = BOK_501Y011[(BOK_501Y011["ITEM_NAME1"] == "제조업") & (BOK_501Y011["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
 
-# 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(2007~2010)[027Y331][YY]
-BOK_027Y331 = pd.read_pickle('./Market_Watch_Data/BOK_027Y331.pkl')
-BOK_027Y331_01 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "전산업") & (BOK_027Y331["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-BOK_027Y331_02 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "제조업") & (BOK_027Y331["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-BOK_027Y331_03 = BOK_027Y331[(BOK_027Y331["ITEM_NAME1"] == "제조업") & (BOK_027Y331["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
+# 5.1.1.2. 기업경영분석 > 기업경영분석지표(연) > 기업경영분석지표 > 기업경영분석지표(2007~2010) [501Y017][A]
+BOK_501Y017 = pd.read_pickle('./Market_Watch_Data/BOK_501Y017.pkl')
+BOK_501Y017_01 = BOK_501Y017[(BOK_501Y017["ITEM_NAME1"] == "전산업") & (BOK_501Y017["ITEM_NAME2"] == "매출액영업이익률") & (BOK_501Y017["TIME"] < 2009)].copy()  # 국내총생산(실질성장률)[%]
+BOK_501Y017_02 = BOK_501Y017[(BOK_501Y017["ITEM_NAME1"] == "제조업") & (BOK_501Y017["ITEM_NAME2"] == "매출액영업이익률") & (BOK_501Y017["TIME"] < 2009)].copy()  # 국내총생산(실질성장률)[%]
+BOK_501Y017_03 = BOK_501Y017[(BOK_501Y017["ITEM_NAME1"] == "제조업") & (BOK_501Y017["ITEM_NAME2"] == "매출액세전순이익률") & (BOK_501Y017["TIME"] < 2009)].copy()  # 국내총생산(실질성장률)[%]
 
-# 12.1.1 기업경영분석 - 기업경영분석지표 - 기업경영분석지표(2009~, 전수조사) [027Y431][YY]
-BOK_027Y431 = pd.read_pickle('./Market_Watch_Data/BOK_027Y431.pkl')
-BOK_027Y431_01 = BOK_027Y431[(BOK_027Y431["ITEM_NAME1"] == "전산업") & (BOK_027Y431["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-BOK_027Y431_02 = BOK_027Y431[(BOK_027Y431["ITEM_NAME1"] == "제조업") & (BOK_027Y431["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
-BOK_027Y431_03 = BOK_027Y431[(BOK_027Y431["ITEM_NAME1"] == "제조업") & (BOK_027Y431["ITEM_NAME2"] == "매출액세전순이익률")].copy()  # 국내총생산(실질성장률)[%]
+# 5.1.1.3. 기업경영분석 > 기업경영분석지표(연) > 기업경영분석지표 > 기업경영분석지표(~2007) [501Y018][A]
+BOK_501Y018 = pd.read_pickle('./Market_Watch_Data/BOK_501Y018.pkl')
+BOK_501Y018_01 = BOK_501Y018[(BOK_501Y018["ITEM_NAME1"] == "전산업") & (BOK_501Y018["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_501Y018_02 = BOK_501Y018[(BOK_501Y018["ITEM_NAME1"] == "제조업") & (BOK_501Y018["ITEM_NAME2"] == "매출액영업이익률")].copy()  # 국내총생산(실질성장률)[%]
+BOK_501Y018_03 = BOK_501Y018[(BOK_501Y018["ITEM_NAME1"] == "제조업") & (BOK_501Y018["ITEM_NAME2"] == "매출액경상이익률(~2006)")].copy()  # 국내총생산(실질성장률)[%]
 
 # 그림: 경제성장률과 기업이익의 추이
-real_gdp_growth = BOK_111Y002_01.copy()
-net_income_to_sales = pd.concat([BOK_027Y131_03, BOK_027Y331_03, BOK_027Y431_03])
+real_gdp_growth = BOK_200Y001_01.copy()
+net_income_to_sales = pd.concat([BOK_501Y018_03, BOK_501Y017_03, BOK_501Y011_03])
 
 fig, ax1 = plt.subplots()
 
@@ -88,16 +88,16 @@ plt.show()
 # 그림 저장
 plt.savefig("./Lecture_Figures_output/fig2.2_net_income_to_sales_and_real_gdp_growth.png")
 
-
 ########################################################################################################################
 # 그림 2.3 실질경제성장률과 연간 코스피 성장률
 # 실질GDP (전년동기대비변동률, %)
-# 6.1.2 증권/재정 - 주식거래 및 주가지수 [028Y015][MM, YY] (200002, 1976 부터)
-BOK_028Y015 = pd.read_pickle('./Market_Watch_Data/BOK_028Y015.pkl')
-BOK_028Y015_01 = BOK_028Y015[BOK_028Y015["ITEM_NAME1"] == "KOSPI_종가"].copy()
+
+# 1.5.1.2. 주식/채권/재정 - 주식거래/주가지수 - 주식시장(월,년) [901Y014][A,M] (200002, 1976 부터)
+BOK_901Y014 = pd.read_pickle('./Market_Watch_Data/BOK_901Y014.pkl')  # 연간 자료 사용
+BOK_901Y014_01 = BOK_901Y014[BOK_901Y014["ITEM_NAME1"] == "KOSPI_종가"].copy()
 
 # 그림: 경제성장률과 코스피지수의 추이
-kospi_index = BOK_028Y015_01.copy()
+kospi_index = BOK_901Y014_01.copy()
 kospi_index["L1_DATA_VALUE"] = kospi_index["DATA_VALUE"].shift(1)
 kospi_index["GROWTH_RATE"] = (kospi_index["DATA_VALUE"]/kospi_index["L1_DATA_VALUE"]-1)*100
 
@@ -125,7 +125,6 @@ plt.show()
 
 # 그림 저장
 plt.savefig("./Lecture_Figures_output/fig2.3_kospi_growth_and_real_gdp_growth.png")
-
 
 ########################################################################################################################
 # 그림 2.7 코스피지수와 MSCI 신흥시장지수

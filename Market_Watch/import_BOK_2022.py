@@ -97,6 +97,8 @@ def get_bok_data(STAT_CODE, CYCLE_TYPE, START_DATE, END_DATE, AUTH_KEY=get_bok_a
             elif CYCLE_TYPE == "D":
                 df_BOK["TIME"] = df_BOK["TIME"].apply(pd.to_numeric)
                 df_BOK["DATETIME"] = pd.to_datetime(df_BOK['TIME'].astype(str), errors='coerce', format='%Y%m%d')
+            elif CYCLE_TYPE == "A":
+                df_BOK["TIME"] = df_BOK["TIME"].apply(pd.to_numeric)
 
             df_BOK["DATA_VALUE"] = list_DATA_VALUE
 
@@ -106,8 +108,8 @@ def get_bok_data(STAT_CODE, CYCLE_TYPE, START_DATE, END_DATE, AUTH_KEY=get_bok_a
     return df_BOK
 
 
-DD_END_DATE = "20220819"
-MM_END_DATE = "202207"
+DD_END_DATE = "20220831"
+MM_END_DATE = "202208"
 QQ_END_DATE = "2022Q2"
 YY_END_DATE = "2021"
 
