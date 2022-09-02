@@ -102,3 +102,49 @@ plt.legend(loc='upper right')
 plt.show()
 
 plt.savefig("./Lecture_Figures_output/fig1.3_exchange_rates.png")
+
+
+########################################################################################################################
+# 그림 1.4 미국과 한국의 주가지수 (2010=100)
+
+
+# 1.5.1.1. 주식/채권/재정 - 주식거래/주가지수 - 주식시장(일) [802Y001][D] (1995.01.03 부터)
+BOK_802Y001 = pd.read_pickle('./Market_Watch_Data/BOK_802Y001.pkl')
+BOK_802Y001_01 = BOK_802Y001[BOK_802Y001["ITEM_CODE1"] == "0001000"].copy()  # KOSPI지수 / 코스피
+BOK_802Y001_01["KOSPI"] = BOK_802Y001_01["DATA_VALUE"]
+BOK_802Y001_01.index = BOK_802Y001_01["DATETIME"]
+df_kospi_monthly = BOK_802Y001_01.resample('M').last()
+df_kospi_monthly.index = df_kospi_monthly.index.map(lambda t: t.replace(day=1))  # 인덱스 날짜를 1일로
+
+# 미국 S&P 500 지수 (1979.12.26 부터)
+investpy_snp500 = pd.read_pickle('./Market_Watch_Data/investpy_snp500.pkl')
+df_snp500_monthly = investpy_snp500.resample('M').last()  # 월말 자료만
+df_snp500_monthly.index = df_snp500_monthly.index.map(lambda t: t.replace(day=1))  # 인덱스 날짜를 1일로
+# sr_SNP500 = investpy_snp500_monthly["Close"]
+
+# 2010 = 100 으로 조정
+obs_start = pd.to_datetime("2010-01-01", errors='coerce', format='%Y-%m-%d')
+kospi_2010 = df_kospi_monthly.loc[obs_start]["KOSPI"]
+df_kospi_monthly["KOSPI_revised"] = df_kospi_monthly["KOSPI"] / kospi_2010 * 100
+
+snp500_2010 = df_snp500_monthly.loc[obs_start]["Close"]
+df_snp500_monthly["SNP500_revised"] = df_snp500_monthly["Close"] / snp500_2010 * 100
+
+# 시각화: 월별 시계열 자료 2개를 같은 y 축으로 표시
+fig = plt.figure()
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+fig.set_size_inches(1800/300, 1200/300)  # 그래프 크기 지정, DPI=300
+
+plt.plot(df_snp500_monthly.index, df_snp500_monthly["SNP500_revised"], color='r', label="S&P500 (2010.01=100)")
+plt.plot(df_kospi_monthly.index, df_kospi_monthly["KOSPI_revised"], color='b', label="KOSPI (2010.01=100)")
+
+xlim_start = pd.to_datetime("2010-01-01", errors='coerce', format='%Y-%m-%d')
+plt.xlim(xlim_start, )
+plt.ylim(50, 450)
+plt.axhline(y=100, color='green', linestyle='dotted')
+plt.xlabel('Dates', fontsize=10)
+plt.ylabel('Index (2010.01=100)', fontsize=10)
+plt.legend(loc='upper left')
+plt.show()
+
+plt.savefig("./Lecture_Figures_output/fig1.4_kospi_and_snp500.png")

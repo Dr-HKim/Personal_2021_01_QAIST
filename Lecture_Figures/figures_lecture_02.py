@@ -35,7 +35,7 @@ def get_yyyymm_add_months(n_yyyymm, n_months):
     return output_yyyymm
 
 
-
+########################################################################################################################
 # 코스피 200 지수
 investpy_kospi_200 = pd.read_pickle('./Market_Watch_Data/investpy_kospi_200.pkl')
 investpy_kospi_200_monthly = investpy_kospi_200.resample('M').last()
@@ -60,7 +60,7 @@ plt.ylabel('point', fontsize=10)
 plt.legend(loc='upper left')
 plt.show()
 
-plt.savefig("./Lecture_Figures_output/fig1.1_KOSPI_200_Index.png")
+plt.savefig("./Lecture_Figures_output/fig2.1_KOSPI_200_Index.png")
 
 
 # 시각화: 월별 시계열 자료 3개를 같은 y 축으로 표시
@@ -79,7 +79,7 @@ plt.ylabel('KRW', fontsize=10)
 plt.legend(loc='upper left')
 plt.show()
 
-plt.savefig("./Lecture_Figures_output/fig1.2_KODEX_200_ETF.png")
+plt.savefig("./Lecture_Figures_output/fig2.2_KODEX_200_ETF.png")
 
 
 
