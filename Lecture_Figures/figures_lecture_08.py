@@ -28,14 +28,13 @@ def get_yyyymm_add_months(n_yyyymm, n_months):
 ########################################################################################################################
 # 그림 8.1 한국은행 기준금리와 환율
 
-# 2.6 한국은행 기준금리 및 여수신금리 [098Y001][DD, MM, QQ, YY] (1994.01.03 부터)
-BOK_098Y001_DD = pd.read_pickle('./Market_Watch_Data/BOK_098Y001_DD.pkl')
-bok_base_rate = BOK_098Y001_DD[(BOK_098Y001_DD["ITEM_NAME1"] == "한국은행 기준금리")].copy()
+# 1.3.1. 한국은행 기준금리 및 여수신금리 [722Y001][A,D,M,Q] (1994.01.03 부터)
+BOK_722Y001_DD = pd.read_pickle('./Market_Watch_Data/BOK_722Y001_DD.pkl')
+bok_base_rate = BOK_722Y001_DD[(BOK_722Y001_DD["ITEM_NAME1"] == "한국은행 기준금리")].copy()
 
-# 8.8.2.1 평균환율, 기말환율 > 주요국통화의 대원화 환율 통계자료 [036Y004][HY,MM,QQ,YY] (1964.05 부터)
-BOK_036Y004 = pd.read_pickle('./Market_Watch_Data/BOK_036Y004.pkl')
-BOK_036Y004_00 = BOK_036Y004[(BOK_036Y004["ITEM_CODE1"] == "0000001") & (BOK_036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
-
+# 3.1.2.1. 평균환율/기말환율 > 주요국통화의 대원화 환율 [731Y004][A,M,Q,S] (1964.05 부터)
+BOK_731Y004 = pd.read_pickle('./Market_Watch_Data/BOK_731Y004.pkl')
+BOK_731Y004_00 = BOK_731Y004[(BOK_731Y004["ITEM_CODE1"] == "0000001") & (BOK_731Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
 
 # 그림 8.1 한국은행 기준금리와 환율
 # 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
@@ -54,7 +53,7 @@ ax1.tick_params(axis="y")
 ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
 color2 = "tab:red"
 ax2.set_ylabel("USD/KRW", color=color2)  # 데이터 레이블
-ax2.plot(BOK_036Y004_00["DATETIME"], BOK_036Y004_00["DATA_VALUE"], color=color2, linestyle='-')
+ax2.plot(BOK_731Y004_00["DATETIME"], BOK_731Y004_00["DATA_VALUE"], color=color2, linestyle='-')
 ax2.tick_params(axis='y')
 
 # 그래프 기타 설정
@@ -75,9 +74,9 @@ plt.savefig("./Lecture_Figures_output/fig8.1_bok_base_rate_and_usd_krw.png")  # 
 ########################################################################################################################
 # 그림 8.2 한국은행 기준금리와 미국 기준금리
 
-# 2.6 한국은행 기준금리 및 여수신금리 [098Y001][DD, MM, QQ, YY] (1994.01.03 부터)
-BOK_098Y001_DD = pd.read_pickle('./Market_Watch_Data/BOK_098Y001_DD.pkl')
-bok_base_rate = BOK_098Y001_DD[(BOK_098Y001_DD["ITEM_NAME1"] == "한국은행 기준금리")].copy()
+# 1.3.1. 한국은행 기준금리 및 여수신금리 [722Y001][A,D,M,Q] (1994.01.03 부터)
+BOK_722Y001_DD = pd.read_pickle('./Market_Watch_Data/BOK_722Y001_DD.pkl')
+bok_base_rate = BOK_722Y001_DD[(BOK_722Y001_DD["ITEM_NAME1"] == "한국은행 기준금리")].copy()
 
 # 미국 기준금리
 fred_DFEDTARU = pd.read_pickle('./Market_Watch_Data/fred_DFEDTARU.pkl')  # Upper Limit
@@ -106,9 +105,9 @@ plt.savefig("./Lecture_Figures_output/fig8.2_bok_base_rate_and_us_bas_rate.png")
 ########################################################################################################################
 # 그림 8.3 한미 기준금리 차이와 달러/원 환율
 
-# 2.6 한국은행 기준금리 및 여수신금리 [098Y001][DD, MM, QQ, YY] (1994.01.03 부터)
-BOK_098Y001_DD = pd.read_pickle('./Market_Watch_Data/BOK_098Y001_DD.pkl')
-bok_base_rate = BOK_098Y001_DD[(BOK_098Y001_DD["ITEM_NAME1"] == "한국은행 기준금리")].copy()
+# 1.3.1. 한국은행 기준금리 및 여수신금리 [722Y001][A,D,M,Q] (1994.01.03 부터)
+BOK_722Y001_DD = pd.read_pickle('./Market_Watch_Data/BOK_722Y001_DD.pkl')
+bok_base_rate = BOK_722Y001_DD[(BOK_722Y001_DD["ITEM_NAME1"] == "한국은행 기준금리")].copy()
 
 # 미국 기준금리
 fred_DFF = pd.read_pickle('./Market_Watch_Data/fred_DFF.pkl')  # Federal Funds Effective Rate
@@ -121,10 +120,9 @@ bok_base_rate.index = bok_base_rate["DATETIME"]
 series_diff = bok_base_rate["diff"]
 series_diff_monthly = series_diff.resample('M').last()
 
-# 8.8.2.1 평균환율, 기말환율 > 주요국통화의 대원화 환율 통계자료 [036Y004][HY,MM,QQ,YY] (1964.05 부터)
-BOK_036Y004 = pd.read_pickle('./Market_Watch_Data/BOK_036Y004.pkl')
-BOK_036Y004_00 = BOK_036Y004[(BOK_036Y004["ITEM_CODE1"] == "0000001") & (BOK_036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
-
+# 3.1.2.1. 평균환율/기말환율 > 주요국통화의 대원화 환율 [731Y004][A,M,Q,S] (1964.05 부터)
+BOK_731Y004 = pd.read_pickle('./Market_Watch_Data/BOK_731Y004.pkl')
+BOK_731Y004_00 = BOK_731Y004[(BOK_731Y004["ITEM_CODE1"] == "0000001") & (BOK_731Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
 
 # 그림 8.3 한미 기준금리 차이와 달러/원 환율
 # 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
@@ -144,7 +142,7 @@ plt.axhline(y=0, color='green', linestyle='dotted')
 ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
 color2 = "tab:red"
 ax2.set_ylabel("USD/KRW", color=color2)  # 데이터 레이블
-ax2.plot(BOK_036Y004_00["DATETIME"], BOK_036Y004_00["DATA_VALUE"], color=color2, linestyle='-')
+ax2.plot(BOK_731Y004_00["DATETIME"], BOK_731Y004_00["DATA_VALUE"], color=color2, linestyle='-')
 ax2.tick_params(axis='y')
 
 # 그래프 기타 설정
@@ -168,9 +166,9 @@ plt.savefig("./Lecture_Figures_output/fig8.3_diff_base_rates_and_usd_krw.png")  
 fred_DTWEXBGS = pd.read_pickle('./Market_Watch_Data/fred_DTWEXBGS.pkl')
 fred_DTWEXBGS_monthly = fred_DTWEXBGS.resample('M').last()
 
-# 8.8.2.1 평균환율, 기말환율 > 주요국통화의 대원화 환율 통계자료 [036Y004][HY,MM,QQ,YY] (1964.05 부터)
-BOK_036Y004 = pd.read_pickle('./Market_Watch_Data/BOK_036Y004.pkl')
-BOK_036Y004_00 = BOK_036Y004[(BOK_036Y004["ITEM_CODE1"] == "0000001") & (BOK_036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
+# 3.1.2.1. 평균환율/기말환율 > 주요국통화의 대원화 환율 [731Y004][A,M,Q,S] (1964.05 부터)
+BOK_731Y004 = pd.read_pickle('./Market_Watch_Data/BOK_731Y004.pkl')
+BOK_731Y004_00 = BOK_731Y004[(BOK_731Y004["ITEM_CODE1"] == "0000001") & (BOK_731Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
 
 # 그림 8.4 달러 인덱스와 달러/원 환율
 # 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
@@ -189,7 +187,7 @@ ax1.tick_params(axis="y")
 ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
 color2 = "tab:red"
 ax2.set_ylabel("USD/KRW", color=color2)  # 데이터 레이블
-ax2.plot(BOK_036Y004_00["DATETIME"], BOK_036Y004_00["DATA_VALUE"], color=color2, linestyle='-')
+ax2.plot(BOK_731Y004_00["DATETIME"], BOK_731Y004_00["DATA_VALUE"], color=color2, linestyle='-')
 ax2.tick_params(axis='y')
 
 # 그래프 기타 설정
@@ -305,16 +303,16 @@ plt.savefig("./Lecture_Figures_output/fig8.6_dollar_index_and_BB_spread.png")  #
 
 ########################################################################################################################
 # 그림 8.1 코스피 지수와 환율
-# 8.8.2.1 평균환율, 기말환율 > 주요국통화의 대원화 환율 통계자료 [036Y004][HY,MM,QQ,YY] (1964.05 부터)
-BOK_036Y004 = pd.read_pickle('./Market_Watch_Data/BOK_036Y004.pkl')
-BOK_036Y004_00 = BOK_036Y004[(BOK_036Y004["ITEM_CODE1"] == "0000001") & (BOK_036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
+# 3.1.2.1. 평균환율/기말환율 > 주요국통화의 대원화 환율 [731Y004][A,M,Q,S] (1964.05 부터)
+BOK_731Y004 = pd.read_pickle('./Market_Watch_Data/BOK_731Y004.pkl')
+BOK_731Y004_00 = BOK_731Y004[(BOK_731Y004["ITEM_CODE1"] == "0000001") & (BOK_731Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
 
-# 6.1.1 증권/재정 - 주식거래 및 주가지수 - 주식시장(일별) [064Y001] (1995.01.03 부터)
-BOK_064Y001 = pd.read_pickle('./Market_Watch_Data/BOK_064Y001.pkl')
-BOK_064Y001_01 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0001000"]  # KOSPI지수
-BOK_064Y001_01.index = BOK_064Y001_01["DATETIME"]
+# 1.5.1.1. 주식/채권/재정 - 주식거래/주가지수 - 주식시장(일) [802Y001][D] (1995.01.03 부터)
+BOK_802Y001 = pd.read_pickle('./Market_Watch_Data/BOK_802Y001.pkl')
+BOK_802Y001_01 = BOK_802Y001[BOK_802Y001["ITEM_CODE1"] == "0001000"]  # KOSPI지수
+BOK_802Y001_01.index = BOK_802Y001_01["DATETIME"]
 
-df_kospi_monthly = BOK_064Y001_01.resample('M').last()
+df_kospi_monthly = BOK_802Y001_01.resample('M').last()
 
 # 그림 8.1 코스피 지수와 환율
 # 시각화: 월별 시계열 자료 2개를 서로 다른 y 축으로 표시하고 0 위치 통일
@@ -333,7 +331,7 @@ ax1.tick_params(axis="y")
 ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
 color2 = "tab:red"
 ax2.set_ylabel("USD/KRW", color=color2)  # 데이터 레이블
-ax2.plot(BOK_036Y004_00["DATETIME"], BOK_036Y004_00["DATA_VALUE"], color=color2, linestyle='-')
+ax2.plot(BOK_731Y004_00["DATETIME"], BOK_731Y004_00["DATA_VALUE"], color=color2, linestyle='-')
 ax2.tick_params(axis='y')
 
 # 그래프 기타 설정
@@ -351,12 +349,12 @@ plt.savefig("./Lecture_Figures_output/fig8.1_kospi_and_usd_krw.png")  # 그림 �
 
 ########################################################################################################################
 # 그림 8.2 코스피 지수와 코스피 기업이익
-# 6.1.2 증권/재정 - 주식거래 및 주가지수 [028Y015][MM, YY] (200002, 1976 부터)
-BOK_028Y015_MM = pd.read_pickle('./Market_Watch_Data/BOK_028Y015_MM.pkl')
-kospi_n_shares = BOK_028Y015_MM[BOK_028Y015_MM["ITEM_NAME1"] == "KOSPI_상장주식수"].copy()
-kospi_mkt_cap = BOK_028Y015_MM[BOK_028Y015_MM["ITEM_NAME1"] == "KOSPI_시가총액"].copy()
-kospi_per = BOK_028Y015_MM[BOK_028Y015_MM["ITEM_NAME1"] == "KOSPI_주가이익비율 3)"].copy()
-kospi_close = BOK_028Y015_MM[BOK_028Y015_MM["ITEM_NAME1"] == "KOSPI_종가"].copy()
+# 1.5.1.2. 주식/채권/재정 - 주식거래/주가지수 - 주식시장(월,년) [901Y014][A,M] (200002, 1976 부터)
+BOK_901Y014_MM = pd.read_pickle('./Market_Watch_Data/BOK_901Y014_MM.pkl')
+kospi_n_shares = BOK_901Y014_MM[BOK_901Y014_MM["ITEM_NAME1"] == "KOSPI_상장주식수"].copy()
+kospi_mkt_cap = BOK_901Y014_MM[BOK_901Y014_MM["ITEM_NAME1"] == "KOSPI_시가총액"].copy()
+kospi_per = BOK_901Y014_MM[BOK_901Y014_MM["ITEM_NAME1"] == "KOSPI_주가이익비율 3)"].copy()
+kospi_close = BOK_901Y014_MM[BOK_901Y014_MM["ITEM_NAME1"] == "KOSPI_종가"].copy()
 
 kospi_n_shares.rename(columns={"DATA_VALUE": "n_shares"}, inplace=True)
 kospi_mkt_cap.rename(columns={"DATA_VALUE": "mkt_cap"}, inplace=True)
@@ -405,9 +403,9 @@ plt.savefig("./Lecture_Figures_output/fig8.2_kospi_and_kospi_earnings.png")  # �
 
 ########################################################################################################################
 # 그림 8.4 달러/원 환율과 국제유가
-# 8.8.2.1 평균환율, 기말환율 > 주요국통화의 대원화 환율 통계자료 [036Y004][HY,MM,QQ,YY] (1964.05 부터)
-BOK_036Y004 = pd.read_pickle('./Market_Watch_Data/BOK_036Y004.pkl')
-BOK_036Y004_00 = BOK_036Y004[(BOK_036Y004["ITEM_CODE1"] == "0000001") & (BOK_036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
+# 3.1.2.1. 평균환율/기말환율 > 주요국통화의 대원화 환율 [731Y004][A,M,Q,S] (1964.05 부터)
+BOK_731Y004 = pd.read_pickle('./Market_Watch_Data/BOK_731Y004.pkl')
+BOK_731Y004_00 = BOK_731Y004[(BOK_731Y004["ITEM_CODE1"] == "0000001") & (BOK_731Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
 
 # 국제유가 WTI (Monthly)
 # Spot Crude Oil Price: West Texas Intermediate (WTI) (WTISPLC)
@@ -431,7 +429,7 @@ ax1.tick_params(axis="y")
 ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
 color2 = "tab:red"
 ax2.set_ylabel("USD/KRW", color=color2)  # 데이터 레이블
-ax2.plot(BOK_036Y004_00["DATETIME"], BOK_036Y004_00["DATA_VALUE"], color=color2, linestyle='-')
+ax2.plot(BOK_731Y004_00["DATETIME"], BOK_731Y004_00["DATA_VALUE"], color=color2, linestyle='-')
 ax2.tick_params(axis='y')
 
 # 그래프 기타 설정
@@ -501,11 +499,10 @@ plt.savefig("./Lecture_Figures_output/fig8.5_oecd_cli_and_wti.png")  # 그림 �
 ########################################################################################################################
 # 그림 8.6 국제유가와 한국 수출단가지수
 
-# 7.5.2 수출물가지수(2015=100)(특수분류)  [019Y302][MM,QQ,YY] (1971.01 부터)
-BOK_019Y302 = pd.read_pickle('./Market_Watch_Data/BOK_019Y302.pkl')
+# 4.3.1.2. 수출물가지수(2015=100)(특수분류) [402Y015][A,M,Q] (1971.01 부터)
+BOK_402Y015 = pd.read_pickle('./Market_Watch_Data/BOK_402Y015.pkl')
 # 수출물가지수 (IT제외, 달러기준)
-BOK_019Y302_00 = BOK_019Y302[(BOK_019Y302["ITEM_CODE1"] == "602AA") & (BOK_019Y302["ITEM_CODE2"] == "D")].copy()
-
+BOK_402Y015_00 = BOK_402Y015[(BOK_402Y015["ITEM_CODE1"] == "602AA") & (BOK_402Y015["ITEM_CODE2"] == "D")].copy()
 
 # 국제유가 WTI (Monthly)
 # Spot Crude Oil Price: West Texas Intermediate (WTI) (WTISPLC)
@@ -530,7 +527,7 @@ ax1.tick_params(axis="y")
 ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
 color2 = "tab:red"
 ax2.set_ylabel("Korea Export Price Index (Excluding IT, 2015=100)", color=color2)  # 데이터 레이블
-ax2.plot(BOK_019Y302_00["DATETIME"], BOK_019Y302_00["DATA_VALUE"], color=color2, linestyle='-')
+ax2.plot(BOK_402Y015_00["DATETIME"], BOK_402Y015_00["DATA_VALUE"], color=color2, linestyle='-')
 ax2.tick_params(axis='y')
 
 # 그래프 기타 설정

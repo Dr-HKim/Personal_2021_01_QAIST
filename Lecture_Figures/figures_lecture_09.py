@@ -34,21 +34,21 @@ investpy_kospi_monthly = investpy_kospi.resample('M').last()  # 월말 자료만
 investpy_kospi_monthly.index = investpy_kospi_monthly.index.map(lambda t: t.replace(day=1))  # 인덱스 날짜를 1일로
 sr_KOSPI = investpy_kospi_monthly["KOSPI"]
 
-# 6.1.1 증권/재정 - 주식거래 및 주가지수 - 주식시장(일별) [064Y001] (1995.01.03 부터)
-BOK_064Y001 = pd.read_pickle('./Market_Watch_Data/BOK_064Y001.pkl')
-BOK_064Y001_01 = BOK_064Y001[BOK_064Y001["ITEM_CODE1"] == "0001000"].copy()  # KOSPI지수 / 코스피
-BOK_064Y001_01["KOSPI"] = BOK_064Y001_01["DATA_VALUE"]
-BOK_064Y001_01.index = BOK_064Y001_01["DATETIME"]
+# 1.5.1.1. 주식/채권/재정 - 주식거래/주가지수 - 주식시장(일) [802Y001][D] (1995.01.03 부터)
+BOK_802Y001 = pd.read_pickle('./Market_Watch_Data/BOK_802Y001.pkl')
+BOK_802Y001_01 = BOK_802Y001[BOK_802Y001["ITEM_CODE1"] == "0001000"].copy()  # KOSPI지수 / 코스피
+BOK_802Y001_01["KOSPI"] = BOK_802Y001_01["DATA_VALUE"]
+BOK_802Y001_01.index = BOK_802Y001_01["DATETIME"]
 
 # 한국 국채
-# 4.1.2 시장금리(월,분기,년) [028Y001] (1987.01, 1987Q1, 1987 부터)
-BOK_028Y001 = pd.read_pickle('./Market_Watch_Data/BOK_028Y001.pkl')
-BOK_028Y001_AA = BOK_028Y001[BOK_028Y001["ITEM_NAME1"] == "회사채(3년, AA-)"].copy()
-BOK_028Y001_AA["CB(AA-)"] = BOK_028Y001_AA["DATA_VALUE"]
-BOK_028Y001_KTB10Y = BOK_028Y001[BOK_028Y001["ITEM_NAME1"] == "국고채(10년)"].copy()
-BOK_028Y001_KTB10Y["KTB10Y"] = BOK_028Y001_KTB10Y["DATA_VALUE"]
-BOK_028Y001_KTB10Y.index = BOK_028Y001_KTB10Y["DATETIME"]
-sr_KTB10Y_yield = BOK_028Y001_KTB10Y["KTB10Y"]
+# 1.3.2.2. 시장금리(월,분기,년) [721Y001][A,M,Q] (1987.01, 1987Q1, 1987 부터)
+BOK_721Y001 = pd.read_pickle('./Market_Watch_Data/BOK_721Y001.pkl')
+BOK_721Y001_AA = BOK_721Y001[BOK_721Y001["ITEM_NAME1"] == "회사채(3년, AA-)"].copy()
+BOK_721Y001_AA["CB(AA-)"] = BOK_721Y001_AA["DATA_VALUE"]
+BOK_721Y001_KTB10Y = BOK_721Y001[BOK_721Y001["ITEM_NAME1"] == "국고채(10년)"].copy()
+BOK_721Y001_KTB10Y["KTB10Y"] = BOK_721Y001_KTB10Y["DATA_VALUE"]
+BOK_721Y001_KTB10Y.index = BOK_721Y001_KTB10Y["DATETIME"]
+sr_KTB10Y_yield = BOK_721Y001_KTB10Y["KTB10Y"]
 
 # KOSEF 국고채 10년 (2011.10.21 부터)
 yahoo_148070ks = pd.read_csv('./Market_Watch_Data/yahoo_148070.KS.csv', header=0, encoding='utf-8', low_memory=False)
@@ -59,30 +59,30 @@ yahoo_148070ks_monthly.index = yahoo_148070ks_monthly.index.map(lambda t: t.repl
 sr_KTB10Y = yahoo_148070ks_monthly["Close"]
 
 # 한국 부동산
-# 7.7.1 주택매매가격지수(KB) [085Y021][MM,QQ,YY] (1986.01 부터)
-BOK_085Y021 = pd.read_pickle('./Market_Watch_Data/BOK_085Y021.pkl')
-BOK_085Y021_00 = BOK_085Y021[BOK_085Y021["ITEM_NAME1"] == "총지수"].copy()  # 총지수
-BOK_085Y021_01 = BOK_085Y021[BOK_085Y021["ITEM_NAME1"] == "아파트"].copy()  # 총지수
-BOK_085Y021_00["HPI"] = BOK_085Y021_00["DATA_VALUE"]
-BOK_085Y021_01["HPI(APT)"] = BOK_085Y021_01["DATA_VALUE"]
-BOK_085Y021_01.index = BOK_085Y021_01["DATETIME"]
-sr_HPI_APT = BOK_085Y021_01["HPI(APT)"]
+# 4.4.1.1. 주택매매가격지수(KB) [901Y062][M] (1986.01 부터)
+BOK_901Y062 = pd.read_pickle('./Market_Watch_Data/BOK_901Y062.pkl')
+BOK_901Y062_00 = BOK_901Y062[BOK_901Y062["ITEM_NAME1"] == "총지수"].copy()  # 총지수
+BOK_901Y062_01 = BOK_901Y062[BOK_901Y062["ITEM_NAME1"] == "아파트"].copy()  # 총지수
+BOK_901Y062_00["HPI"] = BOK_901Y062_00["DATA_VALUE"]
+BOK_901Y062_01["HPI(APT)"] = BOK_901Y062_01["DATA_VALUE"]
+BOK_901Y062_01.index = BOK_901Y062_01["DATETIME"]
+sr_HPI_APT = BOK_901Y062_01["HPI(APT)"]
 
 # 한국 물가
-# 7.4.2 소비자물가지수(2015=100)(전국, 특수분류)  [021Y126][MM,QQ,YY] (1975.01 부터)
-BOK_021Y126 = pd.read_pickle('./Market_Watch_Data/BOK_021Y126.pkl')
-BOK_021Y126_00 = BOK_021Y126[BOK_021Y126["ITEM_CODE1"] == "00"].copy()  # 총지수
-BOK_021Y126_00["CPI"] = BOK_021Y126_00["DATA_VALUE"]
-BOK_021Y126_00.index = BOK_021Y126_00["DATETIME"]
-sr_CPI = BOK_021Y126_00["CPI"]
+# 4.2.1 소비자물가지수(2020=100)(전국, 특수분류) [901Y010][A,M,Q] (1975.01 부터)
+BOK_901Y010 = pd.read_pickle('./Market_Watch_Data/BOK_901Y010.pkl')
+BOK_901Y010_00 = BOK_901Y010[BOK_901Y010["ITEM_CODE1"] == "00"].copy()  # 총지수
+BOK_901Y010_00["CPI"] = BOK_901Y010_00["DATA_VALUE"]
+BOK_901Y010_00.index = BOK_901Y010_00["DATETIME"]
+sr_CPI = BOK_901Y010_00["CPI"]
 
 # 달러/원 환율
-# 8.8.2.1 평균환율, 기말환율 > 주요국통화의 대원화 환율 통계자료 [036Y004][HY,MM,QQ,YY] (1964.05 부터)
-BOK_036Y004 = pd.read_pickle('./Market_Watch_Data/BOK_036Y004.pkl')
-BOK_036Y004_00 = BOK_036Y004[(BOK_036Y004["ITEM_CODE1"] == "0000001") & (BOK_036Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
-BOK_036Y004_00["USDKRW"] = BOK_036Y004_00["DATA_VALUE"]
-BOK_036Y004_00.index = BOK_036Y004_00["DATETIME"]
-sr_USDKRW = BOK_036Y004_00["USDKRW"]
+# 3.1.2.1. 평균환율/기말환율 > 주요국통화의 대원화 환율 [731Y004][A,M,Q,S] (1964.05 부터)
+BOK_731Y004 = pd.read_pickle('./Market_Watch_Data/BOK_731Y004.pkl')
+BOK_731Y004_00 = BOK_731Y004[(BOK_731Y004["ITEM_CODE1"] == "0000001") & (BOK_731Y004["ITEM_CODE2"] == "0000200")].copy()  # 원달러환율 말일자료
+BOK_731Y004_00["USDKRW"] = BOK_731Y004_00["DATA_VALUE"]
+BOK_731Y004_00.index = BOK_731Y004_00["DATETIME"]
+sr_USDKRW = BOK_731Y004_00["USDKRW"]
 
 # 미국 주식
 # 미국 S&P 500 지수 (1979.12.26 부터)
@@ -124,7 +124,6 @@ yahoo_IEF["IEF"] = yahoo_IEF["Close"]
 yahoo_IEF_monthly = yahoo_IEF.resample('M').last()
 yahoo_IEF_monthly.index = yahoo_IEF_monthly.index.map(lambda t: t.replace(day=1))  # 인덱스 날짜를 1일로
 sr_IEF = yahoo_IEF_monthly["IEF"]
-
 
 # 미국 부동산 (배당 재투자)
 # Wilshire US Real Estate Investment Trust Total Market Index (Wilshire US REIT) (WILLREITIND)
@@ -489,7 +488,7 @@ yahoo_HYG.index = yahoo_HYG["datetime"]
 yahoo_132030ks.index = yahoo_132030ks["datetime"]
 yahoo_148070ks.index = yahoo_148070ks["datetime"]
 
-df_kospi_monthly = BOK_064Y001_01.resample('M').last()
+df_kospi_monthly = BOK_802Y001_01.resample('M').last()
 df_spy_monthly = yahoo_SPY.resample('M').last()
 df_ief_monthly = yahoo_IEF.resample('M').last()
 df_vnq_monthly = yahoo_VNQ.resample('M').last()
@@ -514,11 +513,11 @@ df_gold_monthly.index = df_gold_monthly["datetime"]
 df_ktb10y_monthly.index = df_ktb10y_monthly["datetime"]
 
 # 하나로 합친 데이터프레임 만들기
-df_data = BOK_021Y126_00[["DATETIME", "cpi"]]
-df_data = pd.merge(df_data, BOK_085Y021_00[["DATETIME", "hpi"]], left_on='DATETIME', right_on='DATETIME', how='left')
-df_data = pd.merge(df_data, BOK_085Y021_01[["DATETIME", "apt_hpi"]], left_on='DATETIME', right_on='DATETIME', how='left')
-df_data = pd.merge(df_data, BOK_028Y001_AA[["DATETIME", "cb_rate_aa"]], left_on='DATETIME', right_on='DATETIME', how='left')
-df_data = pd.merge(df_data, BOK_036Y004_00[["DATETIME", "usdkrw"]], left_on='DATETIME', right_on='DATETIME', how='left')
+df_data = BOK_901Y010_00[["DATETIME", "CPI"]]
+df_data = pd.merge(df_data, BOK_901Y062_00[["DATETIME", "HPI"]], left_on='DATETIME', right_on='DATETIME', how='left')
+df_data = pd.merge(df_data, BOK_901Y062_01[["DATETIME", "HPI(APT)"]], left_on='DATETIME', right_on='DATETIME', how='left')
+df_data = pd.merge(df_data, BOK_721Y001_AA[["DATETIME", "CB(AA-)"]], left_on='DATETIME', right_on='DATETIME', how='left')
+df_data = pd.merge(df_data, BOK_731Y004_00[["DATETIME", "USDKRW"]], left_on='DATETIME', right_on='DATETIME', how='left')
 df_data = pd.merge(df_data, df_kospi_monthly[["kospi"]], left_on='DATETIME', right_index=True, how='left')
 df_data = pd.merge(df_data, investpy_snp500_monthly[["snp500"]], left_on='DATETIME', right_index=True, how='left')
 df_data = pd.merge(df_data, df_spy_monthly[["spy"]], left_on='DATETIME', right_index=True, how='left')
