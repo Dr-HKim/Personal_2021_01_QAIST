@@ -12,7 +12,7 @@ from time import sleep
 # import matplotlib.pyplot as plt
 # import mplfinance as mpf  # 캔들차트
 
-DD_END_DATE = "23/08/2022"
+DD_END_DATE = "11/09/2022"
 
 sleep_secs = 5
 ########################################################################################################################
