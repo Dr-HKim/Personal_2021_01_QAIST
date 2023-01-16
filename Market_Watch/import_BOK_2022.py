@@ -108,13 +108,30 @@ def get_bok_data(STAT_CODE, CYCLE_TYPE, START_DATE, END_DATE, AUTH_KEY=get_bok_a
     return df_BOK
 
 
-DD_END_DATE = "20220911"
-MM_END_DATE = "202208"
-QQ_END_DATE = "2022Q2"
-YY_END_DATE = "2021"
+DD_END_DATE = "20230115"
+MM_END_DATE = "202212"
+QQ_END_DATE = "2022Q4"
+YY_END_DATE = "2022"
 
 # MM_START_DATE = "200301"
 # QQ_START_DATE = "20031"
+
+
+# macOS 일 경우 폴더 경로 변경
+# Import the os module
+import os
+os.getcwd()
+
+# path = '/Users/hkim/PycharmProjects/Personal_2021_01_QAIST'
+# try:
+#     os.chdir(path)
+#     print("Current working directory: {0}".format(os.getcwd()))
+# except FileNotFoundError:
+#     print("Directory: {0} does not exist".format(path))
+# except NotADirectoryError:
+#     print("{0} is not a directory".format(path))
+# except PermissionError:
+#     print("You do not have permissions to change to {0}".format(path))
 
 ########################################################################################################################
 # # 6.1.1 증권/재정 - 주식거래 및 주가지수 - 주식시장(일별) [064Y001] (1995.01.03 부터)

@@ -81,8 +81,11 @@ BOK_url
 BOK_response = requests.get(BOK_url)
 BOK_response.text
 
-BOK_xml = BeautifulSoup(BOK_response.text, "xml")
+BOK_xml = BeautifulSoup(BOK_response.text, "xml")  # 이 코드가 현재 실행 안됨 (2023.01.16)
 BOK_xml_row = BOK_xml.find_all("row")
+
+BOK_xml = BeautifulSoup(BOK_response.text, "html.parser")
+BOK_xml = BeautifulSoup(BOK_response.text, "xml")
 
 list_STAT_CODE = []
 list_STAT_NAME = []
@@ -143,8 +146,17 @@ df_BOK["ITEM_NAME3"] = list_ITEM_NAME3
 df_BOK["ITEM_CODE4"] = list_ITEM_CODE4
 df_BOK["ITEM_NAME4"] = list_ITEM_NAME4
 df_BOK["UNIT_NAME"] = list_UNIT_NAME
+
 df_BOK["TIME"] = list_TIME
-df_BOK["TIME"] = df_BOK["TIME"].apply(pd.to_numeric)
+if CYCLE_TYPE == "M":
+    df_BOK["TIME"] = df_BOK["TIME"].apply(pd.to_numeric)
+    df_BOK["DATETIME"] = pd.to_datetime(df_BOK['TIME'].astype(str), errors='coerce', format='%Y%m')
+elif CYCLE_TYPE == "D":
+    df_BOK["TIME"] = df_BOK["TIME"].apply(pd.to_numeric)
+    df_BOK["DATETIME"] = pd.to_datetime(df_BOK['TIME'].astype(str), errors='coerce', format='%Y%m%d')
+elif CYCLE_TYPE == "A":
+    df_BOK["TIME"] = df_BOK["TIME"].apply(pd.to_numeric)
+
 df_BOK["DATA_VALUE"] = list_DATA_VALUE
 
 # http 요청이 성공했을때 API의 리턴값 가져오기
