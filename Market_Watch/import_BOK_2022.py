@@ -108,8 +108,8 @@ def get_bok_data(STAT_CODE, CYCLE_TYPE, START_DATE, END_DATE, AUTH_KEY=get_bok_a
     return df_BOK
 
 
-DD_END_DATE = "20230115"
-MM_END_DATE = "202212"
+DD_END_DATE = "20230305"
+MM_END_DATE = "202302"
 QQ_END_DATE = "2022Q4"
 YY_END_DATE = "2022"
 
@@ -153,6 +153,7 @@ kosis_auth_key = get_kosis_auth_key()
 kosis_user_id = get_kosis_user_id()
 
 # KOSIS 제조업 생산능력 및 가동률지수 (2015=100, 계절조정) (1980.01 시작)
+# 광업·제조업 > 광업제조업동향조사 > 생산능력, 가동률 > 제조업 생산능력 및 가동률지수(2020=100)
 kosis_url = \
     "https://kosis.kr/openapi/statisticsData.do?method=getList&apiKey=" + kosis_auth_key \
     + "&format=json&jsonVD=Y&userStatsId=" + kosis_user_id + "/101/DT_1F31501/2/1/20211225210033_6&prdSe=M&startPrdDe=" \
@@ -166,6 +167,7 @@ KOSIS_DT_1F31501["DATA_VALUE"] = pd.to_numeric(KOSIS_DT_1F31501["DT"])  # 텍스
 KOSIS_DT_1F31501.to_pickle('./Market_Watch_Data/KOSIS_DT_1F31501.pkl')
 
 # KOSIS 제조업 평균가동률 (1980.01 시작)
+# 광업·제조업 > 광업제조업동향조사 > 생산능력, 가동률 > 제조업 평균가동률
 kosis_url = \
     "https://kosis.kr/openapi/statisticsData.do?method=getList&apiKey=" + kosis_auth_key \
     + "&format=json&jsonVD=Y&userStatsId=" + kosis_user_id + "/101/DT_1F31502/2/1/20211225194325_2&prdSe=M&startPrdDe=" \

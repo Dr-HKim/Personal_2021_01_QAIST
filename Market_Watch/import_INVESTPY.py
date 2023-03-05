@@ -1,8 +1,11 @@
 # Created by Kim Hyeongjun on 05/01/2021.
 # Copyright © 2021 dr-hkim.github.io. All rights reserved.
 # investpy 패키지의 종목명은 investing.com 에서 검색 가능
+# pip install investpy --upgrade
 # 빠르게 많이 받으면 ConnectionError: ERR#0015: error 429, try again later. 에러가 뜨므로
 # sleep 함수와 VPN 서비스를 활용
+# vpn 사용시 line speed 로 정렬 (9,8,7 순서이며 자릿수는 고려안함)
+
 import pandas as pd
 import numpy as np
 import investpy
@@ -12,7 +15,7 @@ from time import sleep
 # import matplotlib.pyplot as plt
 # import mplfinance as mpf  # 캔들차트
 
-DD_END_DATE = "11/09/2022"
+DD_END_DATE = "05/03/2023"  # "DD/MM/YYYY"
 
 sleep_secs = 5
 ########################################################################################################################
