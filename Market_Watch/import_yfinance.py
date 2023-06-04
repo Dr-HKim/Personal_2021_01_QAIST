@@ -16,7 +16,7 @@ from time import sleep
 # import matplotlib.pyplot as plt
 # import mplfinance as mpf  # 캔들차트
 
-DD_END_DATE = "19/05/2023"  # "DD/MM/YYYY"
+DD_END_DATE = "26/05/2023"  # "DD/MM/YYYY"
 
 sleep_secs = 5
 ########################################################################################################################
@@ -89,7 +89,7 @@ plt.plot(merged_df.Date, merged_df["return_kospi"], color=colors[0], label="KOSP
 plt.plot(merged_df.Date, merged_df["return_ief"], color=colors[1], label="IEF")
 plt.plot(merged_df.Date, merged_df["return_portfolio"], color=colors[2], label="Portfolio")
 xlim_start = dt.datetime.strptime("2023-03-23", "%Y-%m-%d")
-xlim_end = dt.datetime.strptime("2023-05-20", "%Y-%m-%d")
+xlim_end = dt.datetime.strptime("2023-05-26", "%Y-%m-%d")
 plt.xlim(xlim_start, xlim_end)
 plt.ylim(-0.10, 0.10)
 #plt.axhline(y=0, color='green', linestyle='dotted')
@@ -98,7 +98,7 @@ plt.ylabel('Index (2015.01 = 100)', fontsize=10)
 plt.legend(loc='upper left')
 plt.show()
 
-plt.savefig("./Lecture_Figures_output/fig9.2_asset_allocation_returns_2015.png")  # 그림 저장
+plt.savefig("./Lecture_Figures_output/result_20230526.png")  # 그림 저장
 
 
 
