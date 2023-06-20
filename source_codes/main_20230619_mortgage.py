@@ -209,6 +209,7 @@ fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
 
 plt.plot(df_psa80["MONTH"], df_psa80["PRINCIPAL_TOTAL"], color='r', label="PRINCIPAL_TOTAL")
 plt.plot(df_psa300["MONTH"], df_psa300["PRINCIPAL_TOTAL"], color='r', label="PRINCIPAL_TOTAL")
+plt.fill_betweenx(x, df_psa80["PRINCIPAL_TOTAL"], df_psa300["PRINCIPAL_TOTAL"], where=(df_psa80["PRINCIPAL_TOTAL"] < df_psa300["PRINCIPAL_TOTAL"]), color='blue', alpha=0.3)
 
 #plt.xlim(1, )
 # plt.ylim(30, 120)
@@ -222,3 +223,45 @@ plt.show()
 
 
 
+# Sample principal payment cashflows for each tranche by month
+tranche1_cashflow = [100, 150, 200, 250, 300, 350, 400, 450, 500, 550]
+tranche2_cashflow = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500]
+tranche3_cashflow = [25, 50, 75, 100, 125, 150, 175, 200, 225, 250]
+
+months = [f'Month {i+1}' for i in range(len(tranche1_cashflow))]  # Month labels
+
+plt.plot(months, tranche1_cashflow, label='Tranche 1')
+plt.plot(months, tranche2_cashflow, label='Tranche 2')
+plt.plot(months, tranche3_cashflow, label='Tranche 3')
+
+plt.xlabel('Month')
+plt.ylabel('Principal Payment Cashflow')
+plt.title('Principal Payment Cashflow by Tranche')
+plt.legend()
+
+plt.show()
+
+
+import numpy as np
+
+
+# Generate data points for the curves
+x = np.linspace(0, 10, 100)
+curve1 = np.sin(x)
+curve2 = np.cos(x)
+
+# Plot the curves
+plt.plot(x, curve1, label='Curve 1')
+plt.plot(x, curve2, label='Curve 2')
+
+# Fill the area where Curve 1 is lower than Curve 2
+plt.fill_betweenx(x, curve1, curve2, where=(curve1 < curve2), color='blue', alpha=0.3)
+
+# Add labels and a legend
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.title('Convex Curves')
+plt.legend()
+
+# Show the figure
+plt.show()
