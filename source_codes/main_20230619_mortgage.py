@@ -31,32 +31,6 @@ def mortgage_schedule(pool_amount, term_years, interest_rate, prepayment_speed, 
     return df_schedule
 
 
-df_psa80 = mortgage_schedule(pool_amount=100000, term_years=30, interest_rate=0.095, prepayment_speed=0.8)
-df_psa300 = mortgage_schedule(pool_amount=100000, term_years=30, interest_rate=0.095, prepayment_speed=3.0)
-
-df_psa80["PRINCIPAL_TOTAL"]
-df_psa300["PRINCIPAL_TOTAL"]
-
-
-# 시각화
-fig = plt.figure()
-fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
-# fig.set_size_inches(1800/300, 1200/300)  # 그래프 크기 지정, DPI=300
-
-plt.plot(df_psa80["MONTH"], df_psa80["PRINCIPAL_TOTAL"], color='r', label="PRINCIPAL_TOTAL")
-plt.plot(df_psa300["MONTH"], df_psa300["PRINCIPAL_TOTAL"], color='r', label="PRINCIPAL_TOTAL")
-
-#plt.xlim(1, )
-# plt.ylim(30, 120)
-# plt.axhline(y=0, color='green', linestyle='dotted')
-plt.xlabel('Months', fontsize=10)
-plt.ylabel('Consumer Price Index (2020=100)', fontsize=10)
-plt.legend(loc='upper left')
-plt.show()
-
-# plt.savefig("./Lecture_Figures_output/fig1.1_cpi.png")
-
-
 ########################################################################################################################
 # SEQ 구조
 df_pool = mortgage_schedule(pool_amount=75000, term_years=10, interest_rate=0.11, prepayment_speed=2.0, pmt_per_year=12)
@@ -84,52 +58,60 @@ for month in range(1, tranche_term + 1):
     # MBS Cashflow
     mbs_principal = df_pool["PRINCIPAL_TOTAL"][month-1]
     mbs_interest = df_pool["INTEREST"][month-1]
+    mbs_cashflow = mbs_principal + mbs_interest
 
     # Class Z Tranche
     z_interest = z_olb * tranche_z_rate / pmt_per_year # Z 클래스 이자가 accrued 되어 들어온다
 
     # Tranche A
+    a_olb_beg = a_olb  # Tranche A Outstanding Loan Balance (Beginning)
     a_interest = a_olb * tranche_a_rate / pmt_per_year
     a_principal = min(mbs_principal + z_interest, a_olb)
     a_olb = a_olb - a_principal
+    a_olb_end = a_olb  # Tranche A Outstanding Loan Balance (Ending)
     a_cf = a_interest + a_principal
 
     # Tranche B
+    b_olb_beg = b_olb  # Tranche B Outstanding Loan Balance (Beginning)
     b_interest = b_olb * tranche_b_rate / pmt_per_year
     b_principal = min(mbs_principal + z_interest - a_principal, b_olb)
     b_olb = b_olb - b_principal
+    b_olb_end = b_olb  # Tranche B Outstanding Loan Balance (Ending)
     b_cf = b_interest + b_principal
 
     # Tranche Z
+    z_olb_beg = z_olb  # Tranche Z Outstanding Loan Balance (Beginning)
     z_payment = min(mbs_principal + z_interest - a_principal - b_principal, z_olb + z_interest)
     z_olb = z_olb + z_interest - z_payment
+    z_olb_end = z_olb  # Tranche Z Outstanding Loan Balance (Ending)
 
     # Residual
     residual_cf = mbs_principal + mbs_interest - a_interest - a_principal - b_interest - b_principal - z_payment
 
     tranche_schedule.append(
-        (month, mbs_principal, mbs_interest, a_interest, a_principal, a_olb, a_cf, b_interest, b_principal, b_olb, b_cf, z_interest, z_olb, z_payment, residual_cf))
+        (month, mbs_principal, mbs_interest, mbs_cashflow, a_olb_beg, a_interest, a_principal, a_olb_end,
+         b_olb_beg, b_interest, b_principal, b_olb_end, z_olb_beg, z_interest, z_payment, z_olb_end, residual_cf))
 
 
-df_tranche = pd.DataFrame(tranche_schedule, columns=[
-    "MONTH", "MBS_PRINCIPAL", "MBS_INTEREST",
-    "A_INTEREST", "A_PRINCIPAL", "A_OLB", "A_CF",
-    "B_INTEREST", "B_PRINCIPAL", "B_OLB", "B_CF",
-    "Z_INTEREST", "Z_OLB", "Z_PAYMENT", "RESIDUAL_CF"])
+df_seq = pd.DataFrame(tranche_schedule, columns=[
+    "MONTH", "MBS_PRINCIPAL", "MBS_INTEREST", "MBS_CF",
+    "A_OLB(beg)", "A_INTEREST", "A_PRINCIPAL", "A_OLB(end)",
+    "B_OLB(beg)", "B_INTEREST", "B_PRINCIPAL", "B_OLB(end)",
+    "Z_OLB(beg)", "Z_INTEREST", "Z_PAYMENT", "Z_OLB(end)", "RESIDUAL_CF"])
 
 
 ########################################################################################################################
 # PAC 구조
-df_pool = mortgage_schedule(pool_amount=100000000, term_years=30, interest_rate=0.11, prepayment_speed=4.0, pmt_per_year=12)
-df_psa_low = mortgage_schedule(pool_amount=100000000, term_years=30, interest_rate=0.11, prepayment_speed=0.8, pmt_per_year=12)
-df_psa_high = mortgage_schedule(pool_amount=100000000, term_years=30, interest_rate=0.11, prepayment_speed=3.0, pmt_per_year=12)
+df_pool = mortgage_schedule(pool_amount=100000000, term_years=30, interest_rate=0.10, prepayment_speed=2.0, pmt_per_year=12)
+df_psa_low = mortgage_schedule(pool_amount=100000000, term_years=30, interest_rate=0.10, prepayment_speed=0.8, pmt_per_year=12)
+df_psa_high = mortgage_schedule(pool_amount=100000000, term_years=30, interest_rate=0.10, prepayment_speed=3.0, pmt_per_year=12)
 
 # Calculate installment payments and outstanding balances
 tranche_a_amount = 30000000
 tranche_a_rate = 0.0925
 tranche_b_amount = 15000000
 tranche_b_rate = 0.10
-tranche_s_amount = 40000000
+tranche_s_amount = 55000000
 tranche_s_rate = 0.11
 tranche_z_amount = 0
 tranche_z_rate = 0.11
@@ -146,56 +128,97 @@ s_olb = tranche_s_amount
 z_olb = tranche_z_amount
 residual = residual_amount
 
+
 for month in range(1, tranche_term + 1):
     # MBS Cashflow
     mbs_principal = df_pool["PRINCIPAL_TOTAL"][month-1]
     mbs_interest = df_pool["INTEREST"][month-1]
-
-    # PAC Band
-    pac_band = min(df_psa_low["PRINCIPAL_TOTAL"][month-1], df_psa_high["PRINCIPAL_TOTAL"][month-1])
+    mbs_cashflow = mbs_principal + mbs_interest
 
     # Class Z Tranche
     z_interest = z_olb * tranche_z_rate / pmt_per_year # Z 클래스 이자가 accrued 되어 들어온다
 
+    # PAC Band
+    pac_band = min(df_psa_low["PRINCIPAL_TOTAL"][month-1], df_psa_high["PRINCIPAL_TOTAL"][month-1])
+
     # Tranche A
+    a_olb_beg = a_olb  # Tranche A Outstanding Loan Balance (Beginning)
     a_interest = a_olb * tranche_a_rate / pmt_per_year
     a_principal = min(min(mbs_principal + z_interest, pac_band), a_olb)
     a_olb = a_olb - a_principal
-    a_cf = a_interest + a_principal
+    a_olb_end = a_olb  # Tranche A Outstanding Loan Balance (Ending)
+    a_cashflow = a_interest + a_principal
 
     # Tranche B
+    b_olb_beg = b_olb  # Tranche B Outstanding Loan Balance (Beginning)
     b_interest = b_olb * tranche_b_rate / pmt_per_year
     b_principal = min(min(mbs_principal + z_interest, pac_band) - a_principal, b_olb)
     b_olb = b_olb - b_principal
-    b_cf = b_interest + b_principal
+    b_olb_end = b_olb  # Tranche B Outstanding Loan Balance (Ending)
+    b_cashflow = b_interest + b_principal
 
     # Tranche S
+    s_olb_beg = s_olb  # Tranche S Outstanding Loan Balance (Beginning)
     s_interest = s_olb * tranche_s_rate / pmt_per_year
-    s_principal = min(mbs_principal + z_interest - a_principal - b_principal, s_olb)
+    s_payment = mbs_cashflow - a_cashflow - b_cashflow
+    s_principal = min(s_payment - s_interest, s_olb)
+    # s_principal = min(mbs_principal + z_interest - a_principal - b_principal, s_olb)
     s_olb = s_olb - s_principal
+    s_olb_end = s_olb  # Tranche S Outstanding Loan Balance (Ending)
     s_cf = s_interest + s_principal
 
     # Tranche Z
+    z_olb_beg = z_olb  # Tranche Z Outstanding Loan Balance (Beginning)
     z_payment = min(mbs_principal + z_interest - a_principal - b_principal, z_olb + z_interest)
     z_olb = z_olb + z_interest - z_payment
+    z_olb_end = z_olb  # Tranche Z Outstanding Loan Balance (Ending)
 
     # Residual
-    residual_cf = mbs_principal + mbs_interest - a_interest - a_principal - b_interest - b_principal - s_interest - s_principal - z_payment
+    residual_cf = mbs_cashflow - a_cashflow - b_cashflow - s_payment - z_payment
 
     tranche_schedule.append(
-        (month, mbs_principal, mbs_interest, pac_band, a_interest, a_principal, a_olb, a_cf, b_interest, b_principal, b_olb, b_cf, s_interest, s_principal, s_olb, s_cf, z_interest, z_olb, z_payment, residual_cf))
+        (month, mbs_principal, mbs_interest, mbs_cashflow, pac_band, a_olb_beg, a_interest, a_principal, a_olb_end,
+         b_olb_beg, b_interest, b_principal, b_olb_end, s_olb_beg, s_interest, s_principal, s_olb_end,
+         z_olb_beg, z_interest, z_payment, z_olb_end, residual_cf))
 
 
-df_tranche = pd.DataFrame(tranche_schedule, columns=[
-    "MONTH", "MBS_PRINCIPAL", "MBS_INTEREST", "PAC_BAND",
-    "A_INTEREST", "A_PRINCIPAL", "A_OLB", "A_CF",
-    "B_INTEREST", "B_PRINCIPAL", "B_OLB", "B_CF",
-    "S_INTEREST", "S_PRINCIPAL", "S_OLB", "S_CF",
-    "Z_INTEREST", "Z_OLB", "Z_PAYMENT", "RESIDUAL_CF"])
+df_pac = pd.DataFrame(tranche_schedule, columns=[
+    "MONTH", "MBS_PRINCIPAL", "MBS_INTEREST", "MBS_CF", "PAC_BAND",
+    "A_OLB(beg)", "A_INTEREST", "A_PRINCIPAL", "A_OLB(end)",
+    "B_OLB(beg)", "B_INTEREST", "B_PRINCIPAL", "B_OLB(end)",
+    "S_OLB(beg)", "S_INTEREST", "S_PRINCIPAL", "S_OLB(end)",
+    "Z_OLB(beg)", "Z_INTEREST", "Z_PAYMENT", "Z_OLB(end)", "RESIDUAL_CF"])
+
+
 
 ########################################################################################################################
 
 
+
+df_psa80 = mortgage_schedule(pool_amount=100000, term_years=30, interest_rate=0.095, prepayment_speed=0.8)
+df_psa300 = mortgage_schedule(pool_amount=100000, term_years=30, interest_rate=0.095, prepayment_speed=3.0)
+
+df_psa80["PRINCIPAL_TOTAL"]
+df_psa300["PRINCIPAL_TOTAL"]
+
+
+# 시각화
+fig = plt.figure()
+fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+# fig.set_size_inches(1800/300, 1200/300)  # 그래프 크기 지정, DPI=300
+
+plt.plot(df_psa80["MONTH"], df_psa80["PRINCIPAL_TOTAL"], color='r', label="PRINCIPAL_TOTAL")
+plt.plot(df_psa300["MONTH"], df_psa300["PRINCIPAL_TOTAL"], color='r', label="PRINCIPAL_TOTAL")
+
+#plt.xlim(1, )
+# plt.ylim(30, 120)
+# plt.axhline(y=0, color='green', linestyle='dotted')
+plt.xlabel('Months', fontsize=10)
+plt.ylabel('Consumer Price Index (2020=100)', fontsize=10)
+plt.legend(loc='upper left')
+plt.show()
+
+# plt.savefig("./Lecture_Figures_output/fig1.1_cpi.png")
 
 
 
