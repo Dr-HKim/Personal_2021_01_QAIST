@@ -33,7 +33,7 @@ def mortgage_schedule(pool_amount, term_years, interest_rate, prepayment_speed, 
 
 ########################################################################################################################
 # PAC 구조
-df_pool = mortgage_schedule(pool_amount=1000000, term_years=30, interest_rate=0.10, prepayment_speed=6.0, pmt_per_year=12)
+df_pool = mortgage_schedule(pool_amount=1000000, term_years=30, interest_rate=0.10, prepayment_speed=0.5, pmt_per_year=12)
 df_psa_low = mortgage_schedule(pool_amount=1000000, term_years=30, interest_rate=0.10, prepayment_speed=0.9, pmt_per_year=12)
 df_psa_high = mortgage_schedule(pool_amount=1000000, term_years=30, interest_rate=0.10, prepayment_speed=3.0, pmt_per_year=12)
 
@@ -60,15 +60,9 @@ for month in range(1, tranche_term + 1):
     # Tranche A
     a_olb_beg = a_olb  # Tranche A Outstanding Loan Balance (Beginning)
     if mbs_principal - pac_band <= s_olb:
-        check = True
-        check1 = mbs_principal - pac_band
-        check2 = s_olb
         a_principal = min(min(mbs_principal, pac_band), a_olb)
     else:
-        check = False
-        check1 = mbs_principal - pac_band
-        check2 = s_olb
-        a_principal = min(mbs_principal, a_olb)
+        a_principal = min(mbs_principal - s_olb, a_olb)
     a_olb = a_olb - a_principal
     a_olb_end = a_olb  # Tranche A Outstanding Loan Balance (Ending)
 
@@ -77,7 +71,7 @@ for month in range(1, tranche_term + 1):
     if mbs_principal - pac_band <= s_olb:
         b_principal = min(min(mbs_principal, pac_band) - a_principal, b_olb)
     else:
-        b_principal = min(mbs_principal - a_principal, b_olb)
+        b_principal = min(mbs_principal - a_principal - s_olb, b_olb)
 
     b_olb = b_olb - b_principal
     b_olb_end = b_olb  # Tranche B Outstanding Loan Balance (Ending)
@@ -92,14 +86,14 @@ for month in range(1, tranche_term + 1):
 
     tranche_schedule.append(
         (month, mbs_principal,pac_band, a_olb_beg, a_principal, a_olb_end,
-         b_olb_beg, b_principal, b_olb_end, check, check1, check2,
+         b_olb_beg, b_principal, b_olb_end,
          s_olb_beg, s_payment, s_principal, s_olb_end))
 
 
 df_pac = pd.DataFrame(tranche_schedule, columns=[
     "MONTH", "MBS_PRINCIPAL", "PAC_BAND",
     "A_OLB(beg)", "A_PRINCIPAL", "A_OLB(end)",
-    "B_OLB(beg)", "B_PRINCIPAL", "B_OLB(end)", "check", "check1", "check2",
+    "B_OLB(beg)", "B_PRINCIPAL", "B_OLB(end)",
     "S_OLB(beg)", "S_PAYMENT", "S_PRINCIPAL", "S_OLB(end)"])
 
 
@@ -113,12 +107,12 @@ y1 = df_pac["MBS_PRINCIPAL"]
 fig, ax = plt.subplots()
 fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
 
-ax.stackplot(x, y1, labels=["MBS_PRINCIPAL (PSA 500)"])
+ax.stackplot(x, y1, labels=["MBS_PRINCIPAL (PSA 50)"])
 ax.plot(x, df_pac["PAC_BAND"], color='r', label="PAC 90-300")
 ax.legend(loc='upper right')
 plt.ylim(0, 15000)
 plt.show()
-plt.savefig("./pac90-300_psa500_mbs.png")
+plt.savefig("./pac90-300_psa50_mbs.png")
 
 
 
@@ -135,4 +129,4 @@ ax.plot(x, df_pac["PAC_BAND"], color='r', label="PAC 90-300")
 ax.legend(loc='upper right')
 plt.ylim(0, 15000)
 plt.show()
-plt.savefig("./pac90-300_psa500_tranche.png")
+plt.savefig("./pac90-300_psa50_tranche.png")
