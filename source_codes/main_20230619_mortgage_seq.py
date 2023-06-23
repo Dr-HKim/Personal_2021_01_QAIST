@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 
@@ -33,14 +34,14 @@ def mortgage_schedule(pool_amount, term_years, interest_rate, prepayment_speed, 
 
 ########################################################################################################################
 # SEQ 구조
-df_pool = mortgage_schedule(pool_amount=75000, term_years=10, interest_rate=0.11, prepayment_speed=2.0, pmt_per_year=12)
+df_pool = mortgage_schedule(pool_amount=100000, term_years=10, interest_rate=0.11, prepayment_speed=2.0, pmt_per_year=12)
 
 # Calculate installment payments and outstanding balances
-tranche_a_amount = 27000
+tranche_a_amount = 50000
 tranche_a_rate = 0.0925
-tranche_b_amount = 15000
+tranche_b_amount = 30000
 tranche_b_rate = 0.10
-tranche_z_amount = 30000
+tranche_z_amount = 0  # 30000
 tranche_z_rate = 0.11
 residual_amount = 75000 - tranche_a_amount - tranche_b_amount - tranche_z_amount
 
@@ -99,23 +100,46 @@ df_seq = pd.DataFrame(tranche_schedule, columns=[
     "B_OLB(beg)", "B_INTEREST", "B_PRINCIPAL", "B_OLB(end)",
     "Z_OLB(beg)", "Z_INTEREST", "Z_PAYMENT", "Z_OLB(end)", "RESIDUAL_CF"])
 
+########################################################################################################################
+x = df_seq["MONTH"]
+y1 = df_seq["MBS_PRINCIPAL"]
+y2 = df_seq["MBS_INTEREST"]
+
+fig, ax = plt.subplots()
+ax.stackplot(x, y1, y2, labels=["MBS_PRINCIPAL", "MBS_INTEREST"])
+ax.legend(loc='upper right')
+plt.show()
+
+x = df_seq["MONTH"]
+y1 = df_seq["A_PRINCIPAL"]
+y2 = df_seq["A_INTEREST"]
+y3 = df_seq["B_PRINCIPAL"]
+y4 = df_seq["B_INTEREST"]
+y5 = df_seq["Z_PAYMENT"]
+y6 = df_seq["RESIDUAL_CF"]
+
+fig, ax = plt.subplots()
+ax.stackplot(x, y1, y2, y3, y4, y5, y6, labels=["A_PRINCIPAL", "A_INTEREST", "B_PRINCIPAL", "B_INTEREST", "Z_PAYMENT", "RESIDUAL_CF"])
+ax.legend(loc='upper right')
+plt.show()
+
 
 ########################################################################################################################
 # PAC 구조
-df_pool = mortgage_schedule(pool_amount=100000000, term_years=30, interest_rate=0.10, prepayment_speed=2.0, pmt_per_year=12)
-df_psa_low = mortgage_schedule(pool_amount=100000000, term_years=30, interest_rate=0.10, prepayment_speed=0.8, pmt_per_year=12)
-df_psa_high = mortgage_schedule(pool_amount=100000000, term_years=30, interest_rate=0.10, prepayment_speed=3.0, pmt_per_year=12)
+df_pool = mortgage_schedule(pool_amount=1000000, term_years=30, interest_rate=0.10, prepayment_speed=3.0, pmt_per_year=12)
+df_psa_low = mortgage_schedule(pool_amount=1000000, term_years=30, interest_rate=0.10, prepayment_speed=0.8, pmt_per_year=12)
+df_psa_high = mortgage_schedule(pool_amount=1000000, term_years=30, interest_rate=0.10, prepayment_speed=3.0, pmt_per_year=12)
 
 # Calculate installment payments and outstanding balances
-tranche_a_amount = 30000000
+tranche_a_amount = 300000
 tranche_a_rate = 0.0925
-tranche_b_amount = 15000000
+tranche_b_amount = 150000
 tranche_b_rate = 0.10
-tranche_s_amount = 55000000
+tranche_s_amount = 500000  # SUP 금액이 너무 크면 이자를 못받는 상황 발생 가능
 tranche_s_rate = 0.11
 tranche_z_amount = 0
 tranche_z_rate = 0.11
-residual_amount = 100000000 - tranche_a_amount - tranche_b_amount - tranche_s_amount - tranche_z_amount
+residual_amount = 1000000 - tranche_a_amount - tranche_b_amount - tranche_s_amount - tranche_z_amount
 
 pmt_per_year = 12
 
@@ -136,7 +160,7 @@ for month in range(1, tranche_term + 1):
     mbs_cashflow = mbs_principal + mbs_interest
 
     # Class Z Tranche
-    z_interest = z_olb * tranche_z_rate / pmt_per_year # Z 클래스 이자가 accrued 되어 들어온다
+    z_interest = z_olb * tranche_z_rate / pmt_per_year  # Z 클래스 이자가 accrued 되어 들어온다
 
     # PAC Band
     pac_band = min(df_psa_low["PRINCIPAL_TOTAL"][month-1], df_psa_high["PRINCIPAL_TOTAL"][month-1])
@@ -160,7 +184,7 @@ for month in range(1, tranche_term + 1):
     # Tranche S
     s_olb_beg = s_olb  # Tranche S Outstanding Loan Balance (Beginning)
     s_interest = s_olb * tranche_s_rate / pmt_per_year
-    s_payment = mbs_cashflow - a_cashflow - b_cashflow
+    s_payment = min(mbs_cashflow - a_cashflow - b_cashflow, s_olb + s_interest)
     s_principal = min(s_payment - s_interest, s_olb)
     # s_principal = min(mbs_principal + z_interest - a_principal - b_principal, s_olb)
     s_olb = s_olb - s_principal
@@ -178,7 +202,8 @@ for month in range(1, tranche_term + 1):
 
     tranche_schedule.append(
         (month, mbs_principal, mbs_interest, mbs_cashflow, pac_band, a_olb_beg, a_interest, a_principal, a_olb_end,
-         b_olb_beg, b_interest, b_principal, b_olb_end, s_olb_beg, s_interest, s_principal, s_olb_end,
+         b_olb_beg, b_interest, b_principal, b_olb_end,
+         s_olb_beg, s_interest, s_payment, s_principal, s_olb_end,
          z_olb_beg, z_interest, z_payment, z_olb_end, residual_cf))
 
 
@@ -186,13 +211,41 @@ df_pac = pd.DataFrame(tranche_schedule, columns=[
     "MONTH", "MBS_PRINCIPAL", "MBS_INTEREST", "MBS_CF", "PAC_BAND",
     "A_OLB(beg)", "A_INTEREST", "A_PRINCIPAL", "A_OLB(end)",
     "B_OLB(beg)", "B_INTEREST", "B_PRINCIPAL", "B_OLB(end)",
-    "S_OLB(beg)", "S_INTEREST", "S_PRINCIPAL", "S_OLB(end)",
+    "S_OLB(beg)", "S_INTEREST", "S_PAYMENT", "S_PRINCIPAL", "S_OLB(end)",
     "Z_OLB(beg)", "Z_INTEREST", "Z_PAYMENT", "Z_OLB(end)", "RESIDUAL_CF"])
+
+
+########################################################################################################################
+x = df_pac["MONTH"]
+y1 = df_pac["MBS_PRINCIPAL"]
+y2 = df_pac["MBS_INTEREST"]
+
+fig, ax = plt.subplots()
+ax.stackplot(x, y1, y2, labels=["MBS_PRINCIPAL", "MBS_INTEREST"])
+ax.plot(x, df_pac["PAC_BAND"], color='r', label="PAC_BAND")
+ax.legend(loc='upper right')
+plt.show()
+
+x = df_pac["MONTH"]
+y1 = df_pac["A_PRINCIPAL"]
+y2 = df_pac["A_INTEREST"]
+y3 = df_pac["B_PRINCIPAL"]
+y4 = df_pac["B_INTEREST"]
+y5 = df_pac["S_PRINCIPAL"]
+y6 = df_pac["S_INTEREST"]
+y7 = df_pac["RESIDUAL_CF"]
+
+fig, ax = plt.subplots()
+ax.stackplot(x, y1, y2, y3, y4, y5, y6, y7, labels=["A_PRINCIPAL", "A_INTEREST", "B_PRINCIPAL", "B_INTEREST", "S_PRINCIPAL", "S_INTEREST", "RESIDUAL_CF"])
+ax.plot(x, df_pac["PAC_BAND"], color='r', label="PAC_BAND")
+
+ax.legend(loc='upper right')
+plt.show()
+
 
 
 
 ########################################################################################################################
-
 
 
 df_psa80 = mortgage_schedule(pool_amount=100000, term_years=30, interest_rate=0.095, prepayment_speed=0.8)
