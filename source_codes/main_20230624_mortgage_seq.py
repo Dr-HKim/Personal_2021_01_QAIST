@@ -34,7 +34,7 @@ def mortgage_schedule(pool_amount, term_years, interest_rate, prepayment_speed, 
 
 ########################################################################################################################
 # SEQ 구조
-df_pool = mortgage_schedule(pool_amount=1000000, term_years=30, interest_rate=0.10, prepayment_speed=0.0, pmt_per_year=12)
+df_pool = mortgage_schedule(pool_amount=1000000, term_years=30, interest_rate=0.10, prepayment_speed=0.5, pmt_per_year=12)
 
 # Calculate installment payments and outstanding balances
 # tranche_a_amount = 500000
@@ -45,12 +45,12 @@ df_pool = mortgage_schedule(pool_amount=1000000, term_years=30, interest_rate=0.
 # tranche_c_rate = (1000000*0.11 - tranche_a_amount*tranche_a_rate - tranche_b_amount*tranche_b_rate) / tranche_c_amount
 # pmt_per_year = 12
 
-tranche_a_amount = 200000
+tranche_a_amount = 300000
 tranche_a_rate = 0.08
-tranche_b_amount = 300000
-tranche_b_rate = 0.10
+tranche_b_amount = 200000
+tranche_b_rate = 0.09
 tranche_c_amount = 1000000 - tranche_a_amount - tranche_b_amount
-tranche_c_rate = (1000000*0.10 - tranche_a_amount*tranche_a_rate - tranche_b_amount*tranche_b_rate) / tranche_c_amount
+tranche_c_rate = (1000000*0.09 - tranche_a_amount*tranche_a_rate - tranche_b_amount*tranche_b_rate) / tranche_c_amount
 pmt_per_year = 12
 
 tranche_term = len(df_pool["MONTH"])
@@ -121,8 +121,9 @@ fig, ax = plt.subplots()
 fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
 ax.stackplot(x, y1, y2, labels=["MBS_PRINCIPAL", "MBS_INTEREST"])
 ax.legend(loc='upper right')
+plt.ylim(0, 15000)
 plt.show()
-plt.savefig("./seq_mbs_psa150.png")
+plt.savefig("./seq_mbs_psa50.png")
 
 x = df_seq["MONTH"]
 y1 = df_seq["A_PRINCIPAL"]
@@ -131,14 +132,15 @@ y3 = df_seq["B_PRINCIPAL"]
 y4 = df_seq["B_INTEREST"]
 y5 = df_seq["C_PRINCIPAL"]
 y6 = df_seq["C_INTEREST"]
-# y7 = df_seq["RESIDUAL_CF"]
+y7 = df_seq["RESIDUAL_CF"]
 
 fig, ax = plt.subplots()
 fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
-ax.stackplot(x, y1, y2, y3, y4, y5, y6, labels=["A_PRINCIPAL", "A_INTEREST", "B_PRINCIPAL", "B_INTEREST", "C_PRINCIPAL", "C_INTEREST"])
+ax.stackplot(x, y1, y2, y3, y4, y5, y6, y7, labels=["A_PRINCIPAL", "A_INTEREST", "B_PRINCIPAL", "B_INTEREST", "C_PRINCIPAL", "C_INTEREST", "RESIDUAL_CF"])
 ax.legend(loc='upper right')
+plt.ylim(0, 15000)
 plt.show()
-plt.savefig("./seq_tranche_psa150.png")
+plt.savefig("./seq_tranche_psa50.png")
 
 
 
