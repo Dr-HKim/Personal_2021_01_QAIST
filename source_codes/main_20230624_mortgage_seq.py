@@ -34,17 +34,23 @@ def mortgage_schedule(pool_amount, term_years, interest_rate, prepayment_speed, 
 
 ########################################################################################################################
 # SEQ 구조
-df_pool = mortgage_schedule(pool_amount=1000000, term_years=10, interest_rate=0.11, prepayment_speed=2.0, pmt_per_year=12)
+df_pool = mortgage_schedule(pool_amount=1000000, term_years=30, interest_rate=0.10, prepayment_speed=0.0, pmt_per_year=12)
 
 # Calculate installment payments and outstanding balances
-tranche_a_amount = 500000
-tranche_a_rate = 0.0925
+# tranche_a_amount = 500000
+# tranche_a_rate = 0.0925
+# tranche_b_amount = 300000
+# tranche_b_rate = 0.10
+# tranche_c_amount = 1000000 - tranche_a_amount - tranche_b_amount
+# tranche_c_rate = (1000000*0.11 - tranche_a_amount*tranche_a_rate - tranche_b_amount*tranche_b_rate) / tranche_c_amount
+# pmt_per_year = 12
+
+tranche_a_amount = 200000
+tranche_a_rate = 0.08
 tranche_b_amount = 300000
 tranche_b_rate = 0.10
-tranche_z_amount = 0  # 30000
-tranche_z_rate = 0.11
-residual_amount = 1000000 - tranche_a_amount - tranche_b_amount - tranche_z_amount
-
+tranche_c_amount = 1000000 - tranche_a_amount - tranche_b_amount
+tranche_c_rate = (1000000*0.10 - tranche_a_amount*tranche_a_rate - tranche_b_amount*tranche_b_rate) / tranche_c_amount
 pmt_per_year = 12
 
 tranche_term = len(df_pool["MONTH"])
@@ -52,8 +58,7 @@ tranche_term = len(df_pool["MONTH"])
 tranche_schedule = []
 a_olb = tranche_a_amount
 b_olb = tranche_b_amount
-z_olb = tranche_z_amount
-residual = residual_amount
+c_olb = tranche_c_amount
 
 for month in range(1, tranche_term + 1):
     # MBS Cashflow
@@ -61,13 +66,10 @@ for month in range(1, tranche_term + 1):
     mbs_interest = df_pool["INTEREST"][month-1]
     mbs_cashflow = mbs_principal + mbs_interest
 
-    # Class Z Tranche
-    z_interest = z_olb * tranche_z_rate / pmt_per_year # Z 클래스 이자가 accrued 되어 들어온다
-
     # Tranche A
     a_olb_beg = a_olb  # Tranche A Outstanding Loan Balance (Beginning)
     a_interest = a_olb * tranche_a_rate / pmt_per_year
-    a_principal = min(mbs_principal + z_interest, a_olb)
+    a_principal = min(mbs_principal, a_olb)
     a_olb = a_olb - a_principal
     a_olb_end = a_olb  # Tranche A Outstanding Loan Balance (Ending)
     a_cf = a_interest + a_principal
@@ -75,31 +77,41 @@ for month in range(1, tranche_term + 1):
     # Tranche B
     b_olb_beg = b_olb  # Tranche B Outstanding Loan Balance (Beginning)
     b_interest = b_olb * tranche_b_rate / pmt_per_year
-    b_principal = min(mbs_principal + z_interest - a_principal, b_olb)
+    b_principal = min(mbs_principal - a_principal, b_olb)
     b_olb = b_olb - b_principal
     b_olb_end = b_olb  # Tranche B Outstanding Loan Balance (Ending)
     b_cf = b_interest + b_principal
 
-    # Tranche Z
-    z_olb_beg = z_olb  # Tranche Z Outstanding Loan Balance (Beginning)
-    z_payment = min(mbs_principal + z_interest - a_principal - b_principal, z_olb + z_interest)
-    z_olb = z_olb + z_interest - z_payment
-    z_olb_end = z_olb  # Tranche Z Outstanding Loan Balance (Ending)
+    # Tranche C
+    c_olb_beg = c_olb  # Tranche B Outstanding Loan Balance (Beginning)
+    c_interest = c_olb * tranche_c_rate / pmt_per_year
+    c_principal = min(mbs_principal - a_principal - b_principal, c_olb)
+    c_olb = c_olb - c_principal
+    c_olb_end = c_olb  # Tranche B Outstanding Loan Balance (Ending)
+    c_cf = c_interest + c_principal
 
     # Residual
-    residual_cf = mbs_principal + mbs_interest - a_interest - a_principal - b_interest - b_principal - z_payment
+    residual_cf = mbs_principal + mbs_interest - a_interest - a_principal - b_interest - b_principal - c_interest - c_principal
 
     tranche_schedule.append(
         (month, mbs_principal, mbs_interest, mbs_cashflow, a_olb_beg, a_interest, a_principal, a_olb_end,
-         b_olb_beg, b_interest, b_principal, b_olb_end, z_olb_beg, z_interest, z_payment, z_olb_end, residual_cf))
+         b_olb_beg, b_interest, b_principal, b_olb_end,
+         c_olb_beg, c_interest, c_principal, c_olb_end, residual_cf))
 
 
 df_seq = pd.DataFrame(tranche_schedule, columns=[
     "MONTH", "MBS_PRINCIPAL", "MBS_INTEREST", "MBS_CF",
     "A_OLB(beg)", "A_INTEREST", "A_PRINCIPAL", "A_OLB(end)",
     "B_OLB(beg)", "B_INTEREST", "B_PRINCIPAL", "B_OLB(end)",
-    "Z_OLB(beg)", "Z_INTEREST", "Z_PAYMENT", "Z_OLB(end)", "RESIDUAL_CF"])
+    "C_OLB(beg)", "C_INTEREST", "C_PRINCIPAL", "C_OLB(end)", "RESIDUAL_CF"])
 
+wal_a = sum(df_seq["MONTH"] * df_seq["A_PRINCIPAL"])/tranche_a_amount
+wal_b = sum(df_seq["MONTH"] * df_seq["B_PRINCIPAL"])/tranche_b_amount
+wal_c = sum(df_seq["MONTH"] * df_seq["C_PRINCIPAL"])/tranche_c_amount
+
+print("Tranche A WAL: " + str(wal_a))
+print("Tranche B WAL: " + str(wal_b))
+print("Tranche S WAL: " + str(wal_c))
 ########################################################################################################################
 x = df_seq["MONTH"]
 y1 = df_seq["MBS_PRINCIPAL"]
@@ -110,19 +122,23 @@ fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
 ax.stackplot(x, y1, y2, labels=["MBS_PRINCIPAL", "MBS_INTEREST"])
 ax.legend(loc='upper right')
 plt.show()
+plt.savefig("./seq_mbs_psa150.png")
 
 x = df_seq["MONTH"]
 y1 = df_seq["A_PRINCIPAL"]
 y2 = df_seq["A_INTEREST"]
 y3 = df_seq["B_PRINCIPAL"]
 y4 = df_seq["B_INTEREST"]
-y5 = df_seq["RESIDUAL_CF"]
+y5 = df_seq["C_PRINCIPAL"]
+y6 = df_seq["C_INTEREST"]
+# y7 = df_seq["RESIDUAL_CF"]
 
 fig, ax = plt.subplots()
 fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
-ax.stackplot(x, y1, y2, y3, y4, y5, labels=["A_PRINCIPAL", "A_INTEREST", "B_PRINCIPAL", "B_INTEREST", "RESIDUAL_CF"])
+ax.stackplot(x, y1, y2, y3, y4, y5, y6, labels=["A_PRINCIPAL", "A_INTEREST", "B_PRINCIPAL", "B_INTEREST", "C_PRINCIPAL", "C_INTEREST"])
 ax.legend(loc='upper right')
 plt.show()
+plt.savefig("./seq_tranche_psa150.png")
 
 
 

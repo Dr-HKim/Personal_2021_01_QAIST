@@ -33,7 +33,7 @@ def mortgage_schedule(pool_amount, term_years, interest_rate, prepayment_speed, 
 
 ########################################################################################################################
 # PAC 구조
-df_pool = mortgage_schedule(pool_amount=1000000, term_years=30, interest_rate=0.10, prepayment_speed=0.5, pmt_per_year=12)
+df_pool = mortgage_schedule(pool_amount=1000000, term_years=30, interest_rate=0.10, prepayment_speed=0.7, pmt_per_year=12)
 df_psa_low = mortgage_schedule(pool_amount=1000000, term_years=30, interest_rate=0.10, prepayment_speed=0.9, pmt_per_year=12)
 df_psa_high = mortgage_schedule(pool_amount=1000000, term_years=30, interest_rate=0.10, prepayment_speed=3.0, pmt_per_year=12)
 
@@ -97,36 +97,43 @@ df_pac = pd.DataFrame(tranche_schedule, columns=[
     "S_OLB(beg)", "S_PAYMENT", "S_PRINCIPAL", "S_OLB(end)"])
 
 
-df_pac["MBS_PRINCIPAL"][42] - df_pac["PAC_BAND"][42]
-df_pac["S_OLB(beg)"][42]
+wal_a = sum(df_pac["MONTH"] * df_pac["A_PRINCIPAL"])/tranche_a_amount
+wal_b = sum(df_pac["MONTH"] * df_pac["B_PRINCIPAL"])/tranche_b_amount
+wal_s = sum(df_pac["MONTH"] * df_pac["S_PRINCIPAL"])/tranche_s_amount
+
+print("Tranche A WAL: " + str(wal_a))
+print("Tranche B WAL: " + str(wal_b))
+print("Tranche S WAL: " + str(wal_s))
+
+
 
 ########################################################################################################################
-x = df_pac["MONTH"]
-y1 = df_pac["MBS_PRINCIPAL"]
-
-fig, ax = plt.subplots()
-fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
-
-ax.stackplot(x, y1, labels=["MBS_PRINCIPAL (PSA 50)"])
-ax.plot(x, df_pac["PAC_BAND"], color='r', label="PAC 90-300")
-ax.legend(loc='upper right')
-plt.ylim(0, 15000)
-plt.show()
-plt.savefig("./pac90-300_psa50_mbs.png")
-
-
-
-x = df_pac["MONTH"]
-y1 = df_pac["A_PRINCIPAL"]
-y2 = df_pac["B_PRINCIPAL"]
-y3 = df_pac["S_PRINCIPAL"]
-
-fig, ax = plt.subplots()
-fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
-
-ax.stackplot(x, y1, y2, y3, labels=["PAC A", "PAC B", "Support"])
-ax.plot(x, df_pac["PAC_BAND"], color='r', label="PAC 90-300")
-ax.legend(loc='upper right')
-plt.ylim(0, 15000)
-plt.show()
-plt.savefig("./pac90-300_psa50_tranche.png")
+# x = df_pac["MONTH"]
+# y1 = df_pac["MBS_PRINCIPAL"]
+#
+# fig, ax = plt.subplots()
+# fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+#
+# ax.stackplot(x, y1, labels=["MBS_PRINCIPAL (PSA 50)"])
+# ax.plot(x, df_pac["PAC_BAND"], color='r', label="PAC 90-300")
+# ax.legend(loc='upper right')
+# plt.ylim(0, 15000)
+# plt.show()
+# plt.savefig("./pac90-300_psa50_mbs.png")
+#
+#
+#
+# x = df_pac["MONTH"]
+# y1 = df_pac["A_PRINCIPAL"]
+# y2 = df_pac["B_PRINCIPAL"]
+# y3 = df_pac["S_PRINCIPAL"]
+#
+# fig, ax = plt.subplots()
+# fig.set_size_inches(3600/300, 1800/300)  # 그래프 크기 지정, DPI=300
+#
+# ax.stackplot(x, y1, y2, y3, labels=["PAC A", "PAC B", "Support"])
+# ax.plot(x, df_pac["PAC_BAND"], color='r', label="PAC 90-300")
+# ax.legend(loc='upper right')
+# plt.ylim(0, 15000)
+# plt.show()
+# plt.savefig("./pac90-300_psa50_tranche.png")
